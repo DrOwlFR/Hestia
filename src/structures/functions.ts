@@ -1,0 +1,46 @@
+import { EmbedBuilder } from "discord.js";
+import config from "./config";
+
+function embed() {
+	return new EmbedBuilder()
+		.setColor("#26c4ec")
+		.setFooter({ text: "© drowl_", iconURL: "https://cdn.discordapp.com/attachments/906273410924040253/906273850168328262/Logo_Hibou_discord.png" })
+		.setTimestamp();
+}
+
+async function connectUser(code: string, userId: string, username: string) {
+	return await fetch("https://esperluettes.hemit.fr/api/discord/users", {
+		method: "POST",
+		headers: {
+			"Authorization": `Bearer ${config.API_KEY}`,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			"code": code,
+			"discordId": userId,
+			"discordUsername": username,
+		}),
+	});
+}
+
+async function getUser(userId: string) {
+	return await fetch(`https://esperluettes.hemit.fr/api/discord/users/${userId}`, {
+		method: "GET",
+		headers: {
+			"Authorization": `Bearer ${config.API_KEY}`,
+			"Content-Type": "application/json",
+		},
+	});
+}
+
+async function deleteUser(userId: string) {
+	return await fetch(`https://esperluettes.hemit.fr/api/discord/users/${userId}`, {
+		method: "DELETE",
+		headers: {
+			"Authorization": `Bearer ${config.API_KEY}`,
+			"Content-Type": "application/json",
+		},
+	});
+}
+
+export { embed, connectUser, getUser, deleteUser };

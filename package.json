@@ -1,0 +1,28 @@
+{
+	"name": "hestia",
+	"version": "1.0.0-beta",
+	"description": "",
+	"main": "dist/src/index.js",
+	"scripts": {
+		"start": "node ./dist/src/index.js",
+		"build-dev": "tsc --watch",
+		"build": "tsc"
+	},
+	"dependencies": {
+		"discord.js": "^14.23.2",
+		"mongoose": "^8.19.1",
+		"sheweny": "^4.2.1"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.1.0",
+		"@commitlint/config-conventional": "^20.0.0",
+		"@typescript-eslint/eslint-plugin": "^8.45.0",
+		"@typescript-eslint/parser": "^8.45.0",
+		"eslint": "^9.36.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.3"
+	},
+	"keywords": [],
+	"author": "drowl_",
+	"license": "CC-BY-NC-SA"
+}
