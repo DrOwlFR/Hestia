@@ -22,11 +22,11 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
-		const memberData = await User.findOne({ userId: member?.user.id }).then(async doc => {
+		const memberData = await User.findOne({ discordId: member?.user.id }).then(async doc => {
 			try {
 				if (!doc) {
 					doc = await new User({
-						userId: member?.user.id,
+						discordId: member?.user.id,
 						totalMessages: 0,
 						joinedAt: (member as GuildMember).joinedAt,
 					}).save();

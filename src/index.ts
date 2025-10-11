@@ -11,7 +11,7 @@ const client = new ShewenyClient({
 		commands: {
 			directory: "./commands",
 			autoRegisterApplicationCommands: true,
-			guildId: ["467310144901087233"],
+			guildId: ["467310144901087233", "1400021497543655444"],
 			prefix: "pp.",
 			asyncRead: true,
 			applicationPermissions: true,
