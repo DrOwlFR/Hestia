@@ -44,6 +44,60 @@ export class ReadyEvent extends Event {
 			index++;
 		}, 7000);
 
+		// DB cleaning cron
+		schedule("0 1 * * *", async () => {
+			const dbCleaningCronLogChannel = this.client.channels.cache.get("1427009582076788846") as TextChannel;
+			dbCleaningCronLogChannel!.send("<a:load:1424326891778867332> Lancement de la boucle quotidienne de nettoyage de la base de données...");
+			// eslint-disable-next-line no-console
+			console.log("⌚ Lancement du nettoyage quotidien de la base de données...");
+			// Users DB cleaning
+			try {
+				// eslint-disable-next-line no-console
+				console.log("⌚ Lancement du nettoyage quotidien de la collection Users...");
+				(await User.find()).forEach(async dbUser => {
+					const member = gardenGuild?.members.cache.get(dbUser.discordId);
+					if (!member) {
+						await this.client.functions.deleteUser(dbUser.discordId);
+						await LinkedUser.deleteOne({ discordId: dbUser.discordId });
+						await dbUser.deleteOne();
+					}
+					return;
+				});
+				dbCleaningCronLogChannel!.send("<:round_check:1424065559355592884> Le nettoyage quotidien de la collection `Users` s'est effectué correctement.");
+				// eslint-disable-next-line no-console
+				console.log("✅ Fin du nettoyage quotidien de la collection Users...");
+			}
+			catch (err) {
+				// eslint-disable-next-line no-console
+				console.error(err);
+				dbCleaningCronLogChannel!.send(`<:round_cross:1424312051794186260> <@158205521151787009> Le nettoyage de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
+			}
+			// LinkedUsers DB cleaning
+			try {
+				// eslint-disable-next-line no-console
+				console.log("⌚ Lancement du nettoyage quotidien de la collection LinkedUsers...");
+				(await LinkedUser.find()).forEach(async dbLinkedUser => {
+					const getResponse = await this.client.functions.getUser(dbLinkedUser.discordId);
+					if (getResponse.status === 404) {
+						await this.client.functions.deleteUser(dbLinkedUser.discordId);
+						await LinkedUser.deleteOne({ discordId: dbLinkedUser.discordId });
+					}
+					return;
+				});
+				dbCleaningCronLogChannel!.send("<:round_check:1424065559355592884> Le nettoyage quotidien de la collection `LinkedUsers` s'est effectué correctement.");
+				// eslint-disable-next-line no-console
+				console.log("✅ Fin du nettoyage quotidien de la collection des LinkedUsers...");
+			}
+			catch (err) {
+				// eslint-disable-next-line no-console
+				console.log(err);
+				dbCleaningCronLogChannel!.send(`<:round_cross:1424312051794186260> <@158205521151787009> Le nettoyage de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\n\`${err}\``);
+			}
+		}, {
+			timezone: "Europe/Paris",
+		});
+
+
 		// Serious role adding/removing cron
 		schedule("0 2 * * *", async () => {
 			const seriousRoleCronLogChannel = this.client.channels.cache.get("1426975372716806316") as TextChannel;
@@ -104,19 +158,19 @@ export class ReadyEvent extends Event {
 			const dbBackupLogChannel = this.client.channels.cache.get("1426661664475975762") as TextChannel;
 			dbBackupLogChannel!.send("<a:load:1424326891778867332> Lancement de la sauvegarde hebdomadaire de la base de données...");
 			// eslint-disable-next-line no-console
-			console.log("Lancement de la sauvegarde hebdomadaire de la base de données...");
+			console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
 			try {
 				const usersDocuments = await User.find().lean();
 				const usersEjsonData = EJSON.stringify(usersDocuments, { relaxed: false });
 				const now = new Date();
 				const formattedDateTime = now.toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
 				fs.writeFileSync(`Users-${formattedDateTime}.json`, usersEjsonData, "utf8");
-				dbBackupLogChannel!.send("<:round_check:1424065559355592884> La sauvegarde hebdomadaire de la collection `Users` s'est correctement effectuée.");
+				dbBackupLogChannel!.send("<:round_check:1424065559355592884> La sauvegarde hebdomadaire de la collection `Users` s'est effectuée correctement.");
 			}
 			catch (err) {
 				// eslint-disable-next-line no-console
 				console.error(err);
-				dbBackupLogChannel!.send("<:round_cross:1424312051794186260> <@158205521151787009> La sauvegarde hebdomadaire de la collection `Users` ne s'est pas correctement effectuée.");
+				dbBackupLogChannel!.send(`<:round_cross:1424312051794186260> <@158205521151787009> La sauvegarde hebdomadaire de la collection \`Users\` ne s'est pas effectuée correctement : \`${err}\``);
 			}
 			try {
 				const linkedUsersDocuments = await LinkedUser.find().lean();
@@ -129,7 +183,7 @@ export class ReadyEvent extends Event {
 			catch (err) {
 				// eslint-disable-next-line no-console
 				console.error(err);
-				dbBackupLogChannel!.send("<:round_cross:1424312051794186260> <@158205521151787009> La sauvegarde hebdomadaire de la collection `LinkedUsers` ne s'est pas correctement effectuée.");
+				dbBackupLogChannel!.send(`<:round_cross:1424312051794186260> <@158205521151787009> La sauvegarde hebdomadaire de la collection \`LinkedUsers\` ne s'est pas effectuée correctement : \`${err}\``);
 			}
 			dbBackupLogChannel!.send("<:round_cross:1424312051794186260> Fin du script de sauvegarde hebdomadaire de la base de données.");
 			// eslint-disable-next-line no-console
