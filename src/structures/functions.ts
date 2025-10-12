@@ -8,7 +8,11 @@ function embed() {
 		.setTimestamp();
 }
 
-async function connectUser(code: string, userId: string, username: string) {
+function delay(ms: number): Promise<void> {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function connectUser(code: string, userId: string, username: string): Promise<Response> {
 	return await fetch("https://esperluettes.hemit.fr/api/discord/users", {
 		method: "POST",
 		headers: {
@@ -23,7 +27,7 @@ async function connectUser(code: string, userId: string, username: string) {
 	});
 }
 
-async function getUser(userId: string) {
+async function getUser(userId: string): Promise<Response> {
 	return await fetch(`https://esperluettes.hemit.fr/api/discord/users/${userId}`, {
 		method: "GET",
 		headers: {
@@ -33,7 +37,7 @@ async function getUser(userId: string) {
 	});
 }
 
-async function deleteUser(userId: string) {
+async function deleteUser(userId: string): Promise<Response> {
 	return await fetch(`https://esperluettes.hemit.fr/api/discord/users/${userId}`, {
 		method: "DELETE",
 		headers: {
@@ -43,4 +47,4 @@ async function deleteUser(userId: string) {
 	});
 }
 
-export { embed, connectUser, getUser, deleteUser };
+export { embed, delay, connectUser, getUser, deleteUser };

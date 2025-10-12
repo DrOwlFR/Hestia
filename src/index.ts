@@ -1,6 +1,6 @@
 import { ShewenyClient } from "sheweny";
 import config from "./structures/config";
-import { embed, connectUser, getUser, deleteUser } from "./structures/functions";
+import { embed, delay, connectUser, getUser, deleteUser } from "./structures/functions";
 import { dBConnection } from "./structures/database/dBConnection";
 
 const client = new ShewenyClient({
@@ -49,6 +49,7 @@ const client = new ShewenyClient({
 
 client.functions = {
 	embed: embed,
+	delay: delay,
 	connectUser: connectUser,
 	getUser: getUser,
 	deleteUser: deleteUser,
