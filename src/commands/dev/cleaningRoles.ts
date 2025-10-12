@@ -24,10 +24,6 @@ export class CleaningRolesCommand extends Command {
 			flags: MessageFlags.Ephemeral,
 		});
 
-		function delay(ms: number) {
-			return new Promise(resolve => setTimeout(resolve, ms));
-		}
-
 		const members = guild?.members.cache.map(m => m);
 
 		let i;
@@ -71,7 +67,7 @@ export class CleaningRolesCommand extends Command {
 				await interaction.editReply({
 					content: ` Pause de 4 secondes après \`${i + 1}\` itérations et \`${actions}\` actions.`,
 				});
-				await delay(4000);
+				await this.client.functions.delay(4000);
 				continue;
 			} else { continue; }
 		}
