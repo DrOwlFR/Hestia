@@ -36,7 +36,7 @@ export class IRLRoleButton extends Button {
 			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
 		}
 
-		if (memberData && ((memberData?.updatedAt.getTime() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
+		if (memberData && ((Date.now() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
 			(member?.roles as GuildMemberRoleManager).add(config.irlRoleId).catch(err => {
 				// eslint-disable-next-line no-console
 				console.error(err);
