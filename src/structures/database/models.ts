@@ -1,9 +1,15 @@
 import { Document, Types, Schema, model } from "mongoose";
 
+interface MessagePerDay {
+	date: string;
+	count: number;
+}
+
 export interface dbUser extends Document {
 	_id: Types.ObjectId;
 	discordId: string;
 	totalMessages: number;
+	messagesPerDay: MessagePerDay[],
 	joinedAt: Date,
 	createdAt: Date,
 	updatedAt: Date,
@@ -11,11 +17,12 @@ export interface dbUser extends Document {
 
 export const User = model<dbUser>("User", new Schema({
 	discordId: { type: String, required: true, unique: true },
-	totalMessages: { type: Number, required: true },
-	joinedAt: { type: Date, required: true },
+	totalMessages: { type: Number, required: true, default: 0 },
+	messagesPerDay: { type: [Object], required: true, default: [] },
+	joinedAt: { type: Date, required: true, default: new Date() },
 }, { timestamps: true }));
 
-export interface linkedUser extends Document {
+interface linkedUser extends Document {
 	_id: Types.ObjectId,
 	discordId: string,
 	siteId: number,

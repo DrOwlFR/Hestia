@@ -4,6 +4,7 @@ import { ApplicationCommandOptionType, type ChatInputCommandInteraction, GuildMe
 import config from "../../structures/config";
 import type { responseJson } from "../../types";
 import { LinkedUser } from "../../structures/database/models";
+import { Document } from "mongoose";
 
 export class ConnectCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -63,26 +64,23 @@ export class ConnectCommand extends Command {
 
 		if (connectResponseJson.success) {
 
-			const document = await LinkedUser.findOne({ discordId: user.id }).then(async doc => {
-				try {
-					if (!doc) {
-						doc = await new LinkedUser({
+			let document: Document | null = null;
+			try {
+				document = await LinkedUser.findOneAndUpdate(
+					{ discordId: user.id },
+					{
+						$set: {
 							discordId: user.id,
 							siteId: connectResponseJson.userId,
-						}).save();
-					} else {
-						doc.discordId = user.id;
-						doc.siteId = connectResponseJson.userId!;
-						doc.save();
-					}
-				}
-				catch (err) {
-					console.error(err);
-				}
-				finally {
-					return doc;
-				}
-			});
+						},
+					},
+					{ new: true, upsert: true },
+				);
+			}
+			catch (err) {
+				// eslint-disable-next-line no-console
+				console.error(err);
+			}
 
 			if (!document) {
 				await this.client.functions.deleteUser(user.id);

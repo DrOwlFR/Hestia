@@ -1,8 +1,8 @@
 import { Button } from "sheweny";
 import type { ShewenyClient } from "sheweny";
-import { ButtonInteraction, MessageFlags, type GuildMember, GuildMemberRoleManager } from "discord.js";
+import { ButtonInteraction, MessageFlags, type GuildMember, GuildMemberRoleManager, TextChannel } from "discord.js";
 import config from "../../structures/config";
-import { User } from "../../structures/database/models";
+import { User, type dbUser } from "../../structures/database/models";
 
 export class IRLRoleButton extends Button {
 	constructor(client: ShewenyClient) {
@@ -22,23 +22,19 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
-		const memberData = await User.findOne({ discordId: member?.user.id }).then(async doc => {
-			try {
-				if (!doc) {
-					doc = await new User({
-						discordId: member?.user.id,
-						totalMessages: 0,
-						joinedAt: (member as GuildMember).joinedAt,
-					}).save();
-				}
-			}
-			catch (err) {
-				console.error(err);
-			}
-			finally {
-				return doc;
-			}
-		});
+		let memberData: dbUser | null = null;
+		try {
+			memberData = await User.findOneAndUpdate(
+				{ discordId: member?.user.id },
+				{ $setOnInsert: { joinedAt: (member as GuildMember).joinedAt } },
+				{ upsert: true, setDefaultsOnInsert: true },
+			);
+		}
+		catch (err) {
+			// eslint-disable-next-line no-console
+			console.error(err);
+			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
+		}
 
 		if (memberData && ((memberData?.updatedAt.getTime() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
 			(member?.roles as GuildMemberRoleManager).add(config.irlRoleId).catch(err => {
