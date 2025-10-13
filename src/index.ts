@@ -5,13 +5,13 @@ import { dBConnection } from "./structures/database/dBConnection";
 
 const client = new ShewenyClient({
 	intents: ["Guilds", "GuildMembers", "GuildMessages", "GuildPresences"],
-	admins: ["158205521151787009"],
+	admins: config.adminsId,
 	joinThreadsOnCreate: true,
 	managers: {
 		commands: {
 			directory: "./commands",
 			autoRegisterApplicationCommands: true,
-			guildId: ["467310144901087233", "1400021497543655444"],
+			guildId: config.registeredGuildIds,
 			prefix: "pp.",
 			asyncRead: true,
 			applicationPermissions: true,
