@@ -13,7 +13,7 @@ function delay(ms: number): Promise<void> {
 }
 
 async function connectUser(code: string, userId: string, username: string): Promise<Response> {
-	return await fetch("https://esperluettes.hemit.fr/api/discord/users", {
+	return await fetch(`${config.APILink}/api/discord/users`, {
 		method: "POST",
 		headers: {
 			"Authorization": `Bearer ${config.API_KEY}`,
@@ -28,7 +28,7 @@ async function connectUser(code: string, userId: string, username: string): Prom
 }
 
 async function getUser(userId: string): Promise<Response> {
-	return await fetch(`https://esperluettes.hemit.fr/api/discord/users/${userId}`, {
+	return await fetch(`${config.APILink}/api/discord/users/${userId}`, {
 		method: "GET",
 		headers: {
 			"Authorization": `Bearer ${config.API_KEY}`,
@@ -38,7 +38,7 @@ async function getUser(userId: string): Promise<Response> {
 }
 
 async function deleteUser(userId: string): Promise<Response> {
-	return await fetch(`https://esperluettes.hemit.fr/api/discord/users/${userId}`, {
+	return await fetch(`${config.APILink}/api/discord/users/${userId}`, {
 		method: "DELETE",
 		headers: {
 			"Authorization": `Bearer ${config.API_KEY}`,
