@@ -4,7 +4,7 @@ import config from "./config";
 function embed() {
 	return new EmbedBuilder()
 		.setColor("#26c4ec")
-		.setFooter({ text: "© drowl_", iconURL: "https://cdn.discordapp.com/attachments/906273410924040253/906273850168328262/Logo_Hibou_discord.png" })
+		.setFooter({ text: "© Midriass", iconURL: "https://cdn.discordapp.com/attachments/906273410924040253/906273850168328262/Logo_Hibou_discord.png" })
 		.setTimestamp();
 }
 
