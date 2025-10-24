@@ -19,23 +19,24 @@ export class ReadyEvent extends Event {
 
 	async execute() {
 
-		const users = this.client.users.cache.filter(user => !user.bot).size;
+		let users = this.client.users.cache.filter(user => !user.bot).size;
 		const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
-		const ampersands = gardenGuild?.roles.cache.get(config.ampersandRoleId)?.members.size;
-		const seeds = gardenGuild?.roles.cache.get(config.seedRoleId)?.members.size;
 		const guildsIn = this.client.guilds.cache.size;
 		const channels = this.client.channels.cache.filter(channel => channel.type !== ChannelType.GuildCategory).size;
 
 		// Bot status messages
-		const statusList = [
-			`${users} membres`,
-			`${ampersands} esperluettes`,
-			`${seeds} graines`,
-			`Version ${version}`,
-		];
-
 		let index = 0;
 		setInterval(() => {
+			users = this.client.users.cache.filter(user => !user.bot).size;
+			const ampersands = gardenGuild?.roles.cache.get(config.ampersandRoleId)?.members.size;
+			const seeds = gardenGuild?.roles.cache.get(config.seedRoleId)?.members.size;
+			const statusList = [
+				`${users} membre${users > 1 ? "s" : ""}`,
+				`${ampersands} esperluette${ampersands! > 1 ? "s" : ""}`,
+				`${seeds} graine${seeds! > 1 ? "s" : ""}`,
+				`Version ${version}`,
+			];
+
 			if (index === statusList.length) index = 0;
 			const status = statusList[index];
 
@@ -153,7 +154,7 @@ export class ReadyEvent extends Event {
 			timezone: "Europe/Paris",
 		});
 
-		// Saving DB cron
+		// DB saving cron
 		schedule("0 3 * * 1", async () => {
 			const dbBackupLogChannel = this.client.channels.cache.get("1426661664475975762") as TextChannel;
 			dbBackupLogChannel!.send("<a:load:1424326891778867332> Lancement de la sauvegarde hebdomadaire de la base de données...");
@@ -185,7 +186,7 @@ export class ReadyEvent extends Event {
 				console.error(err);
 				dbBackupLogChannel!.send(`<:round_cross:1424312051794186260> <@158205521151787009> La sauvegarde hebdomadaire de la collection \`LinkedUsers\` ne s'est pas effectuée correctement : \`${err}\``);
 			}
-			dbBackupLogChannel!.send("<:round_cross:1424312051794186260> Fin du script de sauvegarde hebdomadaire de la base de données.");
+			dbBackupLogChannel!.send("<:round_check:1424065559355592884> Fin du script de sauvegarde hebdomadaire de la base de données.");
 			// eslint-disable-next-line no-console
 			console.log("✅ Fin du script de sauvegarde hebdomadaire de la base de données...");
 		}, {
