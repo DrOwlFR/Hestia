@@ -6,7 +6,7 @@ export class GetLinkedUserCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
 			name: "getlinkeduser",
-			description: "Émet un évènement au choix.",
+			description: "Renvoie les informations du site à propos d'un id Discord.",
 			category: "Dev",
 			adminsOnly: true,
 			options: [{
