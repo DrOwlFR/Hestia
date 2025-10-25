@@ -13,7 +13,8 @@
 		"discord.js": "^14.24.0",
 		"mongoose": "^8.19.2",
 		"node-cron": "^4.2.1",
-		"sheweny": "^4.2.1"
+		"sheweny": "^4.2.1",
+		"strip-indent": "^4.1.1"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^8.45.0",
