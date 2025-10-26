@@ -10,7 +10,7 @@ export class IRLRoleRemoveCancelButton extends Button {
 	async execute(button: ButtonInteraction) {
 
 		await button.update({
-			content: "> *Hestia vous sourit et range le formulaire.*\nTrès bien ! Profitez de votre retraite, vous avez bien raison.",
+			content: "> *Hestia vous sourit et range le formulaire.*\n— Très bien ! Profitez de votre retraite, vous avez bien raison.",
 			components: [],
 		});
 

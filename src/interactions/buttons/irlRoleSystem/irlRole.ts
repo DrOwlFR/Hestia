@@ -20,7 +20,7 @@ export class IRLRoleButton extends Button {
 
 		if ((member?.roles as GuildMemberRoleManager).cache.some(role => role.id === config.irlRoleId)) {
 			return await button.reply({
-				content: "Eh ! Vous avez déjà le rôle d'accès aux retraites ! Souhaitez-vous que je vous fournisse le formulaire de désinscription ?",
+				content: "— Eh ! Vous avez déjà le rôle d'accès aux retraites ! Souhaitez-vous que je vous fournisse le formulaire de désinscription ?",
 				components: [
 					new ActionRowBuilder<ButtonBuilder>()
 						.addComponents(
@@ -61,7 +61,11 @@ export class IRLRoleButton extends Button {
 				// eslint-disable-next-line no-console
 				console.error(err);
 				return button.reply({
-					content: `<:round_cross:1424312051794186260> Le rôle ${guild?.roles.cache.get(config.irlRoleId)} n'a pas pu vous être attribué. Veuillez contacter un cadratin du Discord (${config.cadratinDiscordIds.map(c => guild?.members.cache.get(c)).join(", ")}) pour le recevoir, ainsi que mon développeur (${this.client.admins.map(a => guild?.members.cache.get(a)).join(", ")}) pour en avoir le cœur net.`,
+					content: stripIndent(`
+						> *Hestia fronce les sourcils, visiblement contrariée.*
+						— Hm, où est-ce que... Je ne trouve plus les clefs de la salle des retraités...\n
+						-# <:round_cross:1424312051794186260> Le rôle ${guild?.roles.cache.get(config.irlRoleId)} n'a pas pu vous être attribué. Veuillez contacter un cadratin du Discord (${config.cadratinDiscordIds.map(c => guild?.members.cache.get(c)).join(", ")}) pour le recevoir, ainsi que mon développeur (${this.client.admins.map(a => guild?.members.cache.get(a)).join(", ")}) pour en avoir le cœur net.
+						`),
 					flags: MessageFlags.Ephemeral,
 				});
 			});
