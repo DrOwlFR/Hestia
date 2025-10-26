@@ -30,16 +30,22 @@ export class DisconnectConfirmButton extends Button {
 			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
 				(member?.roles as GuildMemberRoleManager).remove(config.ampersandRoleId);
 				await button.reply({
-					content: `<:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site avec succès. Le rôle ${guild?.roles.cache.get(config.ampersandRoleId)} vous a été retiré.`,
+					content: `<:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site avec succès. Le rôle ${guild?.roles.cache.get(config.ampersandRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.`,
 					flags: MessageFlags.Ephemeral,
 				});
 			} else {
 				(member?.roles as GuildMemberRoleManager).remove(config.seedRoleId);
 				await button.reply({
-					content: `<:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site avec succès. Le rôle ${guild?.roles.cache.get(config.seedRoleId)} vous a été retiré.`,
+					content: `<:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site avec succès. Le rôle ${guild?.roles.cache.get(config.seedRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.`,
 					flags: MessageFlags.Ephemeral,
 				});
 			}
+			(member?.roles as GuildMemberRoleManager).remove(config.livingRoomRoleId);
+			(member?.roles as GuildMemberRoleManager).remove(config.workshopRoleId);
+			(member?.roles as GuildMemberRoleManager).remove(config.libraryRoleId);
+			(member?.roles as GuildMemberRoleManager).remove(config.terraceRoleId);
+			(member?.roles as GuildMemberRoleManager).remove(config.seriousRoleId);
+			(member?.roles as GuildMemberRoleManager).remove(config.irlRoleId);
 		}
 
 		return button.followUp({
