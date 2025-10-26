@@ -1,6 +1,7 @@
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 export default [
 	{
@@ -12,12 +13,17 @@ export default [
 		plugins: {
 			"@typescript-eslint": tseslint,
 			"import": importPlugin,
+			"simple-import-sort": simpleImportSort,
 		},
 		rules: {
 			...tseslint.configs.recommended.rules,
 			"@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports", "disallowTypeAnnotations": true, "fixStyle": "separate-type-imports" }],
 			"import/no-duplicates": "error",
 			"import/order": ["error", { "alphabetize": { "order": "asc", "caseInsensitive": true } }],
+			"simple-import-sort/imports": ["error", {
+				groups: [['^(assert|buffer|child_process|cluster|crypto|dns|events|fs|http|https|net|os|path|stream|timers|util|zlib)(/.*|$)'], ['^'], ['^\\.']]
+			}],
+			"simple-import-sort/exports": "error",
 			"@typescript-eslint/no-unused-vars": "warn",
 			"no-console": "warn",
 			"arrow-spacing": ["warn", { "before": true, "after": true }],

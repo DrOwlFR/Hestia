@@ -21,6 +21,7 @@
 		"@typescript-eslint/parser": "^8.45.0",
 		"eslint": "^9.36.0",
 		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
 	},
