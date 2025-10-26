@@ -1,6 +1,7 @@
-import { Command } from "sheweny";
+import type { ChatInputCommandInteraction, PermissionsBitField, TextChannel } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ContainerBuilder, MessageFlags, PermissionFlagsBits, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ButtonBuilder, ButtonStyle, ContainerBuilder, PermissionFlagsBits, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, type ChatInputCommandInteraction, MessageFlags, PermissionsBitField, TextChannel } from "discord.js";
+import { Command } from "sheweny";
 import stripIndent from "strip-indent";
 
 export class ButtonsPanelCommand extends Command {
@@ -65,8 +66,9 @@ export class ButtonsPanelCommand extends Command {
 								new TextDisplayBuilder()
 									.setContent(stripIndent(`
 										## Accès au salon des IRLs
-										Cochez la case bleue (bouton bleu) pour obtenir les accès aux évènements dans la vie réelle.\n
+										Cochez la case bleue (bouton bleu) pour obtenir les accès aux évènements de rencontres des Esperluettes (appelés « retraites », « cousinades »...) dans la vie réelle (= *in real life* : IRL).\n
 										❗** Rappel des critères ** : 2 mois d'ancienneté et 300 messages envoyés.
+										❓ **Note** : vous pouvez décider d'enlever ce rôle à tout moment en cliquant de nouveau sur le bouton bleu.
 										`)),
 							)
 							.setButtonAccessory(
