@@ -1,4 +1,5 @@
 import { EmbedBuilder } from "discord.js";
+
 import config from "./config";
 
 function embed() {
@@ -47,4 +48,4 @@ async function deleteUser(userId: string): Promise<Response> {
 	});
 }
 
-export { embed, delay, connectUser, getUser, deleteUser };
+export { connectUser, delay, deleteUser, embed, getUser };

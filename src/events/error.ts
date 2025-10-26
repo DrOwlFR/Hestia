@@ -1,6 +1,6 @@
 import type { TextChannel } from "discord.js";
-import { Event } from "sheweny";
 import type { ShewenyClient } from "sheweny";
+import { Event } from "sheweny";
 
 export class ErrorEvent extends Event {
 	constructor(client: ShewenyClient) {

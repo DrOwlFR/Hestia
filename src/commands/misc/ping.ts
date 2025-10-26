@@ -1,7 +1,7 @@
-import { Command } from "sheweny";
-import type { ShewenyClient } from "sheweny";
 import type { ChatInputCommandInteraction } from "discord.js";
 import { connection } from "mongoose";
+import type { ShewenyClient } from "sheweny";
+import { Command } from "sheweny";
 
 export class PingCommand extends Command {
 	constructor(client: ShewenyClient) {

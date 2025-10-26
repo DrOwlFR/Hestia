@@ -1,7 +1,8 @@
 import { ShewenyClient } from "sheweny";
+
 import config from "./structures/config";
-import { embed, delay, connectUser, getUser, deleteUser } from "./structures/functions";
 import { dBConnection } from "./structures/database/dBConnection";
+import { connectUser, delay, deleteUser, embed, getUser } from "./structures/functions";
 
 const client = new ShewenyClient({
 	intents: ["Guilds", "GuildMembers", "GuildMessages", "GuildPresences"],
@@ -12,7 +13,7 @@ const client = new ShewenyClient({
 			directory: "./commands",
 			autoRegisterApplicationCommands: true,
 			guildId: config.registeredGuildIds,
-			prefix: "pp.",
+			prefix: "h.",
 			asyncRead: true,
 			applicationPermissions: true,
 			default: {

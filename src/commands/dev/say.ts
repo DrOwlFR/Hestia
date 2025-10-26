@@ -1,6 +1,7 @@
-import { Command } from "sheweny";
+import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ApplicationCommandOptionType, MessageFlags, type ChatInputCommandInteraction, TextChannel } from "discord.js";
+import { Command } from "sheweny";
 
 export class SayCommand extends Command {
 	constructor(client: ShewenyClient) {

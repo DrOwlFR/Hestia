@@ -1,10 +1,12 @@
-import { Modal } from "sheweny";
+import type { GuildMemberRoleManager, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { MessageFlags } from "discord.js";
+import type { Document } from "mongoose";
 import type { ShewenyClient } from "sheweny";
-import { MessageFlags, type GuildMemberRoleManager, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { Modal } from "sheweny";
+
 import config from "../../structures/config";
-import { responseJson } from "../../types";
-import { Document } from "mongoose";
 import { LinkedUser } from "../../structures/database/models";
+import type { responseJson } from "../../types";
 
 export class ModalComponent extends Modal {
 	constructor(client: ShewenyClient) {

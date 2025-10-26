@@ -1,10 +1,12 @@
+import type { ChatInputCommandInteraction, GuildMemberRoleManager, TextChannel } from "discord.js";
+import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
+import type { Document } from "mongoose";
+import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
-import { ShewenyClient } from "sheweny";
-import { ApplicationCommandOptionType, type ChatInputCommandInteraction, GuildMemberRoleManager, MessageFlags, TextChannel } from "discord.js";
+
 import config from "../../structures/config";
-import type { responseJson } from "../../types";
 import { LinkedUser } from "../../structures/database/models";
-import { Document } from "mongoose";
+import type { responseJson } from "../../types";
 
 export class ConnectCommand extends Command {
 	constructor(client: ShewenyClient) {

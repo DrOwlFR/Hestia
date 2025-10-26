@@ -1,12 +1,15 @@
-import { Event } from "sheweny";
-import type { ShewenyClient } from "sheweny";
-import config from "../structures/config";
-import { ActivityType, ChannelType, type TextChannel } from "discord.js";
-import { version } from "../../package.json";
-import { LinkedUser, User } from "../structures/database/models";
-import { EJSON } from "bson";
 import fs from "fs";
+
+import { EJSON } from "bson";
+import type { TextChannel } from "discord.js";
+import { ActivityType, ChannelType } from "discord.js";
 import { schedule } from "node-cron";
+import type { ShewenyClient } from "sheweny";
+import { Event } from "sheweny";
+
+import { version } from "../../package.json";
+import config from "../structures/config";
+import { LinkedUser, User } from "../structures/database/models";
 
 export class ReadyEvent extends Event {
 	constructor(client: ShewenyClient) {
@@ -97,7 +100,6 @@ export class ReadyEvent extends Event {
 		}, {
 			timezone: "Europe/Paris",
 		});
-
 
 		// Serious role adding/removing cron
 		schedule("0 2 * * *", async () => {

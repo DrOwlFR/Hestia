@@ -1,10 +1,12 @@
-import { Button } from "sheweny";
+import type { ButtonInteraction, GuildMemberRoleManager, TextChannel } from "discord.js";
+import { MessageFlags } from "discord.js";
+import type { DeleteResult } from "mongoose";
 import type { ShewenyClient } from "sheweny";
-import { ButtonInteraction, MessageFlags, type GuildMemberRoleManager, TextChannel } from "discord.js";
-import { responseJson } from "../../types";
-import { LinkedUser } from "../../structures/database/models";
+import { Button } from "sheweny";
+
 import config from "../../structures/config";
-import { DeleteResult } from "mongoose";
+import { LinkedUser } from "../../structures/database/models";
+import type { responseJson } from "../../types";
 
 export class DisconnectConfirmButton extends Button {
 	constructor(client: ShewenyClient) {

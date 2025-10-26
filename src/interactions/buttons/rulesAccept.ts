@@ -1,6 +1,7 @@
-import { Button } from "sheweny";
+import type { ButtonInteraction } from "discord.js";
+import { ActionRowBuilder, ModalBuilder, TextDisplayBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ActionRowBuilder, ButtonInteraction, ModalBuilder, TextDisplayBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { Button } from "sheweny";
 
 export class RulesAcceptButton extends Button {
 	constructor(client: ShewenyClient) {

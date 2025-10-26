@@ -1,9 +1,11 @@
-import { Command } from "sheweny";
+import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
+import { MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { type ChatInputCommandInteraction, GuildMember, MessageFlags } from "discord.js";
-import { responseJson } from "../../types";
+import { Command } from "sheweny";
+
 import config from "../../structures/config";
 import { LinkedUser } from "../../structures/database/models";
+import type { responseJson } from "../../types";
 
 export class CleaningRolesCommand extends Command {
 	constructor(client: ShewenyClient) {

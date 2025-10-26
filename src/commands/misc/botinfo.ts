@@ -1,9 +1,10 @@
 // Ajouter les infos ce que le bot stocke (id, messages totaux)
-import { Command } from "sheweny";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, type ChatInputCommandInteraction } from "discord.js";
-import { version } from "../../../package.json";
-import { dependencies } from "../../../package.json";
+import { Command } from "sheweny";
+
+import { dependencies, version } from "../../../package.json";
 
 export class BotInfoCommand extends Command {
 	constructor(client: ShewenyClient) {

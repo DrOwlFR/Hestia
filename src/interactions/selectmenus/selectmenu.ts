@@ -1,6 +1,6 @@
-import { SelectMenu } from "sheweny";
-import type { ShewenyClient } from "sheweny";
 import type { SelectMenuInteraction } from "discord.js";
+import type { ShewenyClient } from "sheweny";
+import { SelectMenu } from "sheweny";
 
 export class SelectComponent extends SelectMenu {
 	constructor(client: ShewenyClient) {

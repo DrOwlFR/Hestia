@@ -1,6 +1,7 @@
-import { MessageFlags, Permissions, type ChatInputCommandInteraction } from "discord.js";
-import { Event } from "sheweny";
+import type { ChatInputCommandInteraction, Permissions } from "discord.js";
+import { MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
+import { Event } from "sheweny";
 
 export class ClientMissingPermissionsEvent extends Event {
 	constructor(client: ShewenyClient) {

@@ -1,6 +1,7 @@
-import { Button } from "sheweny";
+import type { ButtonInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, MessageFlags } from "discord.js";
+import { Button } from "sheweny";
 
 export class DisconnectButton extends Button {
 	constructor(client: ShewenyClient) {
