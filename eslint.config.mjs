@@ -1,5 +1,6 @@
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import importPlugin from "eslint-plugin-import";
 
 export default [
 	{
@@ -10,9 +11,13 @@ export default [
 		},
 		plugins: {
 			"@typescript-eslint": tseslint,
+			"import": importPlugin,
 		},
 		rules: {
 			...tseslint.configs.recommended.rules,
+			"@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports", "disallowTypeAnnotations": true, "fixStyle": "separate-type-imports" }],
+			"import/no-duplicates": "error",
+			"import/order": ["error", { "alphabetize": { "order": "asc", "caseInsensitive": true } }],
 			"@typescript-eslint/no-unused-vars": "warn",
 			"no-console": "warn",
 			"arrow-spacing": ["warn", { "before": true, "after": true }],
