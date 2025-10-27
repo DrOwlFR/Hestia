@@ -14,6 +14,8 @@ export class CleaningRolesCommand extends Command {
 			description: "Retire le rôle & aux membres qui ne sont pas connectés au site.",
 			category: "Dev",
 			adminsOnly: true,
+			usage: "cleaningroles",
+			examples: ["cleaningroles"],
 		});
 	}
 

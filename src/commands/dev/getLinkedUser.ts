@@ -10,6 +10,8 @@ export class GetLinkedUserCommand extends Command {
 			description: "Renvoie les informations du site à propos d'un id Discord.",
 			category: "Dev",
 			adminsOnly: true,
+			usage: "getLinkedUser [discordId]",
+			examples: ["getLinkedUser 123456789123456789"],
 			options: [{
 				name: "discordid",
 				description: "ID du compte Discord.",
