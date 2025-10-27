@@ -1,12 +1,13 @@
-import { Command } from "sheweny";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ApplicationCommandOptionType, MessageFlags, type ChatInputCommandInteraction } from "discord.js";
+import { Command } from "sheweny";
 
 export class GetLinkedUserCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
 			name: "getlinkeduser",
-			description: "Émet un évènement au choix.",
+			description: "Renvoie les informations du site à propos d'un id Discord.",
 			category: "Dev",
 			adminsOnly: true,
 			options: [{

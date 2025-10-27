@@ -1,6 +1,7 @@
-import { Command } from "sheweny";
+import type { AutocompleteInteraction, ChatInputCommandInteraction, GuildMember } from "discord.js";
+import { ApplicationCommandOptionType } from "discord.js";
 import type { ShewenyClient } from "sheweny";
-import { ApplicationCommandOptionType, type ChatInputCommandInteraction, AutocompleteInteraction, GuildMember } from "discord.js";
+import { Command } from "sheweny";
 
 export class HelpCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -63,7 +64,6 @@ export class HelpCommand extends Command {
 		}
 
 		embed.addFields({ name: `${lines}`, value: `{} = sous-commande(s) disponible(s)\n<> = option(s) optionnel(s)\n[] = option(s) obligatoire(s)\n\nNe pas inclure les caractères suivants → <> et [] dans vos commandes.\n\n*En cas de besoin, n'hésitez pas à contacter mon développeur : ${this.client.admins.map(a => interaction.guild?.members.cache.get(a)).join(", ")}*.` });
-
 
 		return interaction.reply({ embeds: [embed] });
 	}

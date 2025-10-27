@@ -1,5 +1,6 @@
-import { Inhibitor, type ShewenyClient, type BaseStructure } from "sheweny";
 import type { AutocompleteInteraction, Interaction } from "discord.js";
+import type { BaseStructure, ShewenyClient } from "sheweny";
+import { Inhibitor } from "sheweny";
 
 export class BlackListInhibitor extends Inhibitor {
 	constructor(client: ShewenyClient) {

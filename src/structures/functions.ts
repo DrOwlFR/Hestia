@@ -1,10 +1,11 @@
 import { EmbedBuilder } from "discord.js";
+
 import config from "./config";
 
 function embed() {
 	return new EmbedBuilder()
 		.setColor("#26c4ec")
-		.setFooter({ text: "© drowl_", iconURL: "https://cdn.discordapp.com/attachments/906273410924040253/906273850168328262/Logo_Hibou_discord.png" })
+		.setFooter({ text: "© Midriass", iconURL: "https://cdn.discordapp.com/attachments/906273410924040253/906273850168328262/Logo_Hibou_discord.png" })
 		.setTimestamp();
 }
 
@@ -47,4 +48,4 @@ async function deleteUser(userId: string): Promise<Response> {
 	});
 }
 
-export { embed, delay, connectUser, getUser, deleteUser };
+export { connectUser, delay, deleteUser, embed, getUser };

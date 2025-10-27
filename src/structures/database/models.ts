@@ -1,4 +1,5 @@
-import { Document, Types, Schema, model } from "mongoose";
+import type { Document, Types } from "mongoose";
+import { model, Schema } from "mongoose";
 
 interface MessagePerDay {
 	date: string;

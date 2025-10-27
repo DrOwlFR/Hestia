@@ -1,6 +1,7 @@
-import { Event } from "sheweny";
-import type { ShewenyClient } from "sheweny";
 import type { GuildMember, TextChannel } from "discord.js";
+import type { ShewenyClient } from "sheweny";
+import { Event } from "sheweny";
+
 import config from "../structures/config";
 import { User } from "../structures/database/models";
 

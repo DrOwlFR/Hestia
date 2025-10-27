@@ -1,10 +1,12 @@
-import { Command } from "sheweny";
+import type { ChatInputCommandInteraction, GuildMemberRoleManager, TextChannel } from "discord.js";
+import { MessageFlags } from "discord.js";
+import type { DeleteResult } from "mongoose";
 import type { ShewenyClient } from "sheweny";
-import { MessageFlags, type ChatInputCommandInteraction, GuildMemberRoleManager, TextChannel } from "discord.js";
+import { Command } from "sheweny";
+
 import config from "../../structures/config";
-import type { responseJson } from "../../types";
 import { LinkedUser } from "../../structures/database/models";
-import { DeleteResult } from "mongoose";
+import type { responseJson } from "../../types";
 
 export class DisconnectCommand extends Command {
 	constructor(client: ShewenyClient) {
