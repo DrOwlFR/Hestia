@@ -17,7 +17,7 @@ export class ButtonsPanelCommand extends Command {
 
 	async execute(interaction: ChatInputCommandInteraction) {
 
-		if (!this.client.admins.find(id => id === interaction.user.id) || !(interaction.member?.permissions as PermissionsBitField).has(PermissionFlagsBits.Administrator)) {
+		if (!this.client.admins.find(id => id === interaction.user.id) && !(interaction.member?.permissions as PermissionsBitField).has(PermissionFlagsBits.Administrator)) {
 			return interaction.reply({
 				content: "<:round_cross:1424312051794186260> Vous n'avez pas les permissions requises pour utiliser cette commande.",
 				flags: MessageFlags.Ephemeral,
