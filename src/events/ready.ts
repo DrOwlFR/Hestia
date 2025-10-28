@@ -104,52 +104,54 @@ export class ReadyEvent extends Event {
 		// Serious role adding/removing cron
 		schedule("0 2 * * *", async () => {
 			const seriousRoleCronLogChannel = this.client.channels.cache.get("1426975372716806316") as TextChannel;
-			seriousRoleCronLogChannel!.send("<a:load:1424326891778867332> Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
+			seriousRoleCronLogChannel.send("<a:load:1424326891778867332> Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
 			// eslint-disable-next-line no-console
 			console.log("⌚ Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
-			const [today] = new Date().toISOString().split("T");
+
+			const todayTime = new Date().getTime();
 			const dbUsers = await User.find();
-			let i = 0;
-			let actions = 1;
-			for (i; i < dbUsers.length; i++) {
 
-				if ((i + 1) % 40 === 0 || (actions % 40 === 0 && actions > 0)) {
-					seriousRoleCronLogChannel!.send(`<a:load:1424326891778867332> Pause de 4 secondes après ${i + 1} itérations et ${actions} actions...`);
-					actions++;
-					await this.client.functions.delay(4000);
-				}
+			for (let i = 0; i < dbUsers.length; i++) {
+				const userDoc = dbUsers[i];
 
-				let messagesSum = 0;
-				dbUsers[i].messagesPerDay.forEach(async day => {
-					if (((new Date(today).getTime() - new Date(day.date).getTime()) / (1000 * 60 * 60 * 24)) > 30) {
-						const indexToDelete = dbUsers[i].messagesPerDay.findIndex(entry => entry.date === day.date);
-						dbUsers[i].messagesPerDay.splice(indexToDelete, 1);
-						await dbUsers[i].save();
-					}
-					else { messagesSum += day.count; }
-				});
-				const user = gardenGuild?.members.cache.get(dbUsers[i].discordId);
+				// Check if the Discord user exists
+				const user = gardenGuild?.members.cache.get(userDoc.discordId);
+				// If not, destroy with site, deleting all db info and continue to next user
 				if (!user) {
-					const getResponse = await this.client.functions.getUser(dbUsers[i].discordId);
+					const getResponse = await this.client.functions.getUser(userDoc.discordId);
 					if (getResponse.status !== 404) {
-						await this.client.functions.deleteUser(dbUsers[i].discordId);
+						await this.client.functions.deleteUser(userDoc.discordId);
 					}
-					await LinkedUser.deleteOne({ discordId: dbUsers[i].discordId });
-					await dbUsers[i].deleteOne();
+					await LinkedUser.deleteOne({ discordId: userDoc.discordId });
+					await userDoc.deleteOne();
 					continue;
 				}
-				if (messagesSum >= 50) {
-					if (user.roles.cache.find(r => r.id === config.seriousRoleId)) continue;
-					user.roles.add(config.seriousRoleId);
-					actions++;
+
+				// Cleaning up the old days and calculation of total messages
+				let messagesSum = 0;
+				userDoc.messagesPerDay = userDoc.messagesPerDay.filter(day => {
+					const diffDays = (todayTime - new Date(day.date).getTime()) / (1000 * 60 * 60 * 24);
+					if (diffDays <= 30) messagesSum += day.count;
+					return diffDays <= 30;
+				});
+				await userDoc.save();
+
+				// Management of the ‘serious’ role
+				const hasRole = user.roles.cache.has(config.seriousRoleId);
+				if (messagesSum >= 50 && !hasRole) {
+					await user.roles.add(config.seriousRoleId);
+				} else if (messagesSum < 50 && hasRole) {
+					await user.roles.remove(config.seriousRoleId);
 				}
-				else {
-					if (!user.roles.cache.find(r => r.id === config.seriousRoleId)) continue;
-					user.roles.remove(config.seriousRoleId);
-					actions++;
+
+				// Pause every 40 iterations
+				if ((i + 1) % 40 === 0) {
+					await seriousRoleCronLogChannel.send(`<a:load:1424326891778867332> Pause de 4 secondes après ${i + 1} itérations...`);
+					await this.client.functions.delay(4000);
 				}
 			}
-			seriousRoleCronLogChannel!.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
+
+			seriousRoleCronLogChannel.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
 			// eslint-disable-next-line no-console
 			console.log("✅ Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
 		}, {
