@@ -112,7 +112,6 @@ export class ReadyEvent extends Event {
 			const dbUsers = await User.find();
 
 			try {
-
 				for (let i = 0; i < dbUsers.length; i++) {
 					const userDoc = dbUsers[i];
 
@@ -156,7 +155,6 @@ export class ReadyEvent extends Event {
 				seriousRoleCronLogChannel.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
 				// eslint-disable-next-line no-console
 				console.log("✅ Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
-
 			}
 			catch (err) {
 				console.error(err);
@@ -178,7 +176,7 @@ export class ReadyEvent extends Event {
 				const usersEjsonData = EJSON.stringify(usersDocuments, { relaxed: false });
 				const now = new Date();
 				const formattedDateTime = now.toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
-				fs.writeFileSync(`Users-${formattedDateTime}.json`, usersEjsonData, "utf8");
+				await fs.promises.writeFile(`Users-${formattedDateTime}.json`, usersEjsonData, "utf8");
 				dbBackupLogChannel!.send("<:round_check:1424065559355592884> La sauvegarde hebdomadaire de la collection `Users` s'est effectuée correctement.");
 			}
 			catch (err) {
@@ -191,7 +189,7 @@ export class ReadyEvent extends Event {
 				const linkedUsersEjsonData = EJSON.stringify(linkedUsersDocuments, { relaxed: false });
 				const now = new Date();
 				const formattedDateTime = now.toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
-				fs.writeFileSync(`LinkedUsers-${formattedDateTime}.json`, linkedUsersEjsonData, "utf8");
+				await fs.promises.writeFile(`LinkedUsers-${formattedDateTime}.json`, linkedUsersEjsonData, "utf8");
 				dbBackupLogChannel!.send("<:round_check:1424065559355592884> La sauvegarde hebdomadaire de la collection `LinkedUsers` s'est correctement effectuée.");
 			}
 			catch (err) {
