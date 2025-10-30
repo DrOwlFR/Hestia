@@ -46,8 +46,17 @@ export class IRLRoleButton extends Button {
 		try {
 			memberData = await User.findOneAndUpdate(
 				{ discordId: member?.user.id },
-				{ $setOnInsert: { joinedAt: (member as GuildMember).joinedAt } },
-				{ upsert: true, setDefaultsOnInsert: true },
+				[{
+					$set: {
+						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
+						totalMessages: { $ifNull: ["$totalMessages", 0] },
+						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
+						joinedAt: { $ifNull: ["$joinedAt", (member as GuildMember).joinedAt] },
+						__v: { $add: { $ifNull: ["$__v", 0] } },
+						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
+					},
+				}],
+				{ upsert: true, new: true },
 			);
 		}
 		catch (err) {

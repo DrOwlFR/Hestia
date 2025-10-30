@@ -63,13 +63,16 @@ export class ModalComponent extends Modal {
 			try {
 				document = await LinkedUser.findOneAndUpdate(
 					{ discordId: user.id },
-					{
+					[{
 						$set: {
-							discordId: user.id,
-							siteId: connectResponseJson.userId,
+							discordId: { $ifNull: ["$discordId", user.id] },
+							siteId: { $ifNull: ["$siteId", connectResponseJson.userId] },
+							discordUsername: { $ifNull: ["$discordUsername", user.username] },
+							__v: { $add: { $ifNull: ["$__v", 0] } },
+							createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 						},
-					},
-					{ new: true, upsert: true },
+					}],
+					{ upsert: true, new: true },
 				);
 			}
 			catch (err) {
