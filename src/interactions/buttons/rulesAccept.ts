@@ -13,7 +13,7 @@ export class RulesAcceptButton extends Button {
 
 		const getResponse = await this.client.functions.getUser(button.user.id);
 
-		if (getResponse.status !== 404) {
+		if (![404, 429].includes(getResponse.status)) {
 			return button.reply({
 				content: stripIndent(`
 								> *Hestia fronce les sourcils en lisant votre formulaire qu'elle s'empresse de déchirer.*
@@ -21,6 +21,14 @@ export class RulesAcceptButton extends Button {
 								-# <:round_cross:1424312051794186260> Votre compte Discord est déjà associé à un compte sur le site, ou bien un autre compte Discord est déjà associé au compte sur le site. **Si vous pensez que c'est une erreur, veuillez contacter un·e membre de l'équipe**.
 								`),
 				flags: MessageFlags.Ephemeral,
+			});
+		} else if (getResponse.status === 429) {
+			return button.update({
+				content: stripIndent(`
+					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
+					-# <:round_cross:1424312051794186260> Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+					`),
+				components: [],
 			});
 		}
 

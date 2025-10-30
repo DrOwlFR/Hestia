@@ -25,6 +25,15 @@ export class DisconnectButton extends Button {
 				flags: MessageFlags.Ephemeral,
 			});
 		}
+		else if (getResponse.status === 429) {
+			return button.update({
+				content: stripIndent(`
+					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
+					-# <:round_cross:1424312051794186260> Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+					`),
+				components: [],
+			});
+		}
 
 		await button.reply({
 			content: "Oh... Vous souhaitez nous quitter ? En êtes-vous sûr·e ? Si vous déconnectez votre compte Discord du site, vous perdez l'accès à tous les salons du Manoir.",

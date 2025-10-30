@@ -29,6 +29,8 @@ export class GetLinkedUserCommand extends Command {
 
 		const getResponse = await this.client.functions.getUser(discordId);
 
+		if (getResponse.status === 429) return interaction.reply({ content: "Rate limit atteint.", flags: MessageFlags.Ephemeral });
+
 		if (getResponse.status === 404) return interaction.reply({ content: "L'utilisateur recherché n'est pas enregistré comme lié au site.", flags: MessageFlags.Ephemeral });
 
 		interaction.reply({ content: `L'utilisateur recherché renvoie \`${JSON.stringify(await getResponse.json())}\`.`, flags: MessageFlags.Ephemeral });
