@@ -25,7 +25,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 			return 60 * 1000;
 		}
 
-		logChannel.send(`<:round_cross:1424312051794186260> <@158205521151787009> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement : \`${error.message}\``);
+		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 
@@ -50,7 +50,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 				}
 			} catch (err) {
 				console.error(err);
-				logChannel.send(`<:round_cross:1424312051794186260> <@158205521151787009> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
+				logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
 			}
 		}
 
@@ -58,7 +58,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		console.log("✅ Fin du nettoyage quotidien de la collection Users...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@158205521151787009> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
+		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
 	}
 
 	// --- Cleaning the LinkedUsers collection ---
@@ -108,7 +108,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		console.log("✅ Fin du nettoyage quotidien de la collection LinkedUsers...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@158205521151787009> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
+		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
 	}
 	logChannel.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne de nettoyage de la base de données.");
 }

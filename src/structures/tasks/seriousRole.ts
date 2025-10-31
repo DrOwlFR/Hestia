@@ -55,6 +55,6 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 	}
 	catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@158205521151787009> La boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir ne s'est pas effectuée correctement : \`${err}\``);
+		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> La boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir ne s'est pas effectuée correctement : \`${err}\``);
 	}
 }

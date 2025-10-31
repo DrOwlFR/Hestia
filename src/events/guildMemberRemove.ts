@@ -22,7 +22,7 @@ export class GuildMemberRemoveEvent extends Event {
 		if (await User.findOne({ discordId: member.id })) {
 			try {
 				const userDelete = await User.deleteOne({ discordId: member.id });
-				if (userDelete.deletedCount === 0) (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document **User** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
+				if (userDelete.deletedCount === 0) (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
 			}
 			catch (err) {
 				// eslint-disable-next-line no-console
@@ -33,7 +33,7 @@ export class GuildMemberRemoveEvent extends Event {
 		if (await LinkedUser.findOne({ discordId: member.id })) {
 			try {
 				const linkedUserDelete = await LinkedUser.deleteOne({ discordId: member.id });
-				if (linkedUserDelete.deletedCount === 0) (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document **LinkedUser** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
+				if (linkedUserDelete.deletedCount === 0) (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **LinkedUser** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
 			}
 			catch (err) {
 				// eslint-disable-next-line no-console
@@ -45,7 +45,7 @@ export class GuildMemberRemoveEvent extends Event {
 
 		if (deleteResponse.status === 404) { return; }
 		else if (deleteResponse.status === 204) { return; }
-		else { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le lien avec le site de l'utilisateur \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`); }
+		else { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le lien avec le site de l'utilisateur \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`); }
 
 	}
 };

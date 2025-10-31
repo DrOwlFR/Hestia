@@ -82,7 +82,7 @@ export class ModalComponent extends Modal {
 
 			if (!document) {
 				await this.client.functions.deleteUser(user.id);
-				(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
+				(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
 				return modal.reply({
 					content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.

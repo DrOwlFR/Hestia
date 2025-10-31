@@ -48,7 +48,7 @@ export class DisconnectConfirmButton extends Button {
 			// eslint-disable-next-line no-console
 			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(err => console.error(err));
 			const memberRoles = member?.roles as GuildMemberRoleManager;
-			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
+			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
 			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
 				memberRoles.remove(config.ampersandRoleId);
 				await button.update({
