@@ -32,7 +32,7 @@ export class ReadyEvent extends Event {
 		setInterval(() => {
 			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
 
-			users = this.client.users.cache.filter(user => !user.bot).size;
+			users = gardenGuild!.members.cache.filter(member => !member.user.bot).size;
 			const ampersands = gardenGuild?.roles.cache.get(config.ampersandRoleId)?.members.size;
 			const seeds = gardenGuild?.roles.cache.get(config.seedRoleId)?.members.size;
 			const statusList = [
