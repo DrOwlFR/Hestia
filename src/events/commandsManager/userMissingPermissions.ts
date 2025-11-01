@@ -15,7 +15,7 @@ export class UserMissingPermissionsEvent extends Event {
 	async execute(interaction: ChatInputCommandInteraction, missing: Permissions) {
 
 		return interaction.reply({
-			content: `<:shield_cross:1270727167428395151> Vous n'avez pas la permission suffisante pour la commande \`${interaction}\`. Permission${missing.length > 1 ? "s" : ""} manquant${missing.length > 1 ? "es" : "e"} : *\`${missing}\`*.`,
+			content: `<:round_cross:1424312051794186260> Vous n'avez pas la permission suffisante pour la commande \`${interaction}\`. Permission${missing.length > 1 ? "s" : ""} manquant${missing.length > 1 ? "es" : "e"} : *\`${missing}\`*.`,
 			flags: MessageFlags.Ephemeral,
 		});
 
