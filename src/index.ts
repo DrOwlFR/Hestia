@@ -6,13 +6,13 @@ import { connectUser, delay, deleteUser, embed, getUser } from "./structures/fun
 
 const client = new ShewenyClient({
 	intents: ["Guilds", "GuildMembers", "GuildMessages", "GuildPresences"],
-	admins: config.adminsId,
+	admins: config.botAdminsIds,
 	joinThreadsOnCreate: true,
 	managers: {
 		commands: {
 			directory: "./commands",
 			autoRegisterApplicationCommands: true,
-			guildId: config.registeredGuildIds,
+			guildId: config.registeredGuildsIds,
 			prefix: "h.",
 			asyncRead: true,
 			applicationPermissions: true,

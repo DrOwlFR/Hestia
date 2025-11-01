@@ -8,7 +8,7 @@ export class ButtonsPanelCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
 			name: "buttonspanel",
-			description: "Envoie le panneau du bouton des IRLs.",
+			description: "Envoie le panneau des boutons.",
 			category: "Administration",
 			usage: "buttonspanel",
 			examples: ["buttonspanel"],

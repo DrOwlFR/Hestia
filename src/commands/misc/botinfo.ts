@@ -5,6 +5,7 @@ import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
 import { dependencies, version } from "../../../package.json";
+import config from "../../structures/config";
 
 export class BotInfoCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -30,7 +31,7 @@ export class BotInfoCommand extends Command {
 					.setTitle(`Informations sur __${client.user?.username}__`)
 					.setThumbnail(client.user?.displayAvatarURL({ size: 1024 }))
 					.addFields([
-						{ name: "🩷 Surnom", value: "Philibert Annick de la Botte de Sept Lieues (par <@586903769363513345>)" },
+						{ name: "🩷 Surnom", value: `Philibert Annick de la Botte de Sept Lieues (par <@${config.adminsDiscordIds[0]}>)` },
 						{ name: "🗓️ Date de création", value: `<t:${createdTimestamp}:F>, <t:${createdTimestamp}:R>` },
 						{ name: "<:developer:1424387780447834143> Développeur", value: `${interaction.guild?.members.cache.get(client.admins[0])}` },
 						{ name: "<:high_connection:1424387839197581445> En ligne depuis", value: `<t:${readyTimestamp}:F>, <t:${readyTimestamp}:R>` },

@@ -30,6 +30,16 @@ export class DisconnectConfirmButton extends Button {
 			});
 		}
 
+		if (getResponse.status === 429) {
+			return button.update({
+				content: stripIndent(`
+							— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
+							-# <:round_cross:1424312051794186260> Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+							`),
+				components: [],
+			});
+		}
+
 		const getResponseJson = (await getResponse.json() as responseJson);
 
 		const deleteResponse = await this.client.functions.deleteUser(user.id);
@@ -37,9 +47,10 @@ export class DisconnectConfirmButton extends Button {
 		if (deleteResponse.status === 204) {
 			// eslint-disable-next-line no-console
 			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(err => console.error(err));
-			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
+			const memberRoles = member?.roles as GuildMemberRoleManager;
+			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
 			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
-				(member?.roles as GuildMemberRoleManager).remove(config.ampersandRoleId);
+				memberRoles.remove(config.ampersandRoleId);
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
@@ -48,7 +59,7 @@ export class DisconnectConfirmButton extends Button {
 					components: [],
 				});
 			} else {
-				(member?.roles as GuildMemberRoleManager).remove(config.seedRoleId);
+				memberRoles.remove(config.seedRoleId);
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
@@ -57,12 +68,21 @@ export class DisconnectConfirmButton extends Button {
 					components: [],
 				});
 			}
-			(member?.roles as GuildMemberRoleManager).remove(config.livingRoomRoleId);
-			(member?.roles as GuildMemberRoleManager).remove(config.workshopRoleId);
-			(member?.roles as GuildMemberRoleManager).remove(config.libraryRoleId);
-			(member?.roles as GuildMemberRoleManager).remove(config.terraceRoleId);
-			(member?.roles as GuildMemberRoleManager).remove(config.seriousRoleId);
-			(member?.roles as GuildMemberRoleManager).remove(config.irlRoleId);
+			const rolesToRemove = [config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
+			const rolesOwned = rolesToRemove.filter(roleId => memberRoles.cache.has(roleId));
+
+			if (rolesOwned.length > 0) {
+				await memberRoles.remove(rolesOwned);
+			}
+		}
+		else if (deleteResponse.status === 429) {
+			return button.update({
+				content: stripIndent(`
+					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
+					-# <:round_cross:1424312051794186260> Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+					`),
+				components: [],
+			});
 		}
 
 	}

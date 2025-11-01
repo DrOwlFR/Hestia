@@ -23,28 +23,77 @@ export class MessageCreateEvent extends Event {
 		const [today] = new Date().toISOString().split("T");
 
 		try {
-			const user = await User.findOneAndUpdate(
+			await User.findOneAndUpdate(
 				{ discordId: message.author.id },
-				{
-					$inc: { totalMessages: 1 },
-					$setOnInsert: {
-						joinedAt: message.member?.joinedAt,
-						messagesPerDay: [{ date: today, count: 0 }],
+				[
+					{
+						$set: {
+							isNewDay: { $eq: [{ $indexOfArray: ["$messagesPerDay.date", today] }, -1] },
+						},
 					},
-				},
-				{ new: true, upsert: true },
+					{
+						$set: {
+							discordUsername: { $ifNull: ["$discordUsername", message.author.username] },
+							totalMessages: { $add: [{ $ifNull: ["$totalMessages", 0] }, 1] },
+							// 📊 messagesPerDay : incrémente le jour courant ou ajoute une nouvelle entrée
+							messagesPerDay: {
+								$let: {
+									vars: { today: today },
+									in: {
+										$cond: [
+											{
+												// Condition : la date du jour existe déjà dans le tableau
+												$in: [
+													"$$today",
+													{
+														$map: {
+															input: { $ifNull: ["$messagesPerDay", []] },
+															as: "d",
+															in: "$$d.date",
+														},
+													},
+												],
+											},
+											{
+												// Si oui → incrémente le count pour cette date
+												$map: {
+													input: { $ifNull: ["$messagesPerDay", []] },
+													as: "d",
+													in: {
+														$cond: [
+															{ $eq: ["$$d.date", "$$today"] },
+															{ date: "$$d.date", count: { $add: ["$$d.count", 1] } },
+															"$$d",
+														],
+													},
+												},
+											},
+											{
+												// Sinon → ajoute une nouvelle entrée { date: today, count: 1 }
+												$concatArrays: [
+													{ $ifNull: ["$messagesPerDay", []] },
+													[{ date: "$$today", count: 1 }],
+												],
+											},
+										],
+									},
+								},
+							},
+							joinedAt: { $ifNull: ["$joinedAt", message.member?.joinedAt] },
+							__v: {
+								$cond: [
+									"$isNewDay",
+									{ $add: [{ $ifNull: ["$__v", 0] }, 1] },
+									{ $ifNull: ["$__v", 0] },
+								],
+							},
+							createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
+						},
+					},
+					{ $unset: "isNewDay" },
+				],
+				{ upsert: true },
 			);
-
-			const index = user.messagesPerDay.findIndex(entry => entry.date === today);
-			if (index !== -1) {
-				const entryToUpdate = { ...user.messagesPerDay[index] };
-				entryToUpdate.count += 1;
-				user.messagesPerDay[index] = entryToUpdate;
-			}
-			else {
-				user.messagesPerDay.push({ date: today, count: 1 });
-			}
-			await user.save();
 		}
 		catch (err) {
 			// eslint-disable-next-line no-console

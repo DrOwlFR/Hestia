@@ -22,14 +22,23 @@ export class GuildMemberAddEvent extends Event {
 		try {
 			await User.findOneAndUpdate(
 				{ discordId: member.id },
-				{ totalMessages: 0, messagesPerDay: [], joinedAt: new Date() },
-				{ upsert: true, setDefaultsOnInsert: true },
+				[{
+					$set: {
+						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
+						totalMessages: { $ifNull: ["$totalMessages", 0] },
+						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
+						joinedAt: { $ifNull: ["$joinedAt", (member as GuildMember).joinedAt] },
+						__v: { $add: { $ifNull: ["$__v", 0] } },
+						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
+					},
+				}],
+				{ upsert: true },
 			);
 		}
 		catch (err) {
 			// eslint-disable-next-line no-console
 			console.error(err);
-			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@158205521151787009> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lors de son **arrivée sur le serveur**. À vérifier.`);
+			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lors de son **arrivée sur le serveur**. À vérifier.`);
 		}
 
 	}

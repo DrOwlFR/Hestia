@@ -10,6 +10,8 @@ export class EmitCommand extends Command {
 			description: "Émet un évènement au choix.",
 			category: "Dev",
 			adminsOnly: true,
+			usage: "emit [événement]",
+			examples: ["emit guildMemberAdd"],
 			clientPermissions: ["Administrator"],
 			options: [{
 				name: "événement",
