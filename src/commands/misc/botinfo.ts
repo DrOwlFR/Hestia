@@ -50,6 +50,11 @@ export class BotInfoCommand extends Command {
 							.setLabel("Statut")
 							.setEmoji("📊")
 							.setURL("https://watchbot.fr/status/1423709000456737002"),
+						new ButtonBuilder()
+							.setStyle(ButtonStyle.Link)
+							.setLabel("Politique de confidentialité")
+							.setEmoji("🔐")
+							.setURL("https://github.com/DrOwlFR/Hestia/blob/acceptance/PRIVACY_POLICY.md"),
 					),
 			],
 		});
