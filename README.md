@@ -10,9 +10,10 @@ This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its u
 
 ### Administration
 
-| Name        | Description                         | Sub-commands | Usage        | Cd     |
-| ----------- | ----------------------------------- | ------------ | ------------ | ------ |
-| buttonpanel | Send the panel with the IRL button. | None         | No arguments | 3secs  |
+| Name         | Description                            | Sub-commands | Usage        | Cd     |
+| ------------ | -------------------------------------- | ------------ | ------------ | ------ |
+| buttonspanel | Send the button panel                  | None         | No arguments | 3secs  |
+| rules        | Send the rules from the Garden server. | None         | No arguments | 3secs  |
 
 ### Dev
 
@@ -21,6 +22,7 @@ This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its u
 | cleaningroles  | Removes the ampersand/seed role from members who are not linked to the site. | None         | No arguments | 3secs  |
 | emit           | Sends a Discord event of your choice.                                        | None         | [event]      | 3secs  |
 | getlinkedusers | Returns whether the Discord ID is linked to an account on the site.          | None         | [discordId]  | 3secs  |
+| say            | Make the bot speak.                                                          | None         | [message]    | 3secs  |
 
 ### Misc
 
@@ -33,8 +35,6 @@ This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its u
 
 | Name       | Description                                                                  | Sub-commands | Usage        | Cd     |
 | ---------- | ---------------------------------------------------------------------------- | ------------ | ------------ | ------ |
-| connect    | Allows you to connect your Discord account to the site.                      | None         | [code]       | 3secs  |
-| disconnect | Allows you to disconnect the link between your Discord account and the site. | None         | No arguments | 3secs  |
 | help       | Displays the list of commands, or help on a specific command.                | None         | <command>    | 3secs  |
 
 ### How to install
@@ -42,5 +42,5 @@ This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its u
 1. Clone the repo.
 2. Rename the file `config.template.ts` — located in `src/structures` — to `config.ts`, type your token and the database token.
 3. Install dependencies: `npm install`.
-4. Build typescripts file : `npm run build`
+4. Build typescripts file : `npm run build`.
 4. Start the bot: `npm run start`.
