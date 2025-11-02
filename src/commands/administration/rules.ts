@@ -65,7 +65,7 @@ export class RulesCommand extends Command {
 								* **Merci de vous adresser aux autres Esperluettes avec bienveillance et considération en toutes circonstances**. Si un message ou un sujet abordé vous met mal à l’aise ou vous blesse, vous pouvez le signaler directement dans la discussion incriminée sur le serveur ou, si vous n’osez pas, en contactant **l’équipe** :
 								  * les <@&${config.adminRoleId}> : <@${config.adminsDiscordIds[0]}>, <@${config.adminsDiscordIds[1]}> et <@${config.adminsDiscordIds[2]}>,
 								  * les <@&${config.modRoleId}> du Discord : <@${config.discordModsIds[0]}>, <@${config.discordModsIds[1]}> et <@${config.discordModsIds[2]}>,
-								  * *<@${config.siteModsIds[0]}>, <@${config.siteModsIds[1]}> et <@${config.siteModsIds[2]}> et sont quant à eux les Cadratins du site*.
+								  * *<@${config.siteModsIds[0]}>, <@${config.siteModsIds[1]}> et <@${config.siteModsIds[2]}> sont quant à eux les Cadratins du site*.
 								❓ **Note** : si le ton monte, il est possible de demander à ce que l’équipe vous transfère temporairement dans une zone de calme, à l’écart du reste de serveur, afin que vous puissiez décompresser.
 								❗ **Attention** : en cas de problème grave et/ou qui persiste, vous recevrez un avertissement puis, à terme, si votre comportement ne change pas, vous serez banni·e du Jardin.
 						`)),
