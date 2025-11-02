@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { Guild, TextChannel } from "discord.js";
-import { ActivityType, ChannelType } from "discord.js";
+import { ActivityType } from "discord.js";
 import { schedule } from "node-cron";
 import type { ShewenyClient } from "sheweny";
 import { Event } from "sheweny";
@@ -23,16 +23,12 @@ export class ReadyEvent extends Event {
 
 	async execute() {
 
-		let users = this.client.users.cache.filter(user => !user.bot).size;
-		const guildsIn = this.client.guilds.cache.size;
-		const channels = this.client.channels.cache.filter(channel => channel.type !== ChannelType.GuildCategory).size;
-
 		// Bot status messages
 		let index = 0;
 		setInterval(() => {
 			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
 
-			users = gardenGuild!.members.cache.filter(member => !member.user.bot).size;
+			const users = gardenGuild!.members.cache.filter(member => !member.user.bot).size;
 			const ampersands = gardenGuild?.roles.cache.get(config.ampersandRoleId)?.members.size;
 			const seeds = gardenGuild?.roles.cache.get(config.seedRoleId)?.members.size;
 			const statusList = [
@@ -65,7 +61,7 @@ export class ReadyEvent extends Event {
 		// --- Serious role adding/removing cron: everyday at 2AM ---
 		schedule("0 2 * * *", async () => {
 			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
-			const seriousRoleCronLogChannel = gardenGuild?.channels.cache.get("1426975372716806316") as TextChannel;
+			const seriousRoleCronLogChannel = this.client.channels.cache.get("1426975372716806316") as TextChannel;
 
 			console.log("⌚ Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
 			seriousRoleCronLogChannel.send("<a:load:1424326891778867332> Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
@@ -76,8 +72,7 @@ export class ReadyEvent extends Event {
 
 		// --- DB saving cron: every monday at 3AM ---
 		schedule("0 3 * * 1", async () => {
-			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
-			const dbBackupLogChannel = gardenGuild?.channels.cache.get("1426661664475975762") as TextChannel;
+			const dbBackupLogChannel = this.client.channels.cache.get("1426661664475975762") as TextChannel;
 
 			console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
 			dbBackupLogChannel.send("<a:load:1424326891778867332> Lancement de la sauvegarde hebdomadaire de la base de données...");
@@ -86,6 +81,6 @@ export class ReadyEvent extends Event {
 			timezone: "Europe/Paris",
 		});
 
-		return console.log(`Le bot est prêt et connecté en tant que ${this.client.user?.tag} ! ${guildsIn} serveurs. ${users} utilisateurs et ${channels} salons.`);
+		return console.log(`Le bot est prêt et connecté en tant que ${this.client.user?.tag}.`);
 	}
 };
