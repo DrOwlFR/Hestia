@@ -62,7 +62,10 @@ export class RulesCommand extends Command {
 								* Sont strictement interdits : les messages de diffamation ou de menaces, les contenus à caractère pornographique, les incitations à la haine ou la violence, les discriminations en raison de l'ethnie, de la religion, de l’orientation sexuelle ou du genre, l’apologie du nazisme ou la contestation de crimes contre l’humanité. Soit, globalement : **est interdit tout contenu illicite et/ou portant atteinte à autrui**.
 								❗ Sont également interdits : le prosélytisme et les discussions politiques ouvertement partisanes.
 
-								* **Merci de vous adresser aux autres Esperluettes avec bienveillance et considération en toutes circonstances**. Si un message ou un sujet abordé vous met mal à l’aise ou vous blesse, vous pouvez le signaler directement dans la discussion incriminée sur le serveur ou, si vous n’osez pas, en contactant **l’équipe : les trois <@&${config.adminRoleId}> : <@${config.adminsDiscordIds[0]}>, <@${config.adminsDiscordIds[1]}> et <@${config.adminsDiscordIds[2]}>, ou les <@&${config.modRoleId}> du Discord : <@${config.discordModsIds[0]}>, <@${config.discordModsIds[1]}> et <@${config.discordModsIds[2]}>**. <@${config.siteModsIds[0]}>, <@${config.siteModsIds[1]}> et <@${config.siteModsIds[2]}> et sont quant à eux les Cadratins du site.
+								* **Merci de vous adresser aux autres Esperluettes avec bienveillance et considération en toutes circonstances**. Si un message ou un sujet abordé vous met mal à l’aise ou vous blesse, vous pouvez le signaler directement dans la discussion incriminée sur le serveur ou, si vous n’osez pas, en contactant **l’équipe** :
+								  * les <@&${config.adminRoleId}> : <@${config.adminsDiscordIds[0]}>, <@${config.adminsDiscordIds[1]}> et <@${config.adminsDiscordIds[2]}>,
+								  * les <@&${config.modRoleId}> du Discord : <@${config.discordModsIds[0]}>, <@${config.discordModsIds[1]}> et <@${config.discordModsIds[2]}>,
+								  * *<@${config.siteModsIds[0]}>, <@${config.siteModsIds[1]}> et <@${config.siteModsIds[2]}> et sont quant à eux les Cadratins du site*.
 								❓ **Note** : si le ton monte, il est possible de demander à ce que l’équipe vous transfère temporairement dans une zone de calme, à l’écart du reste de serveur, afin que vous puissiez décompresser.
 								❗ **Attention** : en cas de problème grave et/ou qui persiste, vous recevrez un avertissement puis, à terme, si votre comportement ne change pas, vous serez banni·e du Jardin.
 						`)),
@@ -104,7 +107,7 @@ export class RulesCommand extends Command {
 								**Pour accéder au serveur, il vous sera demandé d'accepter le règlement en cliquant sur le bouton vert dédié que vous propose notre robot concierge, Hestia** (voir en bas du salon). **Vous vous engagerez alors à toujours respecter et appliquer les demandes de la modération.** Si vous souhaitez demander un éclaircissement ou soulever un problème, merci de contacter – poliment – en privé un membre de l'équipe (Cadratin du Discord ou Majuscule).
 								❓ **Note** : le bouton vous demandera un code de vérification que vous pourrez obtenir sur le site (en cliquant sur bouton « Lier » sur votre page de profil), ceci afin de s’assurer que vous possédez un compte sur le Jardin avant d’entrer sur le serveur et de vous ajouter le rôle correspondant. Vous pourrez vous déconnecter à tout moment en cliquant sur le bouton rouge (voir en bas du salon), mais attention : vous perdrez l’accès aux salons du Discord.
 
-								Vous êtes maintenant cordialement invité·e à enlever vos chaussures pour profiter de l'⁠<#${config.antechamberChannelId}> et vous présenter dans la ⁠<#${config.portraitGaleryChannelId}> :content:
+								Vous êtes maintenant cordialement invité·e à enlever vos chaussures pour profiter de l'⁠<#${config.antechamberChannelId}> et vous présenter dans la ⁠<#${config.portraitGaleryChannelId}> <:content:1400469496325607454>
 								**Notez que tant que vous êtes une <@&${config.seedRoleId}>, seule cette section Antichambre vous sera accessible**.
 								`)),
 					),
@@ -122,7 +125,7 @@ export class RulesCommand extends Command {
 								## Point vocabulaire : les rôles sur le Serveur
 								* <@&${config.adminRoleId}> : ce sont nos admin·e·s. Ielles gèrent le site et la modération.
 								* <@&${config.modRoleId}> : ce sont nos modos discord et site qui veillent à ce que tout se passe bien et à ce que tout le monde soit sage 😉
-								
+
 								* <@&${config.arobaseRoleId}> \`(rôle temporaire)\` : ce sont les petits doigts qui travaillent en coulisses sur le site et/ou les outils annexes comme Hestia (développeur·euse·s, graphistes, alpha-testeur·euse·s, etc.).
 								* <@&${config.guillemetRoleId}> \`(rôle temporaire)\` : ce sont les petits doigts qui travaillent en coulisses sur les initiatives « non techniques » (concours, visuels, lore, pages du site comme la FAQ ou le guide Cultiver un commentaire, etc.).
 
