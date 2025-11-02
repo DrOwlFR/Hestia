@@ -20,6 +20,7 @@ This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its u
 | Name           | Description                                                                  | Sub-commands | Usage        | Cd     |
 | -------------- | ---------------------------------------------------------------------------- | ------------ | ------------ | ------ |
 | cleaningroles  | Removes the ampersand/seed role from members who are not linked to the site. | None         | No arguments | 3secs  |
+| editMessage    | Allows you to edit a message.                                                | None         | No arguments | 3secs  |
 | emit           | Sends a Discord event of your choice.                                        | None         | [event]      | 3secs  |
 | getlinkedusers | Returns whether the Discord ID is linked to an account on the site.          | None         | [discordId]  | 3secs  |
 | say            | Make the bot speak.                                                          | None         | [message]    | 3secs  |
