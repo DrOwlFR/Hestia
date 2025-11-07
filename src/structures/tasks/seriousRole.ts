@@ -14,7 +14,7 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 			const userDoc = dbUsers[i];
 
 			// Check if the Discord user exists
-			const user = gardenGuild?.members.cache.get(userDoc.discordId);
+			const user = await gardenGuild?.members.fetch(dbUsers[i].discordId).catch(() => null);
 			// If not, destroy link with site, deleting all db infos and continue to next user
 			if (!user) {
 				const getResponse = await client.functions.getUser(userDoc.discordId);
