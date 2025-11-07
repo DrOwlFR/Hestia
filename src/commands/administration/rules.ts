@@ -65,7 +65,7 @@ export class RulesCommand extends Command {
 								* **Merci de vous adresser aux autres Esperluettes avec bienveillance et considération en toutes circonstances**. Si un message ou un sujet abordé vous met mal à l’aise ou vous blesse, vous pouvez le signaler directement dans la discussion incriminée sur le serveur ou, si vous n’osez pas, en contactant **l’équipe** :
 								  * les <@&${config.adminRoleId}> : <@${config.adminsDiscordIds[0]}>, <@${config.adminsDiscordIds[1]}> et <@${config.adminsDiscordIds[2]}>,
 								  * les <@&${config.modRoleId}> du Discord : <@${config.discordModsIds[0]}>, <@${config.discordModsIds[1]}> et <@${config.discordModsIds[2]}>,
-								  * *<@${config.siteModsIds[0]}>, <@${config.siteModsIds[1]}> et <@${config.siteModsIds[2]}> et sont quant à eux les Cadratins du site*.
+								  * *<@${config.siteModsIds[0]}>, <@${config.siteModsIds[1]}> et <@${config.siteModsIds[2]}> sont quant à eux les Cadratins du site*.
 								❓ **Note** : si le ton monte, il est possible de demander à ce que l’équipe vous transfère temporairement dans une zone de calme, à l’écart du reste de serveur, afin que vous puissiez décompresser.
 								❗ **Attention** : en cas de problème grave et/ou qui persiste, vous recevrez un avertissement puis, à terme, si votre comportement ne change pas, vous serez banni·e du Jardin.
 						`)),
@@ -146,15 +146,18 @@ export class RulesCommand extends Command {
 							.setContent(stripIndent(`
 								## Point contenu : les trigger-warnings
 								Ci-dessous, les **contenus à éviter** :
+								* spoilers de livres/films/séries (logique)
 								* gifs clignotants ou très rapides, pour les & photosensibles
 								* contenu violent (a fortiori contenu autour des violences sur animaux, des violences sexuelles, de la torture)
 								* contenu à caractère médical, notamment autour des soucis aux yeux, de la dermatillomanie, et des photos de blessures ou de seringues
 								* images des bébêtes suivantes : araignées, mantes religieuses, guêpes, frelons
 								* décès d'un·e proche
 								* discussion poussée ou récurrente autour de personnalités ou d’auteur·rice·s aux agissements ou paroles problématiques (ex : JKR, Neil Gaiman…)
+								* les blagues autour des substances addictives / de l'addiction ; les mentions sont okay, mais à ne pas prendre à la légère ou tourner en dérision
+								* les images plein de petits trous (i.e. trypophobie)
+								* les images de ventre de personne enceinte et les descriptions trop précises des sensations de la grossesse
 								* toute discussion d'un ||cours|| de piscine (||apprendre à nager, maître-nageur||, etc.) : ***❗ attention**, ceci est un trigger majeur d'une &, respectez la même logique de termes sous spoiler que dans cet avertissement*
-								* spoilers de livres/films/séries (logique)
-								❓ **Rappel** : ces contenus ne sont pas interdits, il faut seulement qu'ils soient cachés sous balises spoiler (ajouter || de chaque côté du texte à cacher : ||exemple||, et cliquer sur l'icône « œil » quand vous téléversez une image) ET qu'ils soient signalés par un avertissement explicite.
+								❓ **Rappel** : ces contenus ne sont pas interdits, il faut seulement qu'ils soient cachés sous balises spoiler (ajouter \\|| de chaque côté du texte à cacher : ||exemple||, et cliquer sur l'icône « œil » quand vous téléversez une image) ET qu'ils soient signalés par un avertissement explicite.
 
 								❓ **Note** : Pour les <@&${config.ampersandRoleId}> confirmées, vous avez normalement accès à un fil dans ce salon contenant le pad à compléter si vous avez également des sujets sensibles/triggers personnels à signaler. Pour les <@&${config.seedRoleId}>, patience ! Pour des raisons de partage d'informations sensibles, le pad ne vous est pas encore accessible. Contactez directement l'équipe s'il y a un sujet dont vous tenez absolument à nous faire part 👍
 								`)),
