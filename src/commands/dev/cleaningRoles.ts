@@ -1,4 +1,4 @@
-import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
 import { MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
@@ -28,99 +28,113 @@ export class CleaningRolesCommand extends Command {
 			flags: MessageFlags.Ephemeral,
 		});
 
-		const members = guild?.members.cache.map(m => m);
+		const members = await guild?.members.fetch();
+		if (!members) return interaction.editReply("<:round_cross:1424312051794186260> Impossible de récupérer les membres du serveur.");
 
-		let i;
+		let i = 0;
 		let actions = 0;
-		for (i = 0; i < members!.length; i++) {
-			const member = members![i] as GuildMember;
+		let logs: string[] = [];
+
+		const roles = [
+			config.livingRoomRoleId,
+			config.workshopRoleId,
+			config.libraryRoleId,
+			config.terraceRoleId,
+			config.seriousRoleId,
+			config.irlRoleId,
+		];
+
+		for (const member of members.values()) {
 			const getResponse = await this.client.functions.getUser(member.id);
 
 			if (getResponse.status === 404) {
+				const rolesToRemove: string[] = [];
+
 				if (member.roles.cache.has(config.ampersandRoleId)) {
-
-					member.roles.remove(config.ampersandRoleId);
-					actions++;
-
-					await interaction.followUp({
-						content: `Rôle esperluette de ${member.user.username} supprimé.`,
-						flags: MessageFlags.Ephemeral,
-					});
-					actions++;
+					rolesToRemove.push(config.ampersandRoleId);
+					logs.push(`🧹 Rôle <@&${config.ampersandRoleId}> de ${member} **supprimé**.`);
 				}
-				else if (member.roles.cache.has(config.seedRoleId)) {
-
-					member.roles.remove(config.seedRoleId);
-					actions++;
-
-					await interaction.followUp({
-						content: `Rôle graine de ${member.user.username} supprimé.`,
-						flags: MessageFlags.Ephemeral,
-					});
-					actions++;
+				if (member.roles.cache.has(config.seedRoleId)) {
+					rolesToRemove.push(config.seedRoleId);
+					logs.push(`🧹 Rôle <@&${config.seedRoleId}> de ${member} **supprimé**.`);
 				}
-				const rolesToRemove = [config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
-				const rolesOwned = rolesToRemove.filter(roleId => member.roles.cache.has(roleId));
 
-				if (rolesOwned.length > 0) {
-					await member.roles.remove(rolesOwned);
+				const extraRolesOwned = roles.filter(role => member.roles.cache.has(role));
+				if (extraRolesOwned.length > 0) {
+					rolesToRemove.push(...extraRolesOwned);
+					logs.push(`🧹 Rôles secondaires de ${member} supprimés.`);
 				}
-			} else if (getResponse.status === 429) {
+
+				if (rolesToRemove.length) {
+					await member.roles.remove(rolesToRemove);
+					actions += rolesToRemove.length;
+				}
+			}
+
+			else if (getResponse.status === 429) {
 				await interaction.followUp({
 					content: "⚠️ Rate limit atteint. Pause de 60 secondes",
 					flags: MessageFlags.Ephemeral,
 				});
+				actions++;
 				await this.client.functions.delay(60 * 1000);
 			}
-			else if (getResponse.status === 429) {
+
+			else if (getResponse.status === 200) {
 				const getResponseJson = await getResponse.json() as responseJson;
 
-				if (!await LinkedUser.findOne({ discordId: member.id })) {
-					await interaction.followUp({
-						content: `⚠️ Le membre ${member} apparaît comme lié dans l'API, mais n'a pas de document à son nom dans la BDD. Création d'un document en cours.`,
-						flags: MessageFlags.Ephemeral,
+				const linked = await LinkedUser.findOne({ discordId: member.id });
+				if (!linked) {
+					await LinkedUser.create({
+						discordId: member.id,
+						siteId: getResponseJson.userId,
+						discordUsername: member.user.username,
 					});
-					actions++;
-
-					await LinkedUser.create({ discordId: member.id, siteId: getResponseJson.userId, discordUsername: member.user.username });
+					logs.push(`🆕 Le membre ${member} apparaît comme lié dans l'API, mais n'a pas de document à son nom dans la BDD. Document créé.`);
 				}
 
-				if (!member.roles.cache.has(config.ampersandRoleId) && getResponseJson.roles!.find(r => r === "user-confirmed")) {
+				const hasEsperluette = member.roles.cache.has(config.ampersandRoleId);
+				const hasGraine = member.roles.cache.has(config.seedRoleId);
+				const rolesApi = getResponseJson.roles ?? [];
 
-					member.roles.add(config.ampersandRoleId);
+				if (!hasEsperluette && rolesApi.includes("user-confirmed")) {
+					await member.roles.add(config.ampersandRoleId);
 					actions++;
-
-					await interaction.followUp({
-						content: `Rôle Esperluette de ${member.user.username} ajouté.`,
-						flags: MessageFlags.Ephemeral,
-					});
-					actions++;
-				} else if (!member.roles.cache.has(config.seedRoleId) && getResponseJson.roles!.find(r => r === "user")) {
-
-					member.roles.add(config.seedRoleId);
-					actions++;
-
-					await interaction.followUp({
-						content: `Rôle graine de ${member.user.username} ajouté.`,
-						flags: MessageFlags.Ephemeral,
-					});
-					actions++;
+					logs.push(`<:round_check:1424065559355592884> Rôle Esperluette de ${member} ajouté.`);
 				}
-			} else {
-				await interaction.followUp({
-					content: `⚠️ Erreur inconnue sur le membre : ${member}. À vérifier.`,
-					flags: MessageFlags.Ephemeral,
-				});
-				actions++;
+				else if (!hasGraine && rolesApi.includes("user")) {
+					await member.roles.add(config.seedRoleId);
+					actions++;
+					logs.push(`<:round_check:1424065559355592884> Rôle Graine de ${member.user.username} ajouté.`);
+				}
 			}
 
-			if ((i + 1) % 40 === 0 || (actions % 40 === 0 && actions > 0)) {
+			else {
+				logs.push(`⚠️ Erreur inconnue pour ${member}`);
+			}
+
+			if (logs.length >= 10) {
+				await interaction.followUp({
+					content: logs.join("\n"),
+					flags: MessageFlags.Ephemeral,
+				});
+				logs = [];
+			}
+
+			i++;
+			if ((i + 1) % 40 === 0 || (actions > 0 && actions % 40 === 0)) {
 				await interaction.editReply({
 					content: ` Pause de 4 secondes après \`${i + 1}\` itérations et \`${actions}\` actions.`,
 				});
 				await this.client.functions.delay(4000);
-				continue;
-			} else { continue; }
+			}
+		}
+
+		if (logs.length) {
+			await interaction.followUp({
+				content: logs.join("\n"),
+				flags: MessageFlags.Ephemeral,
+			});
 		}
 
 		await interaction.followUp({
