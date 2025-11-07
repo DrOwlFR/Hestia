@@ -12,7 +12,6 @@ This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its u
 
 | Name         | Description                            | Sub-commands | Usage        | Cd     |
 | ------------ | -------------------------------------- | ------------ | ------------ | ------ |
-| buttonspanel | Send the button panel                  | None         | No arguments | 3secs  |
 | rules        | Send the rules from the Garden server. | None         | No arguments | 3secs  |
 
 ### Dev
