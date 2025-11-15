@@ -1,4 +1,3 @@
-// Ajouter les infos ce que le bot stocke (id, messages totaux)
 import type { ChatInputCommandInteraction } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
