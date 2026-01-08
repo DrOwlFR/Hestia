@@ -11,6 +11,12 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 
 	try {
 		for (let i = 0; i < dbUsers.length; i++) {
+			// Pause every 40 iterations
+			if ((i + 1) % 40 === 0) {
+				await logChannel.send(`<a:load:1424326891778867332> Pause de 4 secondes après ${i + 1} itérations...`);
+				await client.functions.delay(4000);
+			}
+
 			const userDoc = dbUsers[i];
 
 			// Check if the Discord user exists
@@ -35,18 +41,17 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 			});
 			await userDoc.save();
 
+			// Checking if the user is a user-confirmed or not (basically we check if he has the Discord role for confirmed users).
+			const isConfirmed = user.roles.cache.has(config.ampersandRoleId);
+			// If not, we do not give the user the serious role.
+			if (!isConfirmed) continue;
+
 			// Management of the ‘serious’ role
 			const hasRole = user.roles.cache.has(config.seriousRoleId);
 			if (messagesSum >= 50 && !hasRole) {
 				await user.roles.add(config.seriousRoleId);
 			} else if (messagesSum < 50 && hasRole) {
 				await user.roles.remove(config.seriousRoleId);
-			}
-
-			// Pause every 40 iterations
-			if ((i + 1) % 40 === 0) {
-				await logChannel.send(`<a:load:1424326891778867332> Pause de 4 secondes après ${i + 1} itérations...`);
-				await client.functions.delay(4000);
 			}
 		}
 
