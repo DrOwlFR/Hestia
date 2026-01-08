@@ -99,7 +99,7 @@ export class ModalComponent extends Modal {
 					content: stripIndent(`
 						> *Hestia vous adresse un immense sourire, et vous tend une clef.*
 						— Bienvenue au Manoir ! Voici la clef de votre chambre. Elle se trouve avec les autres au deuxième étage. Vous avez accès à toutes les pièces du Manoir (sauf le salon fumoir et le salon des évènements IRL, *cf. Règles de vie*).
-							Dirigez-vous vers la ${guild.channels.cache.get(config.portraitGaleryChannelId)} pour dresser le vôtre. Ensuite, vous pourrez rejoindre les autres résident·es du Manoir dans l'${guild.channels.cache.get(config.antechamberChannelId)} ou le ${config.loungeChannelId} pour faire connaissance !\n
+							Dirigez-vous vers la ${guild.channels.cache.get(config.portraitGaleryChannelId)} pour dresser le vôtre. Ensuite, vous pourrez rejoindre les autres résident·es du Manoir dans l'${guild.channels.cache.get(config.antechamberChannelId)} ou le ${guild.channels.cache.get(config.loungeChannelId)} pour faire connaissance !\n
 						-# <:round_check:1424065559355592884> Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.ampersandRoleId)}. Bienvenue !
 					`),
 					flags: MessageFlags.Ephemeral,
