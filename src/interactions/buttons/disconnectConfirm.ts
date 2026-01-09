@@ -50,20 +50,20 @@ export class DisconnectConfirmButton extends Button {
 			const memberRoles = member?.roles as GuildMemberRoleManager;
 			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
 			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
-				memberRoles.remove(config.ampersandRoleId);
+				memberRoles.remove(config.confirmedUserRoleId);
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
-						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.ampersandRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
+						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.confirmedUserRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
 						`),
 					components: [],
 				});
 			} else {
-				memberRoles.remove(config.seedRoleId);
+				memberRoles.remove(config.nonConfirmedUserRoleId);
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
-						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.seedRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
+						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.nonConfirmedUserRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
 						`),
 					components: [],
 				});

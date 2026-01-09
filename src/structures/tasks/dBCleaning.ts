@@ -75,8 +75,8 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 						const member = await gardenGuild.members.fetch(dbLinkedUser.discordId).catch(() => null);
 						if (member) {
 							const rolesToRemove = [
-								config.ampersandRoleId,
-								config.seedRoleId,
+								config.confirmedUserRoleId,
+								config.nonConfirmedUserRoleId,
 								config.livingRoomRoleId,
 								config.workshopRoleId,
 								config.libraryRoleId,

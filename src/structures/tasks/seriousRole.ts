@@ -42,7 +42,7 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 			await userDoc.save();
 
 			// Checking if the user is a user-confirmed or not (basically we check if he has the Discord role for confirmed users).
-			const isConfirmed = user.roles.cache.has(config.ampersandRoleId);
+			const isConfirmed = user.roles.cache.has(config.confirmedUserRoleId);
 			// If not, we do not give the user the serious role.
 			if (!isConfirmed) continue;
 

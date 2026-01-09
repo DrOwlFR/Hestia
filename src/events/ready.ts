@@ -29,12 +29,12 @@ export class ReadyEvent extends Event {
 			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
 
 			const users = gardenGuild!.members.cache.filter(member => !member.user.bot).size;
-			const ampersands = gardenGuild?.roles.cache.get(config.ampersandRoleId)?.members.size;
-			const seeds = gardenGuild?.roles.cache.get(config.seedRoleId)?.members.size;
+			const confirmedUsers = gardenGuild?.roles.cache.get(config.confirmedUserRoleId)?.members.size;
+			const nonConfirmedUsers = gardenGuild?.roles.cache.get(config.nonConfirmedUserRoleId)?.members.size;
 			const statusList = [
 				`${users} membre${users > 1 ? "s" : ""}`,
-				`${ampersands} esperluette${ampersands! > 1 ? "s" : ""}`,
-				`${seeds} graine${seeds! > 1 ? "s" : ""}`,
+				`${confirmedUsers} esperluette${confirmedUsers! > 1 ? "s" : ""}`,
+				`${nonConfirmedUsers} graine${nonConfirmedUsers! > 1 ? "s" : ""}`,
 				`Version ${version}`,
 			];
 

@@ -50,13 +50,13 @@ export class CleaningRolesCommand extends Command {
 			if (getResponse.status === 404) {
 				const rolesToRemove: string[] = [];
 
-				if (member.roles.cache.has(config.ampersandRoleId)) {
-					rolesToRemove.push(config.ampersandRoleId);
-					logs.push(`🧹 Rôle <@&${config.ampersandRoleId}> de ${member} **supprimé**.`);
+				if (member.roles.cache.has(config.confirmedUserRoleId)) {
+					rolesToRemove.push(config.confirmedUserRoleId);
+					logs.push(`🧹 Rôle <@&${config.confirmedUserRoleId}> de ${member} **supprimé**.`);
 				}
-				if (member.roles.cache.has(config.seedRoleId)) {
-					rolesToRemove.push(config.seedRoleId);
-					logs.push(`🧹 Rôle <@&${config.seedRoleId}> de ${member} **supprimé**.`);
+				if (member.roles.cache.has(config.nonConfirmedUserRoleId)) {
+					rolesToRemove.push(config.nonConfirmedUserRoleId);
+					logs.push(`🧹 Rôle <@&${config.nonConfirmedUserRoleId}> de ${member} **supprimé**.`);
 				}
 
 				const extraRolesOwned = roles.filter(role => member.roles.cache.has(role));
@@ -93,17 +93,17 @@ export class CleaningRolesCommand extends Command {
 					logs.push(`🆕 Le membre ${member} apparaît comme lié dans l'API, mais n'a pas de document à son nom dans la BDD. Document créé.`);
 				}
 
-				const hasEsperluette = member.roles.cache.has(config.ampersandRoleId);
-				const hasGraine = member.roles.cache.has(config.seedRoleId);
+				const hasEsperluette = member.roles.cache.has(config.confirmedUserRoleId);
+				const hasGraine = member.roles.cache.has(config.nonConfirmedUserRoleId);
 				const rolesApi = getResponseJson.roles ?? [];
 
 				if (!hasEsperluette && rolesApi.includes("user-confirmed")) {
-					await member.roles.add(config.ampersandRoleId);
+					await member.roles.add(config.confirmedUserRoleId);
 					actions++;
 					logs.push(`<:round_check:1424065559355592884> Rôle Esperluette de ${member} ajouté.`);
 				}
 				else if (!hasGraine && rolesApi.includes("user")) {
-					await member.roles.add(config.seedRoleId);
+					await member.roles.add(config.nonConfirmedUserRoleId);
 					actions++;
 					logs.push(`<:round_check:1424065559355592884> Rôle Graine de ${member.user.username} ajouté.`);
 				}

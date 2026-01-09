@@ -65,7 +65,7 @@ export class IRLRoleButton extends Button {
 			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
 		}
 
-		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.ampersandRoleId);
+		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.confirmedUserRoleId);
 		if (!isConfirmed) {
 			return button.reply({
 				content: stripIndent(`

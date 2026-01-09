@@ -18,8 +18,8 @@ export default {
 	antechamberChannelId: "",
 	loungeChannelId: "",
 
-	ampersandRoleId: "",
-	seedRoleId: "",
+	confirmedUserRoleId: "",
+	nonConfirmedUserRoleId: "",
 
 	livingRoomRoleId: "",
 	workshopRoleId: "",

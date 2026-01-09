@@ -108,7 +108,7 @@ export class RulesCommand extends Command {
 								❓ **Note** : le bouton vous demandera un code de vérification que vous pourrez obtenir sur le site (en cliquant sur bouton « Lier » sur votre page de profil), ceci afin de s’assurer que vous possédez un compte sur le Jardin avant d’entrer sur le serveur et de vous ajouter le rôle correspondant. Vous pourrez vous déconnecter à tout moment en cliquant sur le bouton rouge (voir en bas du salon), mais attention : vous perdrez l’accès aux salons du Discord.
 
 								Vous êtes maintenant cordialement invité·e à enlever vos chaussures pour profiter de l'⁠<#${config.antechamberChannelId}> et vous présenter dans la ⁠<#${config.portraitGaleryChannelId}> <:content:1400469496325607454>
-								**Notez que tant que vous êtes une <@&${config.seedRoleId}>, seule cette section Antichambre vous sera accessible**.
+								**Notez que tant que vous êtes une <@&${config.nonConfirmedUserRoleId}>, seule cette section Antichambre vous sera accessible**.
 								`)),
 					),
 			],
@@ -129,8 +129,8 @@ export class RulesCommand extends Command {
 								* <@&${config.arobaseRoleId}> \`(rôle temporaire)\` : ce sont les petits doigts qui travaillent en coulisses sur le site et/ou les outils annexes comme Hestia (développeur·euse·s, graphistes, alpha-testeur·euse·s, etc.).
 								* <@&${config.guillemetRoleId}> \`(rôle temporaire)\` : ce sont les petits doigts qui travaillent en coulisses sur les initiatives « non techniques » (concours, visuels, lore, pages du site comme la FAQ ou le guide Cultiver un commentaire, etc.).
 
-								* <@&${config.ampersandRoleId}> : c'est le nom que nous donnons à nos membres. Nous sommes tous·tes ici des Esperluettes (ou des &) !
-								* <@&${config.seedRoleId}> : c’est le nom que l’on donne aux primo-arrivant·e·s en période de probation !
+								* <@&${config.confirmedUserRoleId}> : c'est le nom que nous donnons à nos membres. Nous sommes tous·tes ici des Esperluettes (ou des &) !
+								* <@&${config.nonConfirmedUserRoleId}> : c’est le nom que l’on donne aux primo-arrivant·e·s en période de probation !
 								`)),
 					),
 			],
@@ -160,7 +160,7 @@ export class RulesCommand extends Command {
 								* toute discussion d'un ||cours|| de piscine (||apprendre à nager, maître-nageur||, etc.) : ***❗ attention**, ceci est un trigger majeur d'une &, respectez la même logique de termes sous spoiler que dans cet avertissement*
 								❓ **Rappel** : ces contenus ne sont pas interdits, il faut seulement qu'ils soient cachés sous balises spoiler (ajouter \\|| de chaque côté du texte à cacher : ||exemple||, et cliquer sur l'icône « œil » quand vous téléversez une image) ET qu'ils soient signalés par un avertissement explicite.
 
-								❓ **Note** : Pour les <@&${config.ampersandRoleId}> confirmées, vous avez normalement accès à un fil dans ce salon contenant le pad à compléter si vous avez également des sujets sensibles/triggers personnels à signaler. Pour les <@&${config.seedRoleId}>, patience ! Pour des raisons de partage d'informations sensibles, le pad ne vous est pas encore accessible. Contactez directement l'équipe s'il y a un sujet dont vous tenez absolument à nous faire part 👍
+								❓ **Note** : Pour les <@&${config.confirmedUserRoleId}> confirmées, vous avez normalement accès à un fil dans ce salon contenant le pad à compléter si vous avez également des sujets sensibles/triggers personnels à signaler. Pour les <@&${config.nonConfirmedUserRoleId}>, patience ! Pour des raisons de partage d'informations sensibles, le pad ne vous est pas encore accessible. Contactez directement l'équipe s'il y a un sujet dont vous tenez absolument à nous faire part 👍
 								`)),
 					),
 			],
