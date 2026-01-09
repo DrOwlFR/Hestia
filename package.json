@@ -12,7 +12,7 @@
 	"dependencies": {
 		"bottleneck": "^2.19.5",
 		"bson": "^6.10.4",
-		"discord.js": "^14.24.0",
+		"discord.js": "^14.25.1",
 		"mongoose": "^9.1.2",
 		"node-cron": "^4.2.1",
 		"sheweny": "^4.2.1",
