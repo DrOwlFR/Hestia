@@ -65,6 +65,17 @@ export class IRLRoleButton extends Button {
 			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
 		}
 
+		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.ampersandRoleId);
+		if (!isConfirmed) {
+			return button.reply({
+				content: stripIndent(`
+					> *Hestia haussa un sourcil en lisant le formulaire.*
+					Hm, il semble que vous ne remplissiez pas les critères pour accéder à cette aile du manoir. Vous devez être une Esperluette confirmée pour cela. Repassez plus tard.\n
+					`),
+				flags: MessageFlags.Ephemeral,
+			});
+		}
+
 		if (memberData && ((Date.now() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
 			(member?.roles as GuildMemberRoleManager).add(config.irlRoleId).catch(err => {
 				// eslint-disable-next-line no-console

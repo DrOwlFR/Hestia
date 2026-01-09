@@ -153,9 +153,10 @@ export class RulesCommand extends Command {
 								* images des bébêtes suivantes : araignées, mantes religieuses, guêpes, frelons
 								* décès d'un·e proche
 								* discussion poussée ou récurrente autour de personnalités ou d’auteur·rice·s aux agissements ou paroles problématiques (ex : JKR, Neil Gaiman…)
-								* les blagues autour des substances addictives / de l'addiction ; les mentions sont okay, mais à ne pas prendre à la légère ou tourner en dérision
-								* les images plein de petits trous (i.e. trypophobie)
-								* les images de ventre de personne enceinte et les descriptions trop précises des sensations de la grossesse
+								* blagues autour des substances addictives / de l'addiction ; les mentions sont okay, mais à ne pas prendre à la légère ou tourner en dérision
+								* images plein de petits trous (i.e. trypophobie)
+								* photos ou vidéos de (vrais) lapins
+								* images de ventre de personne enceinte et les descriptions trop précises des sensations de la grossesse
 								* toute discussion d'un ||cours|| de piscine (||apprendre à nager, maître-nageur||, etc.) : ***❗ attention**, ceci est un trigger majeur d'une &, respectez la même logique de termes sous spoiler que dans cet avertissement*
 								❓ **Rappel** : ces contenus ne sont pas interdits, il faut seulement qu'ils soient cachés sous balises spoiler (ajouter \\|| de chaque côté du texte à cacher : ||exemple||, et cliquer sur l'icône « œil » quand vous téléversez une image) ET qu'ils soient signalés par un avertissement explicite.
 
