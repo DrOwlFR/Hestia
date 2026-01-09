@@ -72,7 +72,7 @@ export class ModalComponent extends Modal {
 							createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 						},
 					}],
-					{ upsert: true, new: true },
+					{ upsert: true, new: true, updatePipeline: true },
 				);
 			}
 			catch (err) {

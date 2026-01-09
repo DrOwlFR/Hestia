@@ -92,7 +92,7 @@ export class MessageCreateEvent extends Event {
 					},
 					{ $unset: "isNewDay" },
 				],
-				{ upsert: true },
+				{ upsert: true, updatePipeline: true },
 			);
 		}
 		catch (err) {

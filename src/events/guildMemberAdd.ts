@@ -32,7 +32,7 @@ export class GuildMemberAddEvent extends Event {
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 					},
 				}],
-				{ upsert: true },
+				{ upsert: true, updatePipeline: true },
 			);
 		}
 		catch (err) {
