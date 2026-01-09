@@ -85,9 +85,9 @@ export class ModalComponent extends Modal {
 				(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
 				return modal.reply({
 					content: stripIndent(`
-						> *Hestia fronce les sourcils, visiblement contrariée.
-						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?
-						<:round_cross:1424312051794186260> Votre compte Discord n'a pas pu être associé correctement à votre compte sur le site du Jardin. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
+						> *Hestia fronce les sourcils, visiblement contrariée.*
+						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?\n
+						-# <:round_cross:1424312051794186260> Votre compte Discord n'a pas pu être associé correctement à votre compte sur le site du Jardin. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
 						`),
 					flags: MessageFlags.Ephemeral,
 				});
