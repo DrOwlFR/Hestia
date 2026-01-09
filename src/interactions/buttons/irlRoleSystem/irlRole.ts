@@ -63,6 +63,14 @@ export class IRLRoleButton extends Button {
 			// eslint-disable-next-line no-console
 			console.error(err);
 			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
+			return button.reply({
+				content: stripIndent(`
+						> *Hestia fronce les sourcils, visiblement contrariée.*
+						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?\n
+						-# <:round_cross:1424312051794186260> Il semble qu'un problème soit survenu lors de la vérification. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
+						`),
+				flags: MessageFlags.Ephemeral,
+			});
 		}
 
 		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.confirmedUserRoleId);
