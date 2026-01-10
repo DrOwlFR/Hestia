@@ -2,7 +2,7 @@ import { ShewenyClient } from "sheweny";
 
 import config from "./structures/config";
 import { dBConnection } from "./structures/database/dBConnection";
-import { connectUser, delay, deleteUser, embed, getUser } from "./structures/functions";
+import { connectUser, delay, deleteUser, embed, getUser } from "./structures/utils/functions";
 
 const client = new ShewenyClient({
 	intents: ["Guilds", "GuildMembers", "GuildMessages", "GuildPresences"],

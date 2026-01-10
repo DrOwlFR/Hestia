@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { connect } from "mongoose";
 
-import config from "../../structures/config";
+import config from "../config";
 
 export const dBConnection = async (): Promise<void> => {
 	try {

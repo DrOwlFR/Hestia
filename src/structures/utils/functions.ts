@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 
-import config from "./config";
+import config from "../config";
 
 function embed() {
 	return new EmbedBuilder()
