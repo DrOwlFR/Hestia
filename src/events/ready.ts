@@ -10,6 +10,7 @@ import config from "../structures/config";
 import { LinkedUser, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
+import { getSeasonStartingToday, updateRulesMessages } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
 
 export class ReadyEvent extends Event {
@@ -81,6 +82,40 @@ export class ReadyEvent extends Event {
 			timezone: "Europe/Paris",
 		});
 
+		// --- Season theme system ---
+
+		// On each start up (in case the bot was down on the day the season changed), check current season and edit the rules messages color
+		const rulesChannel = this.client.channels.cache.get(config.rulesChannelId) as TextChannel;
+
+		await updateRulesMessages(rulesChannel, this.client);
+
+		// Each day at 00:05, check if a new season is starting, if not, do nothing. If yes, edit rules messages.
+		schedule("5 0 * * *", async () => {
+			const startingSeason = getSeasonStartingToday();
+			if (!startingSeason) return;
+
+			const seasonsLogChannel = this.client.channels.cache.get("1459323515030212780") as TextChannel;
+
+			console.log("⌚ Changement de saison en cours...");
+			seasonsLogChannel.send("<a:load:1424326891778867332> Changement de saison en cours...");
+
+			await updateRulesMessages(rulesChannel, this.client);
+
+			const seasonTranslate = {
+				"spring": "au printemps 🌸",
+				"summer": "en été ☀️",
+				"autumn": "en automne 🍂",
+				"winter": "en hiver ❄️",
+			};
+
+			seasonsLogChannel.send(`<:round_check:1424065559355592884> Nous sommes passés ${seasonTranslate[startingSeason]} !`);
+		},
+		{
+			timezone: "Europe/Paris",
+		},
+		);
+
 		return console.log(`Le bot est prêt et connecté en tant que ${this.client.user?.tag}.`);
+
 	}
 };
