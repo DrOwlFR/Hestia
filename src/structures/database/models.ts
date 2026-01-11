@@ -42,7 +42,7 @@ export const LinkedUser = model<linkedUser>("linked_user", new Schema({
 	discordUsername: { type: String, required: true, unique: true },
 }, { timestamps: true, strict: true }));
 
-interface messageStats extends Document {
+export interface messageStats extends Document {
 	_id: Types.ObjectId,
 	guildId: string,
 	channelId: string,
