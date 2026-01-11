@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import type { Guild, TextChannel } from "discord.js";
-import { ActivityType } from "discord.js";
+import Bottleneck from "bottleneck";
+import type { Guild, TextChannel, ThreadChannel } from "discord.js";
+import { ActivityType, ChannelType } from "discord.js";
 import { schedule } from "node-cron";
 import type { ShewenyClient } from "sheweny";
 import { Event } from "sheweny";
@@ -87,7 +88,7 @@ export class ReadyEvent extends Event {
 		// On each start up (in case the bot was down on the day the season changed), check current season and edit the rules messages color
 		const rulesChannel = this.client.channels.cache.get(config.rulesChannelId) as TextChannel;
 
-		await updateRulesMessages(rulesChannel, this.client);
+		// await updateRulesMessages(rulesChannel, this.client);
 
 		// Each day at 00:05, check if a new season is starting, if not, do nothing. If yes, edit rules messages.
 		schedule("5 0 * * *", async () => {
@@ -114,6 +115,36 @@ export class ReadyEvent extends Event {
 			timezone: "Europe/Paris",
 		},
 		);
+
+		// --- Threads joining system ---
+
+		const gardenGuild = await this.client.guilds.fetch(config.gardenGuildId);
+		const channels = await gardenGuild.channels.fetch();
+
+		const threadJoinLimiter = new Bottleneck({
+			maxConcurrent: 1,
+			minTime: 300,
+		});
+
+		for (const channel of channels.values()) {
+			if (!channel) continue;
+			if (channel.type !== ChannelType.GuildText && channel.type !== ChannelType.GuildAnnouncement && channel.type !== ChannelType.GuildForum) { continue; }
+
+			// Active threads only (because can join archived threads, handling of archives threads is in events/logs/threadUpdate)
+			const activeThreads =
+				channel.type === ChannelType.GuildForum
+					? await channel.threads.fetch()
+					: await channel.threads.fetchActive();
+
+			for (const thread of activeThreads.threads.values()) {
+				if (!thread.joined) {
+					try {
+						await threadJoinLimiter.schedule<ThreadChannel>(async () => thread.join());
+					} catch {}
+				}
+			}
+
+		}
 
 		return console.log(`Le bot est prêt et connecté en tant que ${this.client.user?.tag}.`);
 
