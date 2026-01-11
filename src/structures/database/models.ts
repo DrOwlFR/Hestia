@@ -41,3 +41,42 @@ export const LinkedUser = model<linkedUser>("linked_user", new Schema({
 	siteId: { type: Number, required: true, unique: true },
 	discordUsername: { type: String, required: true, unique: true },
 }, { timestamps: true, strict: true }));
+
+interface MessageStats extends Document {
+	_id: Types.ObjectId,
+	guildId: string,
+	channelId: string,
+	parentChannelId?: string,
+	parentChannelName?: string,
+	channelName: string,
+	year: number,
+	month: number,
+	messageCount: number,
+	__v: number,
+	createdAt: Date,
+	updatedAt: Date,
+}
+
+const MessageStatsSchema = new Schema<MessageStats>({
+	guildId: { type: String, required: true },
+	channelId: { type: String, required: true },
+	// eslint-disable-next-line no-inline-comments
+	parentChannelId: { type: String }, // for threads only
+	// eslint-disable-next-line no-inline-comments
+	parentChannelName: { type: String }, // for threads only
+	channelName: { type: String, required: true },
+	year: { type: Number, required: true },
+	month: { type: Number, required: true },
+	messageCount: { type: Number, required: true, default: 0 },
+}, { timestamps: true, strict: true });
+
+// Composed index unique (only one doc for channel X in january 2026 for example)
+MessageStatsSchema.index(
+	{ guildId: 1, channelId: 1, year: 1, month: 1 },
+	{ unique: true },
+);
+
+export const MessageStats = model<MessageStats>(
+	"messages_stats",
+	MessageStatsSchema,
+);
