@@ -8,7 +8,7 @@ import { Event } from "sheweny";
 
 import { version } from "../../package.json";
 import config from "../structures/config";
-import { LinkedUser, User } from "../structures/database/models";
+import { LinkedUser, MessageStats, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
 import { getSeasonStartingToday, updateRulesMessages } from "../structures/tasks/seasonsSystem";
@@ -78,7 +78,7 @@ export class ReadyEvent extends Event {
 
 			console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
 			dbBackupLogChannel.send("<a:load:1424326891778867332> Lancement de la sauvegarde hebdomadaire de la base de données...");
-			await weeklyDBBackup(User, LinkedUser, dbBackupLogChannel);
+			await weeklyDBBackup(User, LinkedUser, MessageStats, dbBackupLogChannel);
 		}, {
 			timezone: "Europe/Paris",
 		});

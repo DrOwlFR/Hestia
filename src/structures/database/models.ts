@@ -52,9 +52,6 @@ export interface messageStats extends Document {
 	year: number,
 	month: number,
 	messageCount: number,
-	__v: number,
-	createdAt: Date,
-	updatedAt: Date,
 }
 
 const MessageStatsSchema = new Schema<messageStats>({
