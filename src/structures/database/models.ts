@@ -42,7 +42,7 @@ export const LinkedUser = model<linkedUser>("linked_user", new Schema({
 	discordUsername: { type: String, required: true, unique: true },
 }, { timestamps: true, strict: true }));
 
-interface MessageStats extends Document {
+interface messageStats extends Document {
 	_id: Types.ObjectId,
 	guildId: string,
 	channelId: string,
@@ -57,7 +57,7 @@ interface MessageStats extends Document {
 	updatedAt: Date,
 }
 
-const MessageStatsSchema = new Schema<MessageStats>({
+const MessageStatsSchema = new Schema<messageStats>({
 	guildId: { type: String, required: true },
 	channelId: { type: String, required: true },
 	// eslint-disable-next-line no-inline-comments
@@ -76,7 +76,7 @@ MessageStatsSchema.index(
 	{ unique: true },
 );
 
-export const MessageStats = model<MessageStats>(
+export const MessageStats = model<messageStats>(
 	"messages_stats",
 	MessageStatsSchema,
 );
