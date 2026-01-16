@@ -108,7 +108,7 @@ export class MessageCreateEvent extends Event {
 					},
 					{ $unset: "isNewDay" },
 				],
-				{ upsert: true, updatePipeline: true },
+				{ upsert: true },
 			);
 		}
 		catch (err) {
@@ -138,7 +138,7 @@ export class MessageCreateEvent extends Event {
 				},
 				$inc: { messageCount: 1 },
 			},
-			{ upsert: true, updatePipeline: true },
+			{ upsert: true },
 		);
 
 	}
