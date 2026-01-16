@@ -12,6 +12,12 @@ const seasonStartDates: Record<Season, { month: number; day: number }> = {
 	winter: { month: 12, day: 21 },
 };
 
+/**
+ * getSeasonStartingToday: checks if the given date is the start of a new season.
+ * Summary: Compares the date with season start dates to see if a season begins today.
+ * @param date - The date to check, defaults to current date.
+ * @returns The season starting today, or null if none.
+ */
 export function getSeasonStartingToday(date = new Date()): Season | null {
 	const month = date.getMonth() + 1;
 	const day = date.getDate();
@@ -25,6 +31,12 @@ export function getSeasonStartingToday(date = new Date()): Season | null {
 	return null;
 }
 
+/**
+ * getCurrentSeason: determines the current season based on the date.
+ * Summary: Calculates which season is active for the given date by comparing with start dates.
+ * @param date - The date to check, defaults to current date.
+ * @returns The current season.
+ */
 export function getCurrentSeason(date = new Date()): Season {
 	const y = date.getFullYear();
 
@@ -50,8 +62,15 @@ export function getCurrentSeason(date = new Date()): Season {
 
 }
 
-// type RulesMessageInfo = { message: ContainerBuilder; color: number | undefined };
-
+/**
+ * updateRulesMessages: updates the rules messages with seasonal components.
+ * Summary: Fetches bot messages in the rules channel and edits them with updated seasonal rule components.
+ * Steps:
+ * - Fetch bot messages in the channel
+ * - Edit each message with corresponding rule component from rulesMessagesList
+ * @param channel - The text channel containing the rules messages.
+ * @param client - The Sheweny client.
+ */
 export async function updateRulesMessages(channel: TextChannel, client: ShewenyClient): Promise<void> {
 
 	const botMessages = (await channel.messages.fetch())

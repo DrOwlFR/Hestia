@@ -12,12 +12,26 @@ export class IRLRoleButton extends Button {
 		super(client, ["irlRoleButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the IRL role button interaction.
+	 * Summary: Checks if the user already has the IRL role; if not, verifies eligibility criteria (confirmed user status, 61+ days joined, 300+ messages) and assigns the role if met. Uses the User model to fetch or create user data for message count and join date checks.
+	 * Steps:
+	 * - Check if interaction is in the correct guild
+	 * - Check if user already has the IRL role; if yes, offer removal option
+	 * - Fetch or create user data in database
+	 * - Check if user is confirmed
+	 * - Check eligibility criteria (join date and message count)
+	 * - Assign role if eligible, or deny access
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const { guildId, member, guild } = button;
 
+		// Only allow in the site's guild
 		if (guildId !== config.gardenGuildId) return;
 
+		// Check if user already has the IRL role and propose him removal if so
 		if ((member?.roles as GuildMemberRoleManager).cache.some(role => role.id === config.irlRoleId)) {
 			return await button.reply({
 				content: "— Eh ! Vous avez déjà le rôle d'accès aux retraites ! Souhaitez-vous que je vous fournisse le formulaire de désinscription ?",
@@ -42,6 +56,7 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
+		// Fetch or create user data in the database
 		let memberData: dbUser | null = null;
 		try {
 			memberData = await User.findOneAndUpdate(
@@ -73,6 +88,7 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
+		// Check if user has confirmed status
 		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.confirmedUserRoleId);
 		if (!isConfirmed) {
 			return button.reply({
@@ -84,7 +100,9 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
+		// Check eligibility: 61+ days joined and 300+ messages
 		if (memberData && ((Date.now() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
+			// Assign the IRL role
 			(member?.roles as GuildMemberRoleManager).add(config.irlRoleId).catch(err => {
 				// eslint-disable-next-line no-console
 				console.error(err);
@@ -107,6 +125,7 @@ export class IRLRoleButton extends Button {
 				flags: MessageFlags.Ephemeral,
 			});
 		} else {
+			// Deny access if criteria not met
 			return button.reply({
 				content: stripIndent(`
 					> *Hestia haussa un sourcil en lisant le formulaire.*

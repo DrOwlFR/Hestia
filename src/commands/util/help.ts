@@ -20,19 +20,35 @@ export class HelpCommand extends Command {
 		});
 	}
 
+	/**
+	 * Execute: main handler for the `help` command.
+	 * Summary: Display a list of all available commands grouped by category, or detailed help for a specific command.
+	 * Steps:
+	 * - Retrieve all commands from the client
+	 * - If no command specified, build an embed listing commands by category (excluding Dev)
+	 * - If a command is specified, build an embed with usage, examples, and permissions for that command
+	 * - Reply with the appropriate embed
+	 * @param interaction - The slash command interaction.
+	 */
 	async execute(interaction: ChatInputCommandInteraction) {
 
+		// Retrieve all commands from the client
 		const commands = Array.from(this.client.util.getCommands());
+
+		// Initialize the embed with author and thumbnail
 		const embed = this.client.functions.embed()
 			.setAuthor({ name: "Voici la liste de mes commandes.", iconURL: interaction.user.displayAvatarURL() })
 			.setThumbnail(this.client.user?.displayAvatarURL());
 
+		// If no specific command is provided, display the general help with categories
 		if (!interaction.options.getString("commande", false)) {
 
 			embed.setDescription("<:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473>");
 
+			// Get unique categories from commands
 			const categories = new Set(commands.map((command) => command.category));
 
+			// Add fields for each category (excluding Dev)
 			for (let category of categories) {
 				if (category === "Dev") continue;
 				const commandInCategory = commands.filter((command) => command.category === category);
@@ -45,24 +61,29 @@ export class HelpCommand extends Command {
 				});
 			}
 
+			// Add footer with usage instructions
 			embed.addFields({ name: "<:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473>", value: `**\`help <commande>\`** pour des informations sur une commande spécifique.\n\nExemple : **\`help ping\`**\n\n*En cas de besoin, n'hésitez pas à contacter mon développeur : ${this.client.admins.map(a => interaction.guild?.members.cache.get(a)).join(", ")}*.` });
 
 			return interaction.reply({ embeds: [embed] });
 		}
 
+		// If a specific command is provided, display detailed help for that command
 		// eslint-disable-next-line prefer-destructuring
 		const command = commands.filter((cmd) => cmd.name === interaction.options.getString("commande"))[0];
 		const lines = "<:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473>";
 
+		// Set embed details for the specific command
 		embed.setAuthor({ name: (interaction.member as GuildMember).nickname, iconURL: interaction.user.displayAvatarURL() });
 		embed.setTitle(`${command.name} ${command.adminsOnly ? "— ⚠️ Dev Only ⚠️" : ""} ${command.userPermissions.toString() ? `— ⚠️ Requiert : *${command.userPermissions}* ⚠️` : ""}`);
 		embed.setDescription(`${command.description}`);
 		embed.addFields({ name: "Utilisation", value: `${command.usage}`, inline: true });
 
+		// Add examples if available
 		if (command.examples) {
 			embed.addFields({ name: `${command.examples.length > 1 ? "Exemples" : "Exemple"}`, value: `${command.examples.length > 1 ? `${(command.examples as string[]).join("\n")}` : `${command.examples}`}`, inline: true });
 		}
 
+		// Add footer with syntax explanation
 		embed.addFields({ name: `${lines}`, value: `{} = sous-commande(s) disponible(s)\n<> = option(s) optionnel(s)\n[] = option(s) obligatoire(s)\n\nNe pas inclure les caractères suivants → <> et [] dans vos commandes.\n\n*En cas de besoin, n'hésitez pas à contacter mon développeur : ${this.client.admins.map(a => interaction.guild?.members.cache.get(a)).join(", ")}*.` });
 
 		return interaction.reply({ embeds: [embed] });

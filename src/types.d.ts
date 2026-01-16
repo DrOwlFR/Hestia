@@ -1,6 +1,14 @@
 import type { EmbedBuilder } from "discord.js";
 
+/**
+ * Augmentation of Sheweny's ShewenyClient interface.
+ * Adds custom utility functions available on the client instance throughout the bot.
+ */
 declare module "sheweny" {
+	/**
+	 * Extended ShewenyClient with custom utility functions.
+	 * Functions include: embed builder, delay utility, and site API interactions (connect, get, delete user).
+	 */
 	export interface ShewenyClient {
 		functions: {
 			// embed: () => EmbedBuilder,
@@ -17,6 +25,11 @@ declare module "sheweny" {
 	}
 }
 
+/**
+ * API response structure for site interactions.
+ * Returned by connectUser, getUser, and other API functions.
+ * Contains success status, user data, roles, or error details.
+ */
 export interface responseJson {
 	success?: boolean,
 	userId?: number,

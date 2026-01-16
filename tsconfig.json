@@ -1,3 +1,8 @@
+/**
+ * TypeScript configuration for Hestia bot.
+ * Targets ES2021 with strict type checking, CommonJS module output.
+ * Includes decorators support for Sheweny framework and source maps for debugging.
+ */
 {
 	"version": "2.4.2",
 	"compilerOptions": {

@@ -14,16 +14,30 @@ export class MessageCreateEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `messageCreate` event.
+	 * Summary: Processes new messages to update user message counters and channel statistics.
+	 * Steps:
+	 * - Skip bots, DMs, and messages from other guilds
+	 * - Update the user's message count and daily stats in the User collection
+	 * - Update message statistics for the channel (and parent if thread) in the MessageStats collection
+	 * @param message - The message that was created.
+	 */
 	async execute(message: Message) {
 
-		// Management of bot messages, PMs, and messages that are not on the community server (simple protection)
+		// Checks to avoid unnecessary database operations
 		if (message.author.bot) return;
 		if (!message.inGuild()) return;
 		if (message.guildId !== config.gardenGuildId) return;
 
-		// Message counter management system for each member
+		/* ========================================================================== */
+		/* Message counter management system for each member                           */
+		/* ========================================================================== */
 		const [today] = new Date().toISOString().split("T");
 
+		// Complex MongoDB aggregation pipeline to update user message stats.
+		// Handles daily message increments, field initialization, and ensures consistent field ordering in the document (just because I love that).
+		// Uses updatePipeline for advanced operations not possible with standard upsert.
 		try {
 			await User.findOneAndUpdate(
 				{ discordId: message.author.id },
@@ -102,13 +116,16 @@ export class MessageCreateEvent extends Event {
 			console.error(err);
 		}
 
-		// Statistics module, message counter for each channel (and thread), by month and by year
+		/* ========================================================================== */
+		/* Message statistics management system by channel, month, and year          */
+		/* ========================================================================== */
 		const { channel, channelId } = message;
 
 		const now = new Date();
 		const year = now.getFullYear();
 		const month = now.getMonth() + 1;
 
+		// Update or insert message stats for the channel, incrementing the message count for the current month/year
 		await MessageStats.updateOne(
 			{ guildId: message.guild.id, channelId: channelId, year, month },
 			{

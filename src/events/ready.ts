@@ -23,6 +23,15 @@ export class ReadyEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `ready` event (fired once when the bot logs in).
+	 * Summary: Initializes bot presence, schedules cron jobs for maintenance tasks, updates seasonal rules, and joins active threads.
+	 * Steps:
+	 * - Set up rotating status messages
+	 * - Schedule daily DB cleaning, serious role updates, weekly DB backups
+	 * - Handle seasonal theme changes and rules updates
+	 * - Join all active threads in text/announcement/forum channels
+	 */
 	async execute() {
 
 		// Bot status messages
@@ -49,6 +58,7 @@ export class ReadyEvent extends Event {
 		}, 7000);
 
 		// --- DB cleaning cron: everyday at 1 AM ---
+		// Cleans the Users and LinkedUsers collections: removes users no longer in guild, deletes site links, removes roles
 		schedule("0 1 * * *", async () => {
 			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
 			const dbCleaningCronLogChannel = this.client.channels.cache.get("1427009582076788846") as TextChannel;
@@ -61,6 +71,7 @@ export class ReadyEvent extends Event {
 		});
 
 		// --- Serious role adding/removing cron: everyday at 2AM ---
+		// Updates 'serious' role based on message count (50+ in last 30 days for confirmed users)
 		schedule("0 2 * * *", async () => {
 			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
 			const seriousRoleCronLogChannel = this.client.channels.cache.get("1426975372716806316") as TextChannel;
@@ -73,6 +84,7 @@ export class ReadyEvent extends Event {
 		});
 
 		// --- DB saving cron: every monday at 3AM ---
+		// Backs up Users, LinkedUsers, and MessageStats collections to JSON files
 		schedule("0 3 * * 1", async () => {
 			const dbBackupLogChannel = this.client.channels.cache.get("1426661664475975762") as TextChannel;
 
@@ -100,6 +112,7 @@ export class ReadyEvent extends Event {
 			console.log("⌚ Changement de saison en cours...");
 			seasonsLogChannel.send("<a:load:1424326891778867332> Changement de saison en cours...");
 
+			// Edits rules messages with new seasonal colors
 			await updateRulesMessages(rulesChannel, this.client);
 
 			const seasonTranslate = {
@@ -118,24 +131,28 @@ export class ReadyEvent extends Event {
 
 		// --- Threads joining system ---
 
+		// Fetch the guild and its channels to join active threads
 		const gardenGuild = await this.client.guilds.fetch(config.gardenGuildId);
 		const channels = await gardenGuild.channels.fetch();
 
+		// Rate limiter to avoid hitting Discord's API limits when joining threads
 		const threadJoinLimiter = new Bottleneck({
 			maxConcurrent: 1,
 			minTime: 300,
 		});
 
+		// Iterate through channels and join active threads
 		for (const channel of channels.values()) {
 			if (!channel) continue;
 			if (channel.type !== ChannelType.GuildText && channel.type !== ChannelType.GuildAnnouncement && channel.type !== ChannelType.GuildForum) { continue; }
 
-			// Active threads only (because can join archived threads, handling of archives threads is in events/logs/threadUpdate)
+			// Fetch active threads for the channel (different methods for forum vs text/announcement)
 			const activeThreads =
 				channel.type === ChannelType.GuildForum
 					? await channel.threads.fetch()
 					: await channel.threads.fetchActive();
 
+			// Join each active thread if not already joined, using rate limiter
 			for (const thread of activeThreads.threads.values()) {
 				if (!thread.joined) {
 					try {

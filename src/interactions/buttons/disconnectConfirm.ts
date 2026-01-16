@@ -13,12 +13,26 @@ export class DisconnectConfirmButton extends Button {
 		super(client, ["disconnectConfirmButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the disconnect confirm button interaction.
+	 * Summary: Confirms the disconnect by deleting the linked account from the site and database, removing associated roles from the user.
+	 * Steps:
+	 * - Fetch user data from the site
+	 * - Handle 404 (no account) or 429 (rate limit) errors
+	 * - Delete user's link from the site
+	 * - If successful, delete from LinkedUser collection and remove roles based on confirmation status
+	 * - Remove access roles (living room, workshop, etc.)
+	 * - Handle 429 on delete operation
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const { guild, member, user } = button;
 
+		// Fetch user data from the site
 		const getResponse = await this.client.functions.getUser(user.id);
 
+		// Handle no linked account
 		if (getResponse.status === 404) {
 			return button.update({
 				content: stripIndent(`
@@ -30,6 +44,7 @@ export class DisconnectConfirmButton extends Button {
 			});
 		}
 
+		// Handle rate limit
 		if (getResponse.status === 429) {
 			return button.update({
 				content: stripIndent(`
@@ -40,15 +55,19 @@ export class DisconnectConfirmButton extends Button {
 			});
 		}
 
+		// Parse response and delete user from site
 		const getResponseJson = (await getResponse.json() as responseJson);
 
 		const deleteResponse = await this.client.functions.deleteUser(user.id);
 
+		// If delete successful
 		if (deleteResponse.status === 204) {
+			// Delete from LinkedUser collection
 			// eslint-disable-next-line no-console
 			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(err => console.error(err));
 			const memberRoles = member?.roles as GuildMemberRoleManager;
 			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
+			// Remove confirmed or non-confirmed role and update message
 			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
 				memberRoles.remove(config.confirmedUserRoleId);
 				await button.update({
@@ -68,6 +87,7 @@ export class DisconnectConfirmButton extends Button {
 					components: [],
 				});
 			}
+			// Remove access roles
 			const rolesToRemove = [config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
 			const rolesOwned = rolesToRemove.filter(roleId => memberRoles.cache.has(roleId));
 
@@ -75,6 +95,7 @@ export class DisconnectConfirmButton extends Button {
 				await memberRoles.remove(rolesOwned);
 			}
 		}
+		// Handle rate limit on delete
 		else if (deleteResponse.status === 429) {
 			return button.update({
 				content: stripIndent(`

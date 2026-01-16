@@ -7,6 +7,13 @@ export class DisconnectCancelButton extends Button {
 		super(client, ["disconnectCancelButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the disconnect cancel button interaction.
+	 * Summary: Cancels the disconnect process by updating the message to confirm the user changed their mind.
+	 * Steps:
+	 * - Update the interaction with a cancellation message and clear components
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		await button.update({

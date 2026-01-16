@@ -5,10 +5,15 @@ import stripIndent from "strip-indent";
 import config from "../config";
 import { getCurrentSeason } from "../tasks/seasonsSystem";
 
-// Get the current season and then the correct color theme to apply it on the rules messages
+// Get the current season and apply corresponding color theme to rules messages
 const season = getCurrentSeason();
 const colors = config[season];
 
+/**
+ * rulesMessages: contains all rule and info message components with seasonal theming.
+ * Summary: Exports an object with pre-built Discord message containers for rules, server info, and account linking.
+ * Each message includes seasonal color accents and interactive buttons for user actions.
+ */
 export const rulesMessages = {
 	intro: new ContainerBuilder()
 		.setAccentColor(colors.colorPrimary)

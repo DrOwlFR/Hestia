@@ -1,3 +1,8 @@
+/**
+ * ESLint configuration for TypeScript project.
+ * Enforces code style, import sorting, and TypeScript best practices.
+ * Includes rules for consistent formatting, type-only imports, and linting standards.
+ */
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";

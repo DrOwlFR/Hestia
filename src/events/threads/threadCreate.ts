@@ -11,6 +11,14 @@ export class ThreadUpdateEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `threadCreate` event.
+	 * Summary: Joins newly created threads if they are not archived.
+	 * Steps:
+	 * - Check if the thread is archived; if so, skip
+	 * - Join the thread if the bot hasn't already joined
+	 * @param thread - The thread channel that was created.
+	 */
 	async execute(thread: ThreadChannel) {
 
 		if (thread.archived) return;

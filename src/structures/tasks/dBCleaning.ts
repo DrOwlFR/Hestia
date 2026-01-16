@@ -6,6 +6,18 @@ import type { ShewenyClient } from "sheweny";
 import config from "../config";
 import { LinkedUser, User } from "../database/models";
 
+/**
+ * dailyDBCleaning: performs daily cleanup of database collections.
+ * Summary: Removes users no longer in the guild from Users and LinkedUsers collections, deletes site links, and removes associated roles.
+ * Steps:
+ * - Initialize rate limiter for API calls
+ * - Clean Users collection: for each user not in guild, delete site link, remove from LinkedUsers and Users
+ * - Clean LinkedUsers collection: for linked users with no site account, remove roles and delete from DB
+ * - Log progress and completion
+ * @param gardenGuild - The Discord guild to check membership.
+ * @param client - The Sheweny client for API functions.
+ * @param logChannel - The Discord channel to send log messages.
+ */
 export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient, logChannel: TextChannel) {
 
 	// --- Limiter initialisation ---

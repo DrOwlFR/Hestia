@@ -19,8 +19,19 @@ export class CleaningRolesCommand extends Command {
 		});
 	}
 
+	/**
+	 * Execute: main handler for the `cleaningroles` command.
+	 * Summary: Clean and assign roles to guild members based on their linked status from the site's API.
+	 * Steps:
+	 * - Fetch all guild members
+	 * - For each member, query the API to check linked status
+	 * - Remove roles if not linked (404), assign roles if linked (200), handle rate limits (429)
+	 * - Log actions in batches and provide final summary
+	 * @param interaction - The slash command interaction.
+	 */
 	async execute(interaction: ChatInputCommandInteraction) {
 
+		// Access the guild from the interaction
 		const { guild } = interaction;
 
 		await interaction.reply({
@@ -28,13 +39,16 @@ export class CleaningRolesCommand extends Command {
 			flags: MessageFlags.Ephemeral,
 		});
 
+		// Fetching all members of the guild
 		const members = await guild?.members.fetch();
 		if (!members) return interaction.editReply("<:round_cross:1424312051794186260> Impossible de récupérer les membres du serveur.");
 
+		// Initialize counters and logs array
 		let i = 0;
 		let actions = 0;
 		let logs: string[] = [];
 
+		// Define the roles that can be managed by this command
 		const roles = [
 			config.livingRoomRoleId,
 			config.workshopRoleId,
@@ -44,9 +58,13 @@ export class CleaningRolesCommand extends Command {
 			config.irlRoleId,
 		];
 
+		// Iterating through each member to check their status on the external site
 		for (const member of members.values()) {
+			// Query the site's API for the member's linked status
 			const getResponse = await this.client.functions.getUser(member.id);
 
+			// Handling different response statuses from the external API
+			// If the user is not found, remove specific roles
 			if (getResponse.status === 404) {
 				const rolesToRemove: string[] = [];
 
@@ -71,6 +89,7 @@ export class CleaningRolesCommand extends Command {
 				}
 			}
 
+			// Handling rate limiting by pausing the process
 			else if (getResponse.status === 429) {
 				await interaction.followUp({
 					content: "⚠️ Rate limit atteint. Pause de 60 secondes",
@@ -80,10 +99,13 @@ export class CleaningRolesCommand extends Command {
 				await this.client.functions.delay(60 * 1000);
 			}
 
+			// If the user exists, ensure they have the correct roles
 			else if (getResponse.status === 200) {
 				const getResponseJson = await getResponse.json() as responseJson;
 
+				// Ensure the user has a document in the LinkedUser collection
 				const linked = await LinkedUser.findOne({ discordId: member.id });
+				// If not, create one
 				if (!linked) {
 					await LinkedUser.create({
 						discordId: member.id,
@@ -93,6 +115,7 @@ export class CleaningRolesCommand extends Command {
 					logs.push(`🆕 Le membre ${member} apparaît comme lié dans l'API, mais n'a pas de document à son nom dans la BDD. Document créé.`);
 				}
 
+				// Assign roles based on the user's status from the external API
 				const hasEsperluette = member.roles.cache.has(config.confirmedUserRoleId);
 				const hasGraine = member.roles.cache.has(config.nonConfirmedUserRoleId);
 				const rolesApi = getResponseJson.roles ?? [];
@@ -113,6 +136,7 @@ export class CleaningRolesCommand extends Command {
 				logs.push(`⚠️ Erreur inconnue pour ${member}`);
 			}
 
+			// Sending logs in batches to avoid message length limits
 			if (logs.length >= 10) {
 				await interaction.followUp({
 					content: logs.join("\n"),
@@ -121,6 +145,7 @@ export class CleaningRolesCommand extends Command {
 				logs = [];
 			}
 
+			// Pausing every 40 iterations to respect rate limits
 			i++;
 			if ((i + 1) % 40 === 0 || (actions > 0 && actions % 40 === 0)) {
 				await interaction.editReply({
@@ -130,6 +155,7 @@ export class CleaningRolesCommand extends Command {
 			}
 		}
 
+		// Final log output after processing all members
 		if (logs.length) {
 			await interaction.followUp({
 				content: logs.join("\n"),
@@ -137,6 +163,7 @@ export class CleaningRolesCommand extends Command {
 			});
 		}
 
+		// Final summary of the command execution
 		await interaction.followUp({
 			content: `<:round_check:1424065559355592884> Commande terminée après ${i + 1} itérations et \`${actions}\` actions.`,
 			flags: MessageFlags.Ephemeral,

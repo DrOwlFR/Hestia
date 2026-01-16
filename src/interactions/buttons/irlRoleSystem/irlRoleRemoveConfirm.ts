@@ -10,6 +10,14 @@ export class IRLRoleRemoveConfirmButton extends Button {
 		super(client, ["irlRoleRemoveConfirmButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the IRL role removal confirm button interaction.
+	 * Summary: Confirms and processes the removal of the IRL role from the user by removing the role and updating the message.
+	 * Steps:
+	 * - Remove the IRL role from the member
+	 * - Update the interaction with a confirmation message and clear components
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const { member } = button;

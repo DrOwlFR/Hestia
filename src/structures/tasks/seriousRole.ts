@@ -5,13 +5,25 @@ import type { ShewenyClient } from "sheweny";
 import config from "../config";
 import { LinkedUser, User } from "../database/models";
 
+/**
+ * dailySeriousRolesUpdate: updates the 'serious' role based on message activity.
+ * Summary: For confirmed users, grants or removes the 'serious' role if they have 50+ messages in the last 30 days.
+ * Steps:
+ * - Fetch all users from DB
+ * - For each user: pause every 40 iterations, check guild membership, clean old message data, calculate 30-day sum
+ * - If confirmed user and sum >=50, add role; if sum <50, remove role
+ * - Log progress and completion
+ * @param gardenGuild - The Discord guild.
+ * @param client - The Sheweny client.
+ * @param logChannel - The channel to log updates.
+ */
 export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: ShewenyClient, logChannel: TextChannel) {
 	const todayTime = new Date().getTime();
 	const dbUsers = await User.find();
 
 	try {
 		for (let i = 0; i < dbUsers.length; i++) {
-			// Pause every 40 iterations
+			// Pause processing every 40 users to avoid rate limits
 			if ((i + 1) % 40 === 0) {
 				await logChannel.send(`<a:load:1424326891778867332> Pause de 4 secondes après ${i + 1} itérations...`);
 				await client.functions.delay(4000);
@@ -19,9 +31,9 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 
 			const userDoc = dbUsers[i];
 
-			// Check if the Discord user exists
+			// Check if user is still in the guild
 			const user = await gardenGuild?.members.fetch(dbUsers[i].discordId).catch(() => null);
-			// If not, destroy link with site, deleting all db infos and continue to next user
+			// If not in guild, delete site link and DB records, skip to next
 			if (!user) {
 				const getResponse = await client.functions.getUser(userDoc.discordId);
 				if (getResponse.status !== 404) {
@@ -32,7 +44,7 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 				continue;
 			}
 
-			// Cleaning up the old days and calculation of total messages
+			// Filter messages to last 30 days and calculate total
 			let messagesSum = 0;
 			userDoc.messagesPerDay = userDoc.messagesPerDay.filter(day => {
 				const diffDays = (todayTime - new Date(day.date).getTime()) / (1000 * 60 * 60 * 24);
@@ -41,12 +53,12 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 			});
 			await userDoc.save();
 
-			// Checking if the user is a user-confirmed or not (basically we check if he has the Discord role for confirmed users).
+			// Check if user has confirmed role
 			const isConfirmed = user.roles.cache.has(config.confirmedUserRoleId);
-			// If not, we do not give the user the serious role.
+			// Skip if not confirmed
 			if (!isConfirmed) continue;
 
-			// Management of the ‘serious’ role
+			// Manage serious role assignment
 			const hasRole = user.roles.cache.has(config.seriousRoleId);
 			if (messagesSum >= 50 && !hasRole) {
 				await user.roles.add(config.seriousRoleId);

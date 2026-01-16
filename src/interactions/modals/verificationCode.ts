@@ -14,17 +14,31 @@ export class ModalComponent extends Modal {
 		super(client, ["verificationCodeModal"]);
 	}
 
+	/**
+	 * Execute: main handler for the verification code modal submission.
+	 * Summary: Processes the verification code to link the Discord account to the site account, creates or updates the LinkedUser document, and assigns roles based on confirmation status.
+	 * Steps:
+	 * - Check if interaction is in the correct guild
+	 * - Retrieve verification code and attempt to connect user
+	 * - Handle errors: 404 (invalid code), 409 (already linked), 429 (rate limit)
+	 * - If successful, upsert LinkedUser document in database
+	 * - Assign confirmed or non-confirmed role and send welcome message
+	 * @param modal - The modal submit interaction triggered by the user.
+	 */
 	async execute(modal: ModalSubmitInteraction) {
 
 		const { fields, guild, member, user } = modal;
 
+		// Only allow in the site's guild
 		if (guild?.id !== config.gardenGuildId) return;
 
+		// Get code from the input and connect user
 		const code = fields.getTextInputValue("verificationCode");
 		const { id, username } = user;
 
 		const connectResponse = await this.client.functions.connectUser(code, id, username);
 
+		// Handle invalid code
 		if (connectResponse.status === 404) {
 			return modal.reply({
 				content: stripIndent(`
@@ -35,6 +49,7 @@ export class ModalComponent extends Modal {
 				flags: MessageFlags.Ephemeral,
 			});
 		}
+		// Handle already linked
 		if (connectResponse.status === 409) {
 			return modal.reply({
 				content: stripIndent(`
@@ -45,6 +60,7 @@ export class ModalComponent extends Modal {
 				flags: MessageFlags.Ephemeral,
 			});
 		}
+		// Handle rate limit
 		if (connectResponse.status === 429) {
 			return modal.reply({
 				content: stripIndent(`
@@ -55,10 +71,13 @@ export class ModalComponent extends Modal {
 			});
 		}
 
+		// Parse response
 		const connectResponseJson = (await connectResponse.json() as responseJson);
 
+		// If connection successful
 		if (connectResponseJson.success) {
 
+			// Upsert LinkedUser document
 			let document: Document | null = null;
 			try {
 				document = await LinkedUser.findOneAndUpdate(
@@ -80,6 +99,7 @@ export class ModalComponent extends Modal {
 				console.error(err);
 			}
 
+			// Handle database error
 			if (!document) {
 				await this.client.functions.deleteUser(user.id);
 				(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
@@ -93,6 +113,7 @@ export class ModalComponent extends Modal {
 				});
 			}
 
+			// Assign role based on confirmation status
 			if (connectResponseJson.roles!.find(r => r === "user-confirmed")) {
 				(member?.roles as GuildMemberRoleManager).add(config.confirmedUserRoleId);
 				return modal.reply({

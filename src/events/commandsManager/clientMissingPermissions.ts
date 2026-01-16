@@ -13,8 +13,18 @@ export class ClientMissingPermissionsEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `clientMissingPermissions` event.
+	 * Summary: Triggered when the bot lacks required permissions to execute a command.
+	 * Behavior:
+	 * - Receives the interaction and the list of missing permissions
+	 * - Replies with an ephemeral message informing the user of the missing permissions
+	 * @param interaction - The command interaction.
+	 * @param missing - The permissions the bot is missing.
+	 */
 	async execute(interaction: ChatInputCommandInteraction, missing: Permissions) {
 
+		// Reply with an ephemeral message explaining that the bot lacks the necessary permissions
 		return interaction.reply({
 			content: stripIndent(`
 				> *Hestia réfléchit un instant à votre demande.*
