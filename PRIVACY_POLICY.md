@@ -26,6 +26,8 @@ Certaines données spécifiques sont également stockées dans le fichier `confi
 
 À savoir que les identifiants (IDs) ne contiennent aucune information personnelle en eux-mêmes. Il s'agit simplement d'un moyen de vous identifier à coup sûr (l'ID étant unique par définition).
 
+- Sont également stockés le nombre de messages globaux envoyés par salon (ou fil) et par mois, mais ces données ne sont pas liées à un utilisateur en particulier.
+
 ## 2. Pourquoi avons-nous besoin de ces données ?
 
 Les données stockées le sont uniquement dans le but d'assurer le fonctionnement normal du serveur. **Aucun contenu que vous envoyez (contenu des messages, images, etc.) n'est stocké par Hestia**.
@@ -38,6 +40,8 @@ Les données stockées le sont uniquement dans le but d'assurer le fonctionnemen
 
 - Les ID des rôles du Jardin sont stockés afin de faciliter leur attribution ou leur mention. De même, les IDs des salons et de certains membres de l'équipe de modération sont stockés dans le but de faciliter leur mention dans les règles ou les messages d'indications du bot.
 
+- Les statistiques de messages par salon et par mois servent uniquement à l'équipe de modération du serveur pour suivre l'activité globale du serveur.
+
 ## À part Discord, partageons-nous vos données avec des tiers ?
 
 Non. La base de données est stockée en ligne dans le cluster personnel du développeur, fourni par l'entreprise MongoDB Inc., mais l'entreprise n'y accède pas librement. La seule personne qui a librement accès aux données est le développeur (Midriass).
@@ -45,7 +49,7 @@ Non. La base de données est stockée en ligne dans le cluster personnel du dév
 ## Comment les utilisateurs peuvent-ils faire supprimer des données ou contacter le propriétaire du bot ?
 
 Les utilisateurs du bot ne peuvent contacter directement supprimer leurs données. Mais ils peuvent contacter le développeur (Midriass / drowl_) afin d'avoir accès à leurs données stockées et peuvent demander à les supprimer.
-Cependant, il est à noter que certaines données sont strictement nécessaires au fonctionnement normal du serveur (exemple : votre identifiant). Ainsi, leur suppression obligera à vous retirer l'accès au serveur du Jardin, ou à minima à certains salons (Fumoir ou IRL).
+Cependant, il est à noter que certaines données sont strictement nécessaires au fonctionnement normal du serveur (exemple : votre identifiant). Ainsi, leur suppression obligera à vous retirer l'accès au serveur du Jardin, ou à minima à certains salons (Fumoir et/ou IRL).
 
 Par ailleurs, toutes les données stockées sont automatiquement supprimées lorsque le membre à qui elles appartiennent quitte le serveur. Les données de liaison au site sont également supprimées lorsque le membre délie son compte.
 Certaines données peuvent cependant rester accessibles dans les fichiers de sauvegarde de la base de données. Ces fichiers sont stockés hors-ligne dans un disque dur appartenant au développeur (ce disque dur n'est accessible que par lui-même). Ces sauvegardes s'effectuent automatiquement et périodiquement, une fois par semaine. 
