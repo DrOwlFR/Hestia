@@ -1,5 +1,5 @@
-import type { ChatInputCommandInteraction, PermissionsBitField, TextChannel } from "discord.js";
-import { MessageFlags, PermissionFlagsBits } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { ChannelType, GuildMember, MessageFlags, PermissionFlagsBits } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
@@ -29,7 +29,8 @@ export class RulesCommand extends Command {
 	async execute(interaction: ChatInputCommandInteraction) {
 
 		// Permission check for administrators and bot admins
-		if (!this.client.admins.find(id => id === interaction.user.id) && !(interaction.member?.permissions as PermissionsBitField).has(PermissionFlagsBits.Administrator)) {
+		const isAdmin = this.client.admins.includes(interaction.user.id) || interaction.member instanceof GuildMember && interaction.member.permissions.has(PermissionFlagsBits.Administrator);
+		if (!isAdmin) {
 			return interaction.reply({
 				content: "<:round_cross:1424312051794186260> Vous n'avez pas les permissions requises pour utiliser cette commande.",
 				flags: MessageFlags.Ephemeral,
@@ -39,64 +40,70 @@ export class RulesCommand extends Command {
 		// Reply with a loading message while sending the rules
 		await interaction.reply({ content: "<a:load:1424326891778867332> Envoie des règles en cours...", flags: MessageFlags.Ephemeral });
 
+		// Get the current channel and verify it's a text channel
+		const { channel } = interaction;
+		if (!channel || channel.type !== ChannelType.GuildText) {
+			return interaction.followUp({ content: "<:round_cross:1424312051794186260> Cette commande doit être utilisée dans un salon texte.", flags: MessageFlags.Ephemeral });
+		}
+
 		// Sending the rules messages one by one
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.intro,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.rules1,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.rules2,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.serverAccess,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.vocabulary,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.triggerWarnings,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.restrictedChannels,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.separator,
 			],
 			flags: MessageFlags.IsComponentsV2,
 		});
 
-		await (interaction.channel as TextChannel).send({
+		await channel.send({
 			components: [
 				rulesMessages.form,
 			],

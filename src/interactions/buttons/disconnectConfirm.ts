@@ -1,5 +1,4 @@
-import type { ButtonInteraction, GuildMemberRoleManager, TextChannel } from "discord.js";
-import type { DeleteResult } from "mongoose";
+import { type ButtonInteraction, GuildMember } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
@@ -28,6 +27,8 @@ export class DisconnectConfirmButton extends Button {
 	async execute(button: ButtonInteraction) {
 
 		const { guild, member, user } = button;
+
+		if (!member || !(member instanceof GuildMember)) return;
 
 		// Fetch user data from the site
 		const getResponse = await this.client.functions.getUser(user.id);
@@ -62,11 +63,13 @@ export class DisconnectConfirmButton extends Button {
 
 		// If delete successful
 		if (deleteResponse.status === 204) {
-			// Delete from LinkedUser collection
-			// eslint-disable-next-line no-console
-			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(err => console.error(err));
-			const memberRoles = member?.roles as GuildMemberRoleManager;
-			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
+			// Delete from LinkedUser collection and log if deletion failed
+			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(() => null);
+			if (!deleteResult || deleteResult.deletedCount === 0) {
+				await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`);
+			}
+
+			const memberRoles = member.roles;
 			// Remove confirmed or non-confirmed role and update message
 			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
 				memberRoles.remove(config.confirmedUserRoleId);

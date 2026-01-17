@@ -1,5 +1,5 @@
-import type { ButtonInteraction, GuildMember, GuildMemberRoleManager, TextChannel } from "discord.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
+import type { ButtonInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
@@ -28,11 +28,12 @@ export class IRLRoleButton extends Button {
 
 		const { guildId, member, guild } = button;
 
-		// Only allow in the site's guild
+		// Only allow in the site's guild and ensure member is valid
 		if (guildId !== config.gardenGuildId) return;
+		if (!member || !(member instanceof GuildMember)) return;
 
 		// Check if user already has the IRL role and propose him removal if so
-		if ((member?.roles as GuildMemberRoleManager).cache.some(role => role.id === config.irlRoleId)) {
+		if (member.roles.cache.some(role => role.id === config.irlRoleId)) {
 			return await button.reply({
 				content: "— Eh ! Vous avez déjà le rôle d'accès aux retraites ! Souhaitez-vous que je vous fournisse le formulaire de désinscription ?",
 				components: [
@@ -66,7 +67,7 @@ export class IRLRoleButton extends Button {
 						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
 						totalMessages: { $ifNull: ["$totalMessages", 0] },
 						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
-						joinedAt: { $ifNull: ["$joinedAt", (member as GuildMember).joinedAt] },
+						joinedAt: { $ifNull: ["$joinedAt", member.joinedAt] },
 						__v: { $add: { $ifNull: ["$__v", 0] } },
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 					},
@@ -77,7 +78,7 @@ export class IRLRoleButton extends Button {
 		catch (err) {
 			// eslint-disable-next-line no-console
 			console.error(err);
-			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
+			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.\n\`\`\`${err}\`\`\``);
 			return button.reply({
 				content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
@@ -89,7 +90,7 @@ export class IRLRoleButton extends Button {
 		}
 
 		// Check if user has confirmed status
-		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.confirmedUserRoleId);
+		const isConfirmed = member.roles.cache.has(config.confirmedUserRoleId);
 		if (!isConfirmed) {
 			return button.reply({
 				content: stripIndent(`
@@ -103,7 +104,7 @@ export class IRLRoleButton extends Button {
 		// Check eligibility: 61+ days joined and 300+ messages
 		if (memberData && ((Date.now() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
 			// Assign the IRL role
-			(member?.roles as GuildMemberRoleManager).add(config.irlRoleId).catch(err => {
+			member.roles.add(config.irlRoleId).catch(err => {
 				// eslint-disable-next-line no-console
 				console.error(err);
 				return button.reply({

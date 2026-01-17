@@ -1,4 +1,4 @@
-import type { GuildMember, TextChannel } from "discord.js";
+import { GuildMember } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Event } from "sheweny";
 
@@ -26,8 +26,11 @@ export class GuildMemberAddEvent extends Event {
 	async execute(member: GuildMember) {
 
 		// Skip bots and members from other guilds
+		if (!(member instanceof GuildMember)) return;
 		if (member.user.bot) return;
 		if (member.guild.id !== config.gardenGuildId) return;
+
+		await this.client.functions.log("dbError", `Erreur lors de la création du document **User** pour l'id discord \`${member.id}\` à son arrivée sur le serveur.\n\`\`\`test\`\`\``);
 
 		try {
 			// Create or update the User document with initial data
@@ -38,7 +41,7 @@ export class GuildMemberAddEvent extends Event {
 						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
 						totalMessages: { $ifNull: ["$totalMessages", 0] },
 						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
-						joinedAt: { $ifNull: ["$joinedAt", (member as GuildMember).joinedAt] },
+						joinedAt: { $ifNull: ["$joinedAt", member.joinedAt] },
 						__v: { $add: { $ifNull: ["$__v", 0] } },
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 					},
@@ -50,7 +53,7 @@ export class GuildMemberAddEvent extends Event {
 			// Log the error to console and notify admins in a channel
 			// eslint-disable-next-line no-console
 			console.error(err);
-			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lors de son **arrivée sur le serveur**. À vérifier.`);
+			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lors de son **arrivée sur le serveur**. À vérifier.\n\`\`\`${err}\`\`\``);
 		}
 
 	}

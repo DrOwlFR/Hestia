@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import Bottleneck from "bottleneck";
-import type { Guild, GuildMemberRoleManager, TextChannel } from "discord.js";
+import type { Guild, TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
 import config from "../config";
@@ -96,7 +96,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 								config.seriousRoleId,
 								config.irlRoleId,
 							];
-							const memberRoles = member.roles as GuildMemberRoleManager;
+							const memberRoles = member.roles;
 							const rolesOwned = rolesToRemove.filter(roleId => memberRoles.cache.has(roleId));
 
 							if (rolesOwned.length > 0) {

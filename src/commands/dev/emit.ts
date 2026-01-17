@@ -1,5 +1,5 @@
-import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
-import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, GuildMember, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
@@ -46,6 +46,11 @@ export class EmitCommand extends Command {
 		// Extract options and invoking member from the interaction
 		const { options, member } = interaction;
 
+		// Ensure the member is a GuildMember instance
+		if (!member || !(member instanceof GuildMember)) {
+			return interaction.reply({ content: "<:round_cross:1424312051794186260> Impossible de récupérer les informations du membre.", flags: MessageFlags.Ephemeral });
+		}
+
 		// Read the event choice provided by the user (command option)
 		const choice = options.getString("événement");
 
@@ -53,13 +58,13 @@ export class EmitCommand extends Command {
 		switch (choice) {
 			// Emit a simulated guild member join event using the current member
 			case "guildMemberAdd":
-				this.client.emit("guildMemberAdd", member as GuildMember);
+				this.client.emit("guildMemberAdd", member);
 				interaction.reply({ content: "<:round_check:1424065559355592884> L'événement `guildMemberAdd` a été émis avec succès.", flags: MessageFlags.Ephemeral });
 				break;
 
 			// Emit a simulated guild member leave event using the current member
 			case "guildMemberRemove":
-				this.client.emit("guildMemberRemove", member as GuildMember);
+				this.client.emit("guildMemberRemove", member);
 				interaction.reply({ content: "<:round_check:1424065559355592884> L'événement `guildMemberRemove` a été émis avec succès.", flags: MessageFlags.Ephemeral });
 				break;
 		}

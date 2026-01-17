@@ -1,5 +1,5 @@
-import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
-import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, ChannelType, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
@@ -36,14 +36,19 @@ export class SayCommand extends Command {
 		const { options, channel } = interaction;
 
 		// Get the message content provided by the user (required option)
-		const sayMessage = options.getString("message");
+		const sayMessage = options.getString("message", true);
+
+		// Verify the command is used in a text channel
+		if (!channel || channel.type !== ChannelType.GuildText) {
+			return interaction.reply({ content: "<:round_cross:1424312051794186260> Cette commande doit être utilisée dans un salon texte.", flags: MessageFlags.Ephemeral });
+		}
 
 		// Reply to the command issuer with an ephemeral confirmation message
 		await interaction.reply({ content: "Ainsi ai-je parlé.", flags: MessageFlags.Ephemeral });
 
 		// Send the specified message in the current text channel as the bot
-		await (channel as TextChannel).send({
-			content: sayMessage!,
+		await channel.send({
+			content: sayMessage,
 		});
 
 	}

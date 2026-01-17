@@ -1,4 +1,4 @@
-import type { ButtonInteraction, GuildMemberRoleManager } from "discord.js";
+import { type ButtonInteraction, GuildMember } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
@@ -14,6 +14,7 @@ export class IRLRoleRemoveConfirmButton extends Button {
 	 * Execute: main handler for the IRL role removal confirm button interaction.
 	 * Summary: Confirms and processes the removal of the IRL role from the user by removing the role and updating the message.
 	 * Steps:
+	 * - Verify the member is valid
 	 * - Remove the IRL role from the member
 	 * - Update the interaction with a confirmation message and clear components
 	 * @param button - The button interaction triggered by the user.
@@ -22,7 +23,9 @@ export class IRLRoleRemoveConfirmButton extends Button {
 
 		const { member } = button;
 
-		await (member?.roles as GuildMemberRoleManager).remove(config.irlRoleId);
+		if (!member || !(member instanceof GuildMember)) return;
+
+		await member.roles.remove(config.irlRoleId);
 
 		return await button.update({
 			content: stripIndent(`

@@ -1,5 +1,5 @@
-import type { GuildMemberRoleManager, ModalSubmitInteraction, TextChannel } from "discord.js";
-import { MessageFlags } from "discord.js";
+import type { ModalSubmitInteraction } from "discord.js";
+import { GuildMember, MessageFlags } from "discord.js";
 import type { Document } from "mongoose";
 import type { ShewenyClient } from "sheweny";
 import { Modal } from "sheweny";
@@ -29,8 +29,9 @@ export class ModalComponent extends Modal {
 
 		const { fields, guild, member, user } = modal;
 
-		// Only allow in the site's guild
+		// Only allow in the site's guild and ensure member is valid
 		if (guild?.id !== config.gardenGuildId) return;
+		if (!member || !(member instanceof GuildMember)) return;
 
 		// Get code from the input and connect user
 		const code = fields.getTextInputValue("verificationCode");
@@ -102,7 +103,7 @@ export class ModalComponent extends Modal {
 			// Handle database error
 			if (!document) {
 				await this.client.functions.deleteUser(user.id);
-				(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
+				await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
 				return modal.reply({
 					content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
@@ -115,7 +116,7 @@ export class ModalComponent extends Modal {
 
 			// Assign role based on confirmation status
 			if (connectResponseJson.roles!.find(r => r === "user-confirmed")) {
-				(member?.roles as GuildMemberRoleManager).add(config.confirmedUserRoleId);
+				member.roles.add(config.confirmedUserRoleId);
 				return modal.reply({
 					content: stripIndent(`
 						> *Hestia vous adresse un immense sourire, et vous tend une clef.*
@@ -127,7 +128,7 @@ export class ModalComponent extends Modal {
 				});
 			}
 			else {
-				(member?.roles as GuildMemberRoleManager).add(config.nonConfirmedUserRoleId);
+				member.roles.add(config.nonConfirmedUserRoleId);
 				return modal.reply({
 					content: stripIndent(`
 						> *Hestia vous adresse un grand sourire.*

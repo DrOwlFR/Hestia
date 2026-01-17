@@ -1,5 +1,5 @@
-import type { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
-import { ChannelType, MessageFlags, PermissionFlagsBits } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { ChannelType, GuildMember, MessageFlags, PermissionFlagsBits } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
@@ -30,7 +30,8 @@ export class RulesCommand extends Command {
 	async execute(interaction: ChatInputCommandInteraction) {
 
 		// Permission check for guild administrators and bot admins
-		if (!this.client.admins.find(id => id === interaction.user.id) && !(interaction.member?.permissions as PermissionsBitField).has(PermissionFlagsBits.Administrator)) {
+		const isAdmin = this.client.admins.includes(interaction.user.id) || interaction.member instanceof GuildMember && interaction.member.permissions.has(PermissionFlagsBits.Administrator);
+		if (!isAdmin) {
 			return interaction.reply({
 				content: "<:round_cross:1424312051794186260> Vous n'avez pas les permissions requises pour utiliser cette commande.",
 				flags: MessageFlags.Ephemeral,
