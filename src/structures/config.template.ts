@@ -17,6 +17,13 @@ export default {
 	botAdminsIds: [""],
 	registeredGuildsIds: [""],
 
+	errorChannelId: "",
+	dbErrorChannelId: "",
+	dbCleaningCronChannelId: "",
+	seriousRoleCronChannelId: "",
+	saveDbCronChannelId: "",
+	seasonsCronChannelId: "",
+
 	gardenGuildId: "",
 
 	rulesChannelId: "",

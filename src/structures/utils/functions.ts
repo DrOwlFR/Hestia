@@ -85,12 +85,12 @@ export type LogChannel = "generalError" |"dbError" | "dbCleaningCron" | "serious
 
 // Mapping of log channel types to their Discord channel IDs
 const LOG_CHANNELS: Record<LogChannel, string> = {
-	generalError: "1423712292163293336",
-	dbError: "1425177656755748885",
-	dbCleaningCron: "1427009582076788846",
-	seriousRoleCron: "1426975372716806316",
-	saveDbCron: "1426661664475975762",
-	seasonsCron: "1459323515030212780",
+	generalError: config.errorChannelId,
+	dbError: config.dbErrorChannelId,
+	dbCleaningCron: config.dbCleaningCronChannelId,
+	seriousRoleCron: config.seriousRoleCronChannelId,
+	saveDbCron: config.saveDbCronChannelId,
+	seasonsCron: config.seasonsCronChannelId,
 };
 
 /**
