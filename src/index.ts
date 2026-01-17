@@ -2,7 +2,7 @@ import { ShewenyClient } from "sheweny";
 
 import config from "./structures/config";
 import { dBConnection } from "./structures/database/dBConnection";
-import { connectUser, delay, deleteUser, embed, getUser } from "./structures/utils/functions";
+import { connectUser, delay, deleteUser, embed, getUser, log } from "./structures/utils/functions";
 
 /**
  * Initialize and configure the Discord bot client.
@@ -60,6 +60,7 @@ client.functions = {
 	connectUser: connectUser,
 	getUser: getUser,
 	deleteUser: deleteUser,
+	log: log.bind(client),
 };
 
 // Connect to MongoDB

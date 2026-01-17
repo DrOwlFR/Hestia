@@ -1,4 +1,5 @@
-import { EmbedBuilder } from "discord.js";
+import { ChannelType, EmbedBuilder } from "discord.js";
+import type { ShewenyClient } from "sheweny";
 
 import config from "../config";
 
@@ -79,4 +80,36 @@ async function deleteUser(userId: string): Promise<Response> {
 	});
 }
 
-export { connectUser, delay, deleteUser, embed, getUser };
+// Log channels types
+export type LogChannel = "generalError" |"dbError" | "dbCleaningCron" | "seriousRoleCron" | "saveDbCron" | "seasonsCron";
+
+// Mapping of log channel types to their Discord channel IDs
+const LOG_CHANNELS: Record<LogChannel, string> = {
+	generalError: "1423712292163293336",
+	dbError: "1425177656755748885",
+	dbCleaningCron: "1427009582076788846",
+	seriousRoleCron: "1426975372716806316",
+	saveDbCron: "1426661664475975762",
+	seasonsCron: "1459323515030212780",
+};
+
+/**
+ * log: sends a log message to a specified Discord channel.
+ * Summary: Utility to log messages to designated channels for different log types.
+ * @param this - The ShewenyClient instance.
+ * @param type - The type of log channel to send the message to.
+ * @param message - The log message content.
+ * @returns A promise that resolves when the message is sent or an error is thrown if the channel is not found.
+ */
+async function log(this: ShewenyClient, type: LogChannel, message: string): Promise<void> {
+	const channelId = LOG_CHANNELS[type];
+	const channel = this.channels.cache.get(channelId);
+
+	if (!channel || channel.type !== ChannelType.GuildText) {
+		throw new Error(`Channel de log "${type}" introuvable`);
+	}
+
+	await channel.send(message);
+}
+
+export { connectUser, delay, deleteUser, embed, getUser, log };
