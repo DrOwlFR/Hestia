@@ -19,8 +19,8 @@ export class DisconnectConfirmButton extends Button {
 	 * - Fetch user data from the site
 	 * - Handle 404 (no account) or 429 (rate limit) errors
 	 * - Delete user's link from the site
-	 * - If successful, delete from LinkedUser collection and remove roles based on confirmation status
-	 * - Remove access roles (living room, workshop, etc.)
+	 * - If successful, delete from LinkedUser collection and send confirmation message to the user
+	 * - Remove status (confirmed/non-confirmed) and access roles (living room, workshop, etc.)
 	 * - Handle 429 on delete operation
 	 * @param button - The button interaction triggered by the user.
 	 */
@@ -70,9 +70,8 @@ export class DisconnectConfirmButton extends Button {
 			}
 
 			const memberRoles = member.roles;
-			// Remove confirmed or non-confirmed role and update message
-			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
-				memberRoles.remove(config.confirmedUserRoleId);
+			// Send message based on confirmation status
+			if (member.roles.cache.has(config.confirmedUserRoleId)) {
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
@@ -81,7 +80,6 @@ export class DisconnectConfirmButton extends Button {
 					components: [],
 				});
 			} else {
-				memberRoles.remove(config.nonConfirmedUserRoleId);
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
@@ -90,8 +88,8 @@ export class DisconnectConfirmButton extends Button {
 					components: [],
 				});
 			}
-			// Remove access roles
-			const rolesToRemove = [config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
+			// Remove status (confirmed/non-confirmed) and access roles (only remove roles the user has)
+			const rolesToRemove = [config.confirmedUserRoleId, config.nonConfirmedUserRoleId, config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
 			const rolesOwned = rolesToRemove.filter(roleId => memberRoles.cache.has(roleId));
 
 			if (rolesOwned.length > 0) {
