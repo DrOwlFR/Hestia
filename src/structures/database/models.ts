@@ -47,6 +47,7 @@ export interface linkedUser extends Document {
 	discordId: string,
 	discordUsername: string,
 	siteId: number,
+	roles: string[],
 	__v: number,
 	createdAt: Date,
 	updatedAt: Date,
@@ -60,6 +61,7 @@ export const LinkedUser = model<linkedUser>("linked_user", new Schema({
 	discordId: { type: String, required: true, unique: true },
 	siteId: { type: Number, required: true, unique: true },
 	discordUsername: { type: String, required: true, unique: true },
+	roles: { type: [String], required: true },
 }, { timestamps: true, strict: true }));
 
 /**

@@ -111,8 +111,21 @@ export class CleaningRolesCommand extends Command {
 						discordId: member.id,
 						siteId: getResponseJson.userId,
 						discordUsername: member.user.username,
+						roles: getResponseJson.roles,
 					});
 					logs.push(`🆕 Le membre ${member} apparaît comme lié dans l'API, mais n'a pas de document à son nom dans la BDD. Document créé.`);
+				} else {
+					// If exists but roles differ, update the document
+					const rolesApi = getResponseJson.roles ?? [];
+					const rolesDb = linked.roles;
+					const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
+					if (rolesDiffer) {
+						await LinkedUser.findOneAndUpdate(
+							{ discordId: member.id },
+							{ roles: rolesApi },
+						);
+						logs.push(`🔄 Les rôles du membre ${member} ont été mis à jour dans la BDD.`);
+					}
 				}
 
 				// Assign roles based on the user's status from the external API

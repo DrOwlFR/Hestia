@@ -21,7 +21,8 @@ export class ModalComponent extends Modal {
 	 * - Check if interaction is in the correct guild
 	 * - Retrieve verification code and attempt to connect user
 	 * - Handle errors: 404 (invalid code), 409 (already linked), 429 (rate limit)
-	 * - If successful, upsert LinkedUser document in database
+	 * - If successful, create or update LinkedUser document in database
+	 * - Handle database errors
 	 * - Assign confirmed or non-confirmed role and send welcome message
 	 * @param modal - The modal submit interaction triggered by the user.
 	 */
@@ -78,26 +79,25 @@ export class ModalComponent extends Modal {
 		// If connection successful
 		if (connectResponseJson.success) {
 
-			// Upsert LinkedUser document
-			let document: Document | null = null;
-			try {
+			// Create or update LinkedUser document
+			let document: Document | null = await LinkedUser.findOne({ discordId: user.id });
+			if (!document) {
+				document = await LinkedUser.create({
+					discordId: user.id,
+					siteId: connectResponseJson.userId,
+					discordUsername: user.username,
+					roles: connectResponseJson.roles,
+				});
+			} else {
 				document = await LinkedUser.findOneAndUpdate(
 					{ discordId: user.id },
-					[{
-						$set: {
-							discordId: { $ifNull: ["$discordId", user.id] },
-							siteId: { $ifNull: ["$siteId", connectResponseJson.userId] },
-							discordUsername: { $ifNull: ["$discordUsername", user.username] },
-							__v: { $add: { $ifNull: ["$__v", 0] } },
-							createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
-						},
-					}],
-					{ upsert: true, new: true, updatePipeline: true },
+					{
+						siteId: connectResponseJson.userId,
+						discordUsername: user.username,
+						roles: connectResponseJson.roles,
+					},
+					{ new: true },
 				);
-			}
-			catch (err) {
-				// eslint-disable-next-line no-console
-				console.error(err);
 			}
 
 			// Handle database error
