@@ -3,6 +3,7 @@ import Bottleneck from "bottleneck";
 import type { Guild, TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
+import type { responseJson } from "../../types";
 import config from "../config";
 import { LinkedUser, User } from "../database/models";
 
@@ -78,11 +79,13 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		console.log("⌚ Lancement du nettoyage quotidien de la collection LinkedUsers...");
 		logChannel.send("<a:load:1424326891778867332> Lancement du nettoyage quotidien de la collection `LinkedUsers`...");
 
+		// Fetch all linked users from the database
 		const linkedUsers = await LinkedUser.find();
 		for (const dbLinkedUser of linkedUsers) {
 			limiter.schedule(async () => {
 				try {
 					const getResponse = await client.functions.getUser(dbLinkedUser.discordId);
+					// If the user is not found on the site, remove roles and delete from DB
 					if (getResponse.status === 404) {
 						const member = await gardenGuild.members.fetch(dbLinkedUser.discordId).catch(() => null);
 						if (member) {
@@ -106,6 +109,51 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 						await client.functions.deleteUser(dbLinkedUser.discordId);
 						await LinkedUser.deleteOne({ discordId: dbLinkedUser.discordId });
 						logChannel.send(`-# La connexion au site de l'ID \`${dbLinkedUser.discordId}\` (siteId : \`${dbLinkedUser.siteId}\`, username : \`${dbLinkedUser.discordUsername}\`) a été supprimée.`);
+					} else {
+						// If the user exists on the site, sync roles
+						const member = await gardenGuild.members.fetch(dbLinkedUser.discordId).catch(() => null);
+						if (member) {
+							// Sync roles between DB and site account
+							const getResponseJson = await getResponse.json() as responseJson;
+							const rolesApi = getResponseJson.roles || [];
+							const rolesDb = dbLinkedUser.roles;
+							const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
+							if (rolesDiffer) {
+								await LinkedUser.findOneAndUpdate(
+									{ discordId: dbLinkedUser.discordId },
+									{ roles: rolesApi },
+								);
+							}
+
+							// Determine confirmation status from site roles
+							const isNonConfirmed = rolesApi.includes("user");
+							const isConfirmed = rolesApi.includes("user-confirmed");
+
+							// Determine current roles in guild
+							const memberRoles = member.roles;
+							const hasNonConfirmedRole = memberRoles.cache.has(config.nonConfirmedUserRoleId);
+							const hasConfirmedRole = memberRoles.cache.has(config.confirmedUserRoleId);
+
+							// Determine roles to add or remove
+							const toAdd: string[] = [];
+							const toRemove: string[] = [];
+
+							if (isNonConfirmed && !hasNonConfirmedRole) {
+								toAdd.push(config.nonConfirmedUserRoleId);
+							} else if (!isNonConfirmed && hasNonConfirmedRole) {
+								toRemove.push(config.nonConfirmedUserRoleId);
+							}
+
+							if (isConfirmed && !hasConfirmedRole) {
+								toAdd.push(config.confirmedUserRoleId);
+							} else if (!isConfirmed && hasConfirmedRole) {
+								toRemove.push(config.confirmedUserRoleId);
+							}
+
+							// Apply role changes
+							if (toAdd.length) await memberRoles.add(toAdd);
+							if (toRemove.length) await memberRoles.remove(toRemove);
+						}
 					}
 				} catch (err) {
 					console.error(`Erreur lors de la suppression du LinkedUser ${dbLinkedUser.discordId}:`, err);
