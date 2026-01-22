@@ -17,6 +17,7 @@ Uniquement le nombre de messages est stocké, pas leur contenu.
 
 Lorsque vous liez votre compte Discord au site :
 - L'identifiant (ID) de votre compte sur le site.
+- Vos rôles actuels sur le site (exemple : Graine, Esperluette, Modérateur, etc.).
 
 Certaines données spécifiques sont également stockées dans le fichier `config` d'Hestia (ce fichier n'est pas public) :
 - L'ID du serveur Discord du Jardin.
@@ -37,6 +38,9 @@ Les données stockées le sont uniquement dans le but d'assurer le fonctionnemen
 - La date à laquelle vous avez rejoint le serveur sert à vérifier votre ancienneté, l'un des critères requis pour l'obtention du rôle d'accès au salon des évènements IRL (*In Real Life* : dans la vraie vie).
 - Le nombre de messages totaux envoyés sert au système d'obtention du rôle d'accès au salon des évènements IRL, afin de vérifier que vous avez bien le nombre de messages requis.
 - Le nombre de messages envoyés par jour sert au système d'ajout et de suppression du rôle d'accès au salon Fumoir. Ils sont stockés pendant au maximum 30 jours, puis sont supprimés automatiquement.
+
+- L'ID de votre compte sur le site sert à faire le lien entre votre compte Discord et votre compte sur le site.
+- Vos rôles sur le site servent à vous attribuer les rôles correspondants sur le serveur Discord (Graine/Esperluette) et à les changer lorsque vous êtes promu(e) de Graine à Esperluette.
 
 - Les ID des rôles du Jardin sont stockés afin de faciliter leur attribution ou leur mention. De même, les IDs des salons et de certains membres de l'équipe de modération sont stockés dans le but de faciliter leur mention dans les règles ou les messages d'indications du bot.
 
