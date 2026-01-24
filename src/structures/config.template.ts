@@ -76,4 +76,6 @@ export default {
 		colorAccent: 0xA4345C, // "#a4345c"
 		colorTertiary: 0x639DA5, // "#639da5"
 	},
+
+	githubRepositoryUrl: "",
 };
