@@ -44,6 +44,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 							### ➕ Ajouts
 							- \`[règles de vie]\` - Changement automatique des liserés de couleur (le même thème que sur le site) selon les saisons
 							- \`[commande "version"]\` - Création. Elle permet de naviguer dans les anciennes notes de patch
+							- \`[commande "editrules"]\` - Création. Elle permet d'éditer facilement les messages des règles de vie sans avoir à les reposter (admins et devs uniquement)
 							- \`[commande "sendpatchnotes"]\` - Qui me permet de faire envoyer les notes de patch par Hestia elle-même
 							- \`[statistiques]\` - Ajout d'un système pour compter le nombre de messages envoyés par salon et par mois (mise à jour de la politique de confidentialité en accord avec ces nouvelles données stockées)
 							-#  - \`[technique]\` - Ajout de documentation dans tous les fichiers du code, pour le rendre plus lisible à d'autres personnes que moi
