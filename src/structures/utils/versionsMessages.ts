@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.5.1-beta", description: "Dernière version en date", value: "1.5.1-beta" },
+				{ label: "v1.6.0-beta", description: "Dernière version en date", value: "1.6.0-beta" },
+				{ label: "v1.5.1-beta", value: "1.5.1-beta" },
 				{ label: "v1.5.0-beta", value: "1.5.0-beta" },
 				{ label: "v1.4.0-beta", value: "1.4.0-beta" },
 				{ label: "v1.3.1-beta", value: "1.3.1-beta" },
@@ -28,6 +29,41 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.6.0-beta": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.0-beta - __Les Saisons !__
+							*(24 janvier 2026)*
+							### 🚀 La grande nouveauté
+							Les **saisons** sont arrivées à la conciergerie ! Les liserés de couleur des règles de vie changeront au fil du calendrier, comme sur le site !
+							-# ça parait pas mais c'était un enfer à coder pour si peu, appréciez ce système s'il vous plaît 🥲
+							### ➕ Ajouts
+							- \`[règles de vie]\` - Changement automatique des liserés de couleur (le même thème que sur le site) selon les saisons
+							- \`[commande "version"]\` - Création. Elle permet de naviguer dans les anciennes notes de patch
+							- \`[commande "sendpatchnotes"]\` - Qui me permet de faire envoyer les notes de patch par Hestia elle-même
+							- \`[statistiques]\` - Ajout d'un système pour compter le nombre de messages envoyés par salon et par mois (mise à jour de la politique de confidentialité en accord avec ces nouvelles données stockées)
+							-#  - \`[technique]\` - Ajout de documentation dans tous les fichiers du code, pour le rendre plus lisible à d'autres personnes que moi
+							### 🔨 Corrections & Modifications
+							- \`[commande "botinfo"]\` - Ajout d'une nouvelle info spéciale dans le lore d'Hestia
+							- \`[bouton "accepter le règlement"]\` - Correction du message d'erreur
+							- \`[bouton "IRL"]\` - Ajout d'un message d'erreur visuel en cas d'erreur de la base de données
+							- \`[commande "ping"]\` - Passage à une réponse "éphémère" (i.e., seulement visible par celui qui lance la commande)
+							- \`[déconnexion du site]\` - Tous les rôles sont à présent supprimés, sans tenir compte du statut
+							- \`[base de données]\` - Ajout du stockage de vos rôles sur le site (sert à détecter les promotions lors du nettoyage nocturne)
+							
+							-# PS : Je vous le tease maintenant, la prochaine grosse feature sera probablement le système de **notifications** !
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.5.1-beta...v1.6.0-beta)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL() || ""),
+				),
+		),
 	"1.5.1-beta": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
