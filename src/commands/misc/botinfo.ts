@@ -45,6 +45,7 @@ export class BotInfoCommand extends Command {
 					.addFields([
 						{ name: "🩷 Surnom", value: `Philibert Annick de la Botte de Sept Lieues (par <@${config.adminsDiscordIds[0]}>)` },
 						{ name: "💚 Marraine", value: `<@${config.discordModsIds[0]}>` },
+						{ name: "🖼️ Photo de profil", value: `<@${config.adminsDiscordIds[2]}> 🩵` },
 						{ name: "🗓️ Date de création", value: `<t:${createdTimestamp}:F>, <t:${createdTimestamp}:R>` },
 						{ name: "<:developer:1424387780447834143> Développeur", value: `${interaction.guild?.members.cache.get(client.admins[0])}` },
 						{ name: "<:high_connection:1424387839197581445> En ligne depuis", value: `<t:${readyTimestamp}:F>, <t:${readyTimestamp}:R>` },
