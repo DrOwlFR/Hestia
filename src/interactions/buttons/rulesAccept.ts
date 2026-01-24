@@ -9,10 +9,21 @@ export class RulesAcceptButton extends Button {
 		super(client, ["rulesAcceptButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the rules accept button interaction.
+	 * Summary: Handles accepting rules by checking for an existing linked account and showing a verification modal if the user is eligible to link.
+	 * Steps:
+	 * - Fetch user data from the site
+	 * - If already linked (status not 404 or 429), reply with denial message
+	 * - If rate limited (429), update with error message
+	 * - Otherwise, show modal for entering verification code
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const getResponse = await this.client.functions.getUser(button.user.id);
 
+		// Check if user already has a linked account
 		if (![404, 429].includes(getResponse.status)) {
 			return button.reply({
 				content: stripIndent(`
@@ -22,7 +33,9 @@ export class RulesAcceptButton extends Button {
 								`),
 				flags: MessageFlags.Ephemeral,
 			});
-		} else if (getResponse.status === 429) {
+		}
+		// Handle rate limit
+		else if (getResponse.status === 429) {
 			return button.update({
 				content: stripIndent(`
 					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
@@ -32,6 +45,7 @@ export class RulesAcceptButton extends Button {
 			});
 		}
 
+		// Show verification code modal
 		await button.showModal(
 			new ModalBuilder()
 				.setCustomId("verificationCodeModal")

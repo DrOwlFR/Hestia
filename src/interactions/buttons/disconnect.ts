@@ -9,12 +9,23 @@ export class DisconnectButton extends Button {
 		super(client, ["disconnectButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the disconnect button interaction.
+	 * Summary: Initiates the process to disconnect the user's Discord account from the site, checking for a linked account and offering confirmation options if found.
+	 * Steps:
+	 * - Fetch user data from the site using getUser function
+	 * - Handle 404 error (no linked account) or 429 error (rate limit)
+	 * - If account exists, reply with confirmation message and buttons for cancel/confirm
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const { user } = button;
 
+		// Fetch user data from the site
 		const getResponse = await this.client.functions.getUser(user.id);
 
+		// Handle case where no linked account exists
 		if (getResponse.status === 404) {
 			return button.reply({
 				content: stripIndent(`
@@ -25,6 +36,7 @@ export class DisconnectButton extends Button {
 				flags: MessageFlags.Ephemeral,
 			});
 		}
+		// Handle rate limit error
 		else if (getResponse.status === 429) {
 			return button.update({
 				content: stripIndent(`
@@ -35,6 +47,7 @@ export class DisconnectButton extends Button {
 			});
 		}
 
+		// Account exists, offer confirmation
 		await button.reply({
 			content: "Oh... Vous souhaitez nous quitter ? En êtes-vous sûr·e ? Si vous déconnectez votre compte Discord du site, vous perdez l'accès à tous les salons du Manoir.",
 			components: [

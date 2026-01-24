@@ -13,8 +13,18 @@ export class UserMissingPermissionsEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `userMissingPermissions` event.
+	 * Summary: Triggered when the user lacks required permissions to execute a command.
+	 * Behavior:
+	 * - Receives the interaction and the list of missing permissions
+	 * - Replies with an ephemeral message informing the user of the missing permissions
+	 * @param interaction - The command interaction.
+	 * @param missing - The permissions the user is missing.
+	 */
 	async execute(interaction: ChatInputCommandInteraction, missing: Permissions) {
 
+		// Reply with an ephemeral message explaining that the user lacks the necessary permissions
 		return interaction.reply({
 			content: stripIndent(`
 				> *Alors que vous essayez désespérément de faire fonctionner ce mécanisme, vous entendez des talons approcher en claquant sur le sol. Puis… La voix de la Concierge.*

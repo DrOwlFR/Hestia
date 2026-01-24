@@ -1,4 +1,3 @@
-// Ajouter les infos ce que le bot stocke (id, messages totaux)
 import type { ChatInputCommandInteraction } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
@@ -18,13 +17,26 @@ export class BotInfoCommand extends Command {
 		});
 	}
 
+	/**
+	 * Execute: main handler for the `botinfo` command.
+	 * Summary: Reply with an embed containing detailed information about the bot,
+	 * including creation date, uptime, developer, and version details, along with action buttons.
+	 * Steps:
+	 * - Calculate ready and creation timestamps
+	 * - Build and send an embed with bot info fields
+	 * - Include components with links to status and privacy policy
+	 * @param interaction - The slash command interaction.
+	 */
 	async execute(interaction: ChatInputCommandInteraction) {
 
+		// Access the client instance for bot information
 		const { client } = this;
 
+		// Calculate timestamps for bot creation and ready time (in seconds for Discord timestamps)
 		const readyTimestamp = client.readyTimestamp ? Math.floor(client.readyTimestamp / 1000) : undefined;
 		const createdTimestamp = client.user?.createdTimestamp ? Math.floor(client.user?.createdTimestamp / 1000) : undefined;
 
+		// Reply with an embed containing bot information and action buttons
 		return interaction.reply({
 			embeds: [
 				client.functions.embed()
@@ -32,6 +44,7 @@ export class BotInfoCommand extends Command {
 					.setThumbnail(client.user?.displayAvatarURL({ size: 1024 }))
 					.addFields([
 						{ name: "🩷 Surnom", value: `Philibert Annick de la Botte de Sept Lieues (par <@${config.adminsDiscordIds[0]}>)` },
+						{ name: "💚 Marraine", value: `<@${config.discordModsIds[0]}>` },
 						{ name: "🗓️ Date de création", value: `<t:${createdTimestamp}:F>, <t:${createdTimestamp}:R>` },
 						{ name: "<:developer:1424387780447834143> Développeur", value: `${interaction.guild?.members.cache.get(client.admins[0])}` },
 						{ name: "<:high_connection:1424387839197581445> En ligne depuis", value: `<t:${readyTimestamp}:F>, <t:${readyTimestamp}:R>` },

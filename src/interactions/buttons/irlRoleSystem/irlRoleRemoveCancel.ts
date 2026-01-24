@@ -7,6 +7,13 @@ export class IRLRoleRemoveCancelButton extends Button {
 		super(client, ["irlRoleRemoveCancelButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the IRL role removal cancel button interaction.
+	 * Summary: Cancels the IRL role removal process by updating the message to confirm the user changed their mind.
+	 * Steps:
+	 * - Update the interaction with a cancellation message and clear components
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		await button.update({

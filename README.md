@@ -1,46 +1,63 @@
 # *Hestia*
 
-*Hestia* is a French bot created for the Discord server of a writing community. Its main purpose is to link each user's account on the site to their Discord account in order to assign them the appropriate role (via the site's API). The other goal is to allow specific roles to be added on Discord based on criteria such as seniority on the server and number of messages sent.
+*Hestia* is a Discord bot project for a writing community. It links members' website accounts with Discord, assigns roles from the site's API, and manages extra roles based on server activity (seniority, message counts, etc.).
 
-The name *Hestia* comes from the Greek virgin goddess of the hearth and the home.
+The name "*Hestia*" refers to the Greek goddess of hearth and home, symbolizing the bot's role in fostering community and connection.
 
-This bot uses the [sheweny](https://sheweny.js.org/) framework to simplify its use and creation. As well as a Mongo database for storing information.
+## Features
+- Slash commands powered by Sheweny (Discord.js 14)
+- MongoDB persistence for links, roles, and scheduled tasks
+- Role sync with external site API, plus seasonal color themes
+- Moderation helpers (rules posting, message edit, emit events for debugging)
+- Cron-based maintenance (backups, role cleanups)
 
-## Commands
+## Tech stack
+- Node.js + TypeScript
+- Discord.js 14 with Sheweny framework
+- MongoDB via Mongoose
+- Utilities: Bottleneck (rate limiting), node-cron, Husky/Commitlint
 
-### Administration
+## Requirements
+- Node.js 20+ and npm
+- Discord application with a bot token and needed intents (Guilds, Members, Messages, Presences)
+- MongoDB instance
 
-| Name         | Description                            | Sub-commands | Usage        | Cd     |
-| ------------ | -------------------------------------- | ------------ | ------------ | ------ |
-| rules        | Send the rules from the Garden server. | None         | No arguments | 3secs  |
+## Quick start
+1. Clone the repo and install dependencies:
+	- `npm install`
+2. Configure the bot:
+	- Copy [src/structures/config.template.ts](src/structures/config.template.ts) to [src/structures/config.ts](src/structures/config.ts).
+	- Fill tokens, API keys, guild IDs, channel/role IDs, and admin/mod IDs. Required fields include `DISCORD_TOKEN`, `MONGO_TOKEN`, `dbName`, `API_KEY`, `APILink`, `botAdminsIds`, `registeredGuildsIds`, and the various channel/role IDs.
+3. Build and run:
+	- `npm run build`
+	- `npm run start`
 
-### Dev
+When the bot starts, Sheweny auto-registers slash commands for the guild IDs listed in `registeredGuildsIds`.
 
-| Name           | Description                                                                  | Sub-commands | Usage        | Cd     |
-| -------------- | ---------------------------------------------------------------------------- | ------------ | ------------ | ------ |
-| cleaningroles  | Removes the ampersand/seed role from members who are not linked to the site. | None         | No arguments | 3secs  |
-| editMessage    | Allows you to edit a message.                                                | None         | No arguments | 3secs  |
-| emit           | Sends a Discord event of your choice.                                        | None         | [event]      | 3secs  |
-| getlinkedusers | Returns whether the Discord ID is linked to an account on the site.          | None         | [discordId]  | 3secs  |
-| say            | Make the bot speak.                                                          | None         | [message]    | 3secs  |
+## Scripts
+- `npm run build` — compile TypeScript to `dist`.
+- `npm run start` — start the compiled bot from `dist/src/index.js`.
+- `npm run build-dev` — watch mode for development (run alongside `npm run start` in another terminal).
 
-### Misc
+## Project structure
+- [src/index.ts](src/index.ts): bootstraps the Sheweny client, managers, DB connection, and login.
+- [src/structures/config.ts](src/structures/config.ts): runtime configuration (copied from the template).
+- [src/structures/database](src/structures/database): Mongo connection and models.
+- [src/commands](src/commands): slash commands (administration, dev, misc, util).
+- [src/events](src/events): Discord event handlers and inhibitors.
+- [src/interactions](src/interactions): buttons, select menus, modals.
+- [src/structures/tasks](src/structures/tasks): cron-like jobs (backups, cleanups, seasonal roles).
+- [src/structures/utils](src/structures/utils): shared helpers and embeds.
 
-| Name    | Description                        | Sub-commands | Usage        | Cd     |
-| ------- | ---------------------------------- | ------------ | ------------ | ------ |
-| botinfo | Returns information about the bot. | None         | No arguments | 3secs  |
-| ping    | Ping pong.                         | None         | No arguments | 3secs  |
+## Deployment notes
+- For production, build then run with your process manager of choice. Example with PM2:
+  - `npm run build`
+  - `pm2 start dist/src/index.js --name hestia --watch`
+- Ensure the bot has the required gateway intents enabled in the Discord Developer Portal.
 
-### Util
+## Contributing
+- Conventional commits are enforced via Commitlint/Husky (`npm run prepare` installs hooks).
+- Keep configuration secrets in `config.ts`; **do not commit them**.
 
-| Name       | Description                                                                  | Sub-commands | Usage        | Cd     |
-| ---------- | ---------------------------------------------------------------------------- | ------------ | ------------ | ------ |
-| help       | Displays the list of commands, or help on a specific command.                | None         | <command>    | 3secs  |
-
-### How to install
-
-1. Clone the repo.
-2. Rename the file `config.template.ts` — located in `src/structures` — to `config.ts`, type your token and the database token.
-3. Install dependencies: `npm install`.
-4. Build typescripts file : `npm run build`.
-4. Start the bot: `npm run start`.
+## License
+Creative Commons BY-NC-SA (see LICENSE.md).

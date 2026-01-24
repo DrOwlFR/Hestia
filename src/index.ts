@@ -2,8 +2,13 @@ import { ShewenyClient } from "sheweny";
 
 import config from "./structures/config";
 import { dBConnection } from "./structures/database/dBConnection";
-import { connectUser, delay, deleteUser, embed, getUser } from "./structures/functions";
+import { connectUser, delay, deleteUser, embed, getUser, log } from "./structures/utils/functions";
 
+/**
+ * Initialize and configure the Discord bot client.
+ * Sets up managers for commands, events, buttons, select menus, modals, and inhibitors.
+ * Configures bot intents, permissions, and development mode.
+ */
 const client = new ShewenyClient({
 	intents: ["Guilds", "GuildMembers", "GuildMessages", "GuildPresences"],
 	admins: config.botAdminsIds,
@@ -48,14 +53,18 @@ const client = new ShewenyClient({
 	mode: "development",
 });
 
+// Attach utility functions to client for use across bot
 client.functions = {
 	embed: embed,
 	delay: delay,
 	connectUser: connectUser,
 	getUser: getUser,
 	deleteUser: deleteUser,
+	log: log.bind(client),
 };
 
+// Connect to MongoDB
 dBConnection();
 
+// Login to Discord
 client.login(config.DISCORD_TOKEN);

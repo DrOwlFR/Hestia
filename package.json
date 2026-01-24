@@ -1,6 +1,6 @@
 {
 	"name": "hestia",
-	"version": "1.5.1-beta",
+	"version": "1.6.0-beta",
 	"description": "",
 	"main": "dist/src/index.js",
 	"scripts": {
@@ -11,9 +11,8 @@
 	},
 	"dependencies": {
 		"bottleneck": "^2.19.5",
-		"bson": "^6.10.4",
-		"discord.js": "^14.24.0",
-		"mongoose": "^8.19.2",
+		"discord.js": "^14.25.1",
+		"mongoose": "^8.21.0",
 		"node-cron": "^4.2.1",
 		"sheweny": "^4.2.1",
 		"strip-indent": "^4.1.1"

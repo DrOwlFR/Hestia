@@ -1,5 +1,4 @@
-import type { ButtonInteraction, GuildMemberRoleManager, TextChannel } from "discord.js";
-import type { DeleteResult } from "mongoose";
+import { type ButtonInteraction, GuildMember } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
@@ -13,12 +12,28 @@ export class DisconnectConfirmButton extends Button {
 		super(client, ["disconnectConfirmButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the disconnect confirm button interaction.
+	 * Summary: Confirms the disconnect by deleting the linked account from the site and database, removing associated roles from the user.
+	 * Steps:
+	 * - Fetch user data from the site
+	 * - Handle 404 (no account) or 429 (rate limit) errors
+	 * - Delete user's link from the site
+	 * - If successful, delete from LinkedUser collection and send confirmation message to the user
+	 * - Remove status (confirmed/non-confirmed) and access roles (living room, workshop, etc.)
+	 * - Handle 429 on delete operation
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const { guild, member, user } = button;
 
+		if (!member || !(member instanceof GuildMember)) return;
+
+		// Fetch user data from the site
 		const getResponse = await this.client.functions.getUser(user.id);
 
+		// Handle no linked account
 		if (getResponse.status === 404) {
 			return button.update({
 				content: stripIndent(`
@@ -30,6 +45,7 @@ export class DisconnectConfirmButton extends Button {
 			});
 		}
 
+		// Handle rate limit
 		if (getResponse.status === 429) {
 			return button.update({
 				content: stripIndent(`
@@ -40,41 +56,47 @@ export class DisconnectConfirmButton extends Button {
 			});
 		}
 
+		// Parse response and delete user from site
 		const getResponseJson = (await getResponse.json() as responseJson);
 
 		const deleteResponse = await this.client.functions.deleteUser(user.id);
 
+		// If delete successful
 		if (deleteResponse.status === 204) {
-			// eslint-disable-next-line no-console
-			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(err => console.error(err));
-			const memberRoles = member?.roles as GuildMemberRoleManager;
-			if ((deleteResult as DeleteResult).deletedCount === 0) { (this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`); }
-			if (getResponseJson.roles!.find(r => r === "user-confirmed")) {
-				memberRoles.remove(config.ampersandRoleId);
+			// Delete from LinkedUser collection and log if deletion failed
+			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(() => null);
+			if (!deleteResult || deleteResult.deletedCount === 0) {
+				await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`);
+			}
+
+			const memberRoles = member.roles;
+			// Send message based on confirmation status
+			if (member.roles.cache.has(config.confirmedUserRoleId)) {
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
-						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.ampersandRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
+						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.confirmedUserRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
 						`),
 					components: [],
 				});
 			} else {
-				memberRoles.remove(config.seedRoleId);
 				await button.update({
 					content: stripIndent(`
 						> *Hestia vous adresse un regard triste. Elle tamponne votre formulaire de départ et vous laisse quitter le Manoir, sans un mot.*\n
-						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.seedRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
+						-# <:round_check:1424065559355592884> Votre compte Discord a été déconnecté de votre compte du site. Le rôle ${guild?.roles.cache.get(config.nonConfirmedUserRoleId)}, ainsi que vos autres rôles d'accès, vous ont été retirés.
 						`),
 					components: [],
 				});
 			}
-			const rolesToRemove = [config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
+			// Remove status (confirmed/non-confirmed) and access roles (only remove roles the user has)
+			const rolesToRemove = [config.confirmedUserRoleId, config.nonConfirmedUserRoleId, config.livingRoomRoleId, config.workshopRoleId, config.libraryRoleId, config.terraceRoleId, config.seriousRoleId, config.irlRoleId];
 			const rolesOwned = rolesToRemove.filter(roleId => memberRoles.cache.has(roleId));
 
 			if (rolesOwned.length > 0) {
 				await memberRoles.remove(rolesOwned);
 			}
 		}
+		// Handle rate limit on delete
 		else if (deleteResponse.status === 429) {
 			return button.update({
 				content: stripIndent(`

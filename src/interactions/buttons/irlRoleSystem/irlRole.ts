@@ -1,5 +1,5 @@
-import type { ButtonInteraction, GuildMember, GuildMemberRoleManager, TextChannel } from "discord.js";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from "discord.js";
+import type { ButtonInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildMember, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
@@ -12,13 +12,28 @@ export class IRLRoleButton extends Button {
 		super(client, ["irlRoleButton"]);
 	}
 
+	/**
+	 * Execute: main handler for the IRL role button interaction.
+	 * Summary: Checks if the user already has the IRL role; if not, verifies eligibility criteria (confirmed user status, 61+ days joined, 300+ messages) and assigns the role if met. Uses the User model to fetch or create user data for message count and join date checks.
+	 * Steps:
+	 * - Check if interaction is in the correct guild
+	 * - Check if user already has the IRL role; if yes, offer removal option
+	 * - Fetch or create user data in database
+	 * - Check if user is confirmed
+	 * - Check eligibility criteria (join date and message count)
+	 * - Assign role if eligible, or deny access
+	 * @param button - The button interaction triggered by the user.
+	 */
 	async execute(button: ButtonInteraction) {
 
 		const { guildId, member, guild } = button;
 
+		// Only allow in the site's guild and ensure member is valid
 		if (guildId !== config.gardenGuildId) return;
+		if (!member || !(member instanceof GuildMember)) return;
 
-		if ((member?.roles as GuildMemberRoleManager).cache.some(role => role.id === config.irlRoleId)) {
+		// Check if user already has the IRL role and propose him removal if so
+		if (member.roles.cache.some(role => role.id === config.irlRoleId)) {
 			return await button.reply({
 				content: "— Eh ! Vous avez déjà le rôle d'accès aux retraites ! Souhaitez-vous que je vous fournisse le formulaire de désinscription ?",
 				components: [
@@ -42,6 +57,7 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
+		// Fetch or create user data in the database
 		let memberData: dbUser | null = null;
 		try {
 			memberData = await User.findOneAndUpdate(
@@ -51,21 +67,30 @@ export class IRLRoleButton extends Button {
 						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
 						totalMessages: { $ifNull: ["$totalMessages", 0] },
 						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
-						joinedAt: { $ifNull: ["$joinedAt", (member as GuildMember).joinedAt] },
+						joinedAt: { $ifNull: ["$joinedAt", member.joinedAt] },
 						__v: { $add: { $ifNull: ["$__v", 0] } },
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 					},
 				}],
-				{ upsert: true, new: true },
+				{ upsert: true, new: true, updatePipeline: true },
 			);
 		}
 		catch (err) {
 			// eslint-disable-next-line no-console
 			console.error(err);
-			(this.client.channels.cache.get("1425177656755748885") as TextChannel)!.send(`<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${(member as GuildMember).id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.`);
+			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.\n\`\`\`${err}\`\`\``);
+			return button.reply({
+				content: stripIndent(`
+						> *Hestia fronce les sourcils, visiblement contrariée.*
+						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?\n
+						-# <:round_cross:1424312051794186260> Il semble qu'un problème soit survenu lors de la vérification. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
+						`),
+				flags: MessageFlags.Ephemeral,
+			});
 		}
 
-		const isConfirmed = (member?.roles as GuildMemberRoleManager).cache.has(config.ampersandRoleId);
+		// Check if user has confirmed status
+		const isConfirmed = member.roles.cache.has(config.confirmedUserRoleId);
 		if (!isConfirmed) {
 			return button.reply({
 				content: stripIndent(`
@@ -76,8 +101,10 @@ export class IRLRoleButton extends Button {
 			});
 		}
 
+		// Check eligibility: 61+ days joined and 300+ messages
 		if (memberData && ((Date.now() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
-			(member?.roles as GuildMemberRoleManager).add(config.irlRoleId).catch(err => {
+			// Assign the IRL role
+			member.roles.add(config.irlRoleId).catch(err => {
 				// eslint-disable-next-line no-console
 				console.error(err);
 				return button.reply({
@@ -99,6 +126,7 @@ export class IRLRoleButton extends Button {
 				flags: MessageFlags.Ephemeral,
 			});
 		} else {
+			// Deny access if criteria not met
 			return button.reply({
 				content: stripIndent(`
 					> *Hestia haussa un sourcil en lisant le formulaire.*

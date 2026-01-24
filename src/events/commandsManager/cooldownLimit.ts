@@ -13,9 +13,21 @@ export class CooldownLimitEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `cooldownLimit` event.
+	 * Summary: Triggered when a user attempts to use a command while on cooldown.
+	 * Behavior:
+	 * - Receives the interaction and the remaining cooldown time in milliseconds
+	 * - Calculates the remaining time in seconds and replies with an ephemeral message
+	 * @param interaction - The command interaction on cooldown.
+	 * @param time - The remaining cooldown time in milliseconds.
+	 */
 	async execute(interaction: ChatInputCommandInteraction, time: number) {
 
+		// Calculate the remaining cooldown time in seconds
 		const remaining = Math.round(time / 1000);
+
+		// Reply with an ephemeral message informing the user of the cooldown
 		return interaction.reply({
 			content: stripIndent(`
 				— Oulah doucement, pas si vite ! Je n'ai rien compris. Reprenez calmement.\n
