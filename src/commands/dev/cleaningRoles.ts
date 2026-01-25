@@ -35,13 +35,13 @@ export class CleaningRolesCommand extends Command {
 		const { guild } = interaction;
 
 		await interaction.reply({
-			content: "<a:load:1424326891778867332> Lancement de la commande...",
+			content: `${config.emojis.loading} Lancement de la commande...`,
 			flags: MessageFlags.Ephemeral,
 		});
 
 		// Fetching all members of the guild
 		const members = await guild?.members.fetch();
-		if (!members) return interaction.editReply("<:round_cross:1424312051794186260> Impossible de récupérer les membres du serveur.");
+		if (!members) return interaction.editReply(`${config.emojis.cross} Impossible de récupérer les membres du serveur.`);
 
 		// Initialize counters and logs array
 		let i = 0;
@@ -92,7 +92,7 @@ export class CleaningRolesCommand extends Command {
 			// Handling rate limiting by pausing the process
 			else if (getResponse.status === 429) {
 				await interaction.followUp({
-					content: "⚠️ Rate limit atteint. Pause de 60 secondes",
+					content: `${config.emojis.warn} Rate limit atteint. Pause de 60 secondes...`,
 					flags: MessageFlags.Ephemeral,
 				});
 				actions++;
@@ -136,17 +136,17 @@ export class CleaningRolesCommand extends Command {
 				if (!hasEsperluette && rolesApi.includes("user-confirmed")) {
 					await member.roles.add(config.confirmedUserRoleId);
 					actions++;
-					logs.push(`<:round_check:1424065559355592884> Rôle Esperluette de ${member} ajouté.`);
+					logs.push(`${config.emojis.check} Rôle Esperluette de ${member} ajouté.`);
 				}
 				else if (!hasGraine && rolesApi.includes("user")) {
 					await member.roles.add(config.nonConfirmedUserRoleId);
 					actions++;
-					logs.push(`<:round_check:1424065559355592884> Rôle Graine de ${member.user.username} ajouté.`);
+					logs.push(`${config.emojis.check} Rôle Graine de ${member.user.username} ajouté.`);
 				}
 			}
 
 			else {
-				logs.push(`⚠️ Erreur inconnue pour ${member}`);
+				logs.push(`${config.emojis.warn} Erreur inconnue pour ${member}`);
 			}
 
 			// Sending logs in batches to avoid message length limits
@@ -162,7 +162,7 @@ export class CleaningRolesCommand extends Command {
 			i++;
 			if ((i + 1) % 40 === 0 || (actions > 0 && actions % 40 === 0)) {
 				await interaction.editReply({
-					content: ` Pause de 4 secondes après \`${i + 1}\` itérations et \`${actions}\` actions.`,
+					content: `Pause de 4 secondes après \`${i + 1}\` itérations et \`${actions}\` actions.`,
 				});
 				await this.client.functions.delay(4000);
 			}
@@ -178,7 +178,7 @@ export class CleaningRolesCommand extends Command {
 
 		// Final summary of the command execution
 		await interaction.followUp({
-			content: `<:round_check:1424065559355592884> Commande terminée après ${i + 1} itérations et \`${actions}\` actions.`,
+			content: `${config.emojis.check} Commande terminée après ${i + 1} itérations et \`${actions}\` actions.`,
 			flags: MessageFlags.Ephemeral,
 		});
 

@@ -25,7 +25,7 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 		for (let i = 0; i < dbUsers.length; i++) {
 			// Pause processing every 40 users to avoid rate limits
 			if ((i + 1) % 40 === 0) {
-				await logChannel.send(`<a:load:1424326891778867332> Pause de 4 secondes après ${i + 1} itérations...`);
+				await logChannel.send(`${config.emojis.loading} Pause de 4 secondes après ${i + 1} itérations...`);
 				await client.functions.delay(4000);
 			}
 
@@ -67,11 +67,11 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 			}
 		}
 
-		logChannel.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
+		logChannel.send(`${config.emojis.check} Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.`);
 		console.log("✅ Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
 	}
 	catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> La boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir ne s'est pas effectuée correctement : \`${err}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> La boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir ne s'est pas effectuée correctement : \`${err}\``);
 	}
 }

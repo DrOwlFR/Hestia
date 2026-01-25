@@ -3,6 +3,7 @@ import { ChannelType, GuildMember, MessageFlags, PermissionFlagsBits } from "dis
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
 import { rulesMessages } from "../../structures/utils/rulesMessages";
 
 export class RulesCommand extends Command {
@@ -32,18 +33,18 @@ export class RulesCommand extends Command {
 		const isAdmin = this.client.admins.includes(interaction.user.id) || interaction.member instanceof GuildMember && interaction.member.permissions.has(PermissionFlagsBits.Administrator);
 		if (!isAdmin) {
 			return interaction.reply({
-				content: "<:round_cross:1424312051794186260> Vous n'avez pas les permissions requises pour utiliser cette commande.",
+				content: `${config.emojis.cross} Vous n'avez pas les permissions requises pour utiliser cette commande.`,
 				flags: MessageFlags.Ephemeral,
 			});
 		}
 
 		// Reply with a loading message while sending the rules
-		await interaction.reply({ content: "<a:load:1424326891778867332> Envoie des règles en cours...", flags: MessageFlags.Ephemeral });
+		await interaction.reply({ content: `${config.emojis.loading} Envoie des règles en cours...`, flags: MessageFlags.Ephemeral });
 
 		// Get the current channel and verify it's a text channel
 		const { channel } = interaction;
 		if (!channel || channel.type !== ChannelType.GuildText) {
-			return interaction.followUp({ content: "<:round_cross:1424312051794186260> Cette commande doit être utilisée dans un salon texte.", flags: MessageFlags.Ephemeral });
+			return interaction.followUp({ content: `${config.emojis.cross} Cette commande doit être utilisée dans un salon textuel.`, flags: MessageFlags.Ephemeral });
 		}
 
 		// Sending the rules messages one by one
@@ -111,6 +112,6 @@ export class RulesCommand extends Command {
 		});
 
 		// Follow up with a success message
-		return interaction.followUp({ content: "<:round_check:1424065559355592884> Les règles ont été envoyées correctement.", flags: MessageFlags.Ephemeral });
+		return interaction.followUp({ content: `${config.emojis.check} Les règles ont été envoyées correctement.`, flags: MessageFlags.Ephemeral });
 	}
 }

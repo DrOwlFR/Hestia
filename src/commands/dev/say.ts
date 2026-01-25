@@ -3,6 +3,8 @@ import { ApplicationCommandOptionType, ChannelType, MessageFlags } from "discord
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
+
 export class SayCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
@@ -40,7 +42,7 @@ export class SayCommand extends Command {
 
 		// Verify the command is used in a text channel
 		if (!channel || channel.type !== ChannelType.GuildText) {
-			return interaction.reply({ content: "<:round_cross:1424312051794186260> Cette commande doit être utilisée dans un salon texte.", flags: MessageFlags.Ephemeral });
+			return interaction.reply({ content: `${config.emojis.cross} Cette commande doit être utilisée dans un salon texte.`, flags: MessageFlags.Ephemeral });
 		}
 
 		// Reply to the command issuer with an ephemeral confirmation message

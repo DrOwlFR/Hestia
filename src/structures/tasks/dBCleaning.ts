@@ -34,18 +34,18 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		const id = jobInfo.options.id || "unknown";
 
 		if (error.response?.status === 429) {
-			logChannel.send(`<:round_cross:1424312051794186260> [${id}] Rate limit atteint. Nouvelle tentative dans 60 secondes...`);
+			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans 60 secondes...`);
 			return 60 * 1000;
 		}
 
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement : \`${error.message}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 
 	// --- Cleaning the Users collection ---
 	try {
 		console.log("⌚ Lancement du nettoyage quotidien de la collection Users...");
-		logChannel.send("<a:load:1424326891778867332> Lancement du nettoyage quotidien de la collection `Users`...");
+		logChannel.send(`${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`Users\`...`);
 
 		const users = await User.find();
 
@@ -63,21 +63,21 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 				}
 			} catch (err) {
 				console.error(err);
-				logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
+				logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
 			}
 		}
 
-		logChannel.send("<:round_check:1424065559355592884> Le nettoyage quotidien de la collection `Users` s'est effectué correctement.");
+		logChannel.send(`${config.emojis.check} Le nettoyage quotidien de la collection \`Users\` s'est effectué correctement.`);
 		console.log("✅ Fin du nettoyage quotidien de la collection Users...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
 	}
 
 	// --- Cleaning the LinkedUsers collection ---
 	try {
 		console.log("⌚ Lancement du nettoyage quotidien de la collection LinkedUsers...");
-		logChannel.send("<a:load:1424326891778867332> Lancement du nettoyage quotidien de la collection `LinkedUsers`...");
+		logChannel.send(`${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`LinkedUsers\`...`);
 
 		// Fetch all linked users from the database
 		const linkedUsers = await LinkedUser.find();
@@ -164,11 +164,11 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 
 		await limiter.stop({ dropWaitingJobs: false });
 
-		logChannel.send("<:round_check:1424065559355592884> Le nettoyage quotidien de la collection `LinkedUsers` s'est effectué correctement.");
+		logChannel.send(`${config.emojis.check} Le nettoyage quotidien de la collection \`LinkedUsers\` s'est effectué correctement.`);
 		console.log("✅ Fin du nettoyage quotidien de la collection LinkedUsers...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
 	}
-	logChannel.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne de nettoyage de la base de données.");
+	logChannel.send(`${config.emojis.check} Fin de la boucle quotidienne de nettoyage de la base de données.`);
 }

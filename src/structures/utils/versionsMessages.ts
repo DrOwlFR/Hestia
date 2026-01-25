@@ -129,7 +129,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 							### 🔨 Corrections & Modifications
 							- \`[règles-de-vie]\`
 							  - Modification d'une partie du texte présentant l'équipe pour plus de clarté (François·6po)
-							  - Correction de l'émoji <:content:1400469496325607454> qui n'apparaissait pas correctement (Dewen)
+							  - Correction de l'émoji ${config.emojis.content} qui n'apparaissait pas correctement (Dewen)
 							### ➖ Suppression
 							- \`[salon #conciergerie]\` - Obsolète depuis l'intégration des boutons dans les messages des règles de vie 🫡
 							

@@ -3,6 +3,8 @@ import { ApplicationCommandOptionType } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
+
 export class HelpCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
@@ -43,7 +45,7 @@ export class HelpCommand extends Command {
 		// If no specific command is provided, display the general help with categories
 		if (!interaction.options.getString("commande", false)) {
 
-			embed.setDescription("<:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473>");
+			embed.setDescription(`${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}`);
 
 			// Get unique categories from commands
 			const categories = new Set(commands.map((command) => command.category));
@@ -56,13 +58,13 @@ export class HelpCommand extends Command {
 				if (!category) category = "Non classée(s)";
 
 				embed.addFields({
-					name: `<:right_blue_arrow:1424370479086440654> ${category}`,
+					name: `${config.emojis.rightBlueArrow} ${category}`,
 					value: `${commandInCategory.map(command => `**\`${command.name}\`** : ${command.description}`).join("\r\n")}`,
 				});
 			}
 
 			// Add footer with usage instructions
-			embed.addFields({ name: "<:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473>", value: `**\`help <commande>\`** pour des informations sur une commande spécifique.\n\nExemple : **\`help ping\`**\n\n*En cas de besoin, n'hésitez pas à contacter mon développeur : ${this.client.admins.map(a => interaction.guild?.members.cache.get(a)).join(", ")}*.` });
+			embed.addFields({ name: `${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}`, value: `**\`help <commande>\`** pour des informations sur une commande spécifique.\n\nExemple : **\`help ping\`**\n\n*En cas de besoin, n'hésitez pas à contacter mon développeur : ${this.client.admins.map(a => interaction.guild?.members.cache.get(a)).join(", ")}*.` });
 
 			return interaction.reply({ embeds: [embed] });
 		}
@@ -70,11 +72,11 @@ export class HelpCommand extends Command {
 		// If a specific command is provided, display detailed help for that command
 		// eslint-disable-next-line prefer-destructuring
 		const command = commands.filter((cmd) => cmd.name === interaction.options.getString("commande"))[0];
-		const lines = "<:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473><:line:1424369804839485473>";
+		const lines = `${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}`;
 
 		// Set embed details for the specific command
 		embed.setAuthor({ name: (interaction.member as GuildMember).nickname, iconURL: interaction.user.displayAvatarURL() });
-		embed.setTitle(`${command.name} ${command.adminsOnly ? "— ⚠️ Dev Only ⚠️" : ""} ${command.userPermissions.toString() ? `— ⚠️ Requiert : *${command.userPermissions}* ⚠️` : ""}`);
+		embed.setTitle(`${command.name} ${command.adminsOnly ? `— ${config.emojis.warn} Dev Only ${config.emojis.warn}` : ""} ${command.userPermissions.toString() ? `— ${config.emojis.warn} Requiert : *${command.userPermissions}* ${config.emojis.warn}` : ""}`);
 		embed.setDescription(`${command.description}`);
 		embed.addFields({ name: "Utilisation", value: `${command.usage}`, inline: true });
 

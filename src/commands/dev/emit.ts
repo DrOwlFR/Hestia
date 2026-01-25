@@ -3,6 +3,8 @@ import { ApplicationCommandOptionType, GuildMember, MessageFlags } from "discord
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
+
 export class EmitCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
@@ -48,7 +50,7 @@ export class EmitCommand extends Command {
 
 		// Ensure the member is a GuildMember instance
 		if (!member || !(member instanceof GuildMember)) {
-			return interaction.reply({ content: "<:round_cross:1424312051794186260> Impossible de récupérer les informations du membre.", flags: MessageFlags.Ephemeral });
+			return interaction.reply({ content: `${config.emojis.cross} Impossible de récupérer les informations du membre.`, flags: MessageFlags.Ephemeral });
 		}
 
 		// Read the event choice provided by the user (command option)
@@ -59,13 +61,13 @@ export class EmitCommand extends Command {
 			// Emit a simulated guild member join event using the current member
 			case "guildMemberAdd":
 				this.client.emit("guildMemberAdd", member);
-				interaction.reply({ content: "<:round_check:1424065559355592884> L'événement `guildMemberAdd` a été émis avec succès.", flags: MessageFlags.Ephemeral });
+				interaction.reply({ content: `${config.emojis.check} L'événement \`guildMemberAdd\` a été émis avec succès.`, flags: MessageFlags.Ephemeral });
 				break;
 
 			// Emit a simulated guild member leave event using the current member
 			case "guildMemberRemove":
 				this.client.emit("guildMemberRemove", member);
-				interaction.reply({ content: "<:round_check:1424065559355592884> L'événement `guildMemberRemove` a été émis avec succès.", flags: MessageFlags.Ephemeral });
+				interaction.reply({ content: `${config.emojis.check} L'événement \`guildMemberRemove\` a été émis avec succès.`, flags: MessageFlags.Ephemeral });
 				break;
 		}
 

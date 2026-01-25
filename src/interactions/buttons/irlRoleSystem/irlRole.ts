@@ -83,7 +83,7 @@ export class IRLRoleButton extends Button {
 				content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
 						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?\n
-						-# <:round_cross:1424312051794186260> Il semble qu'un problème soit survenu lors de la vérification. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
+						-# ${config.emojis.cross} Il semble qu'un problème soit survenu lors de la vérification. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
 						`),
 				flags: MessageFlags.Ephemeral,
 			});
@@ -111,7 +111,7 @@ export class IRLRoleButton extends Button {
 					content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
 						— Hm, où est-ce que... Je ne trouve plus les clefs de la salle des retraités...\n
-						-# <:round_cross:1424312051794186260> Le rôle ${guild?.roles.cache.get(config.irlRoleId)} n'a pas pu vous être attribué. Veuillez contacter un cadratin du Discord (${config.discordModsIds.map(c => guild?.members.cache.get(c)).join(", ")}) pour le recevoir, ainsi que mon développeur (${guild?.members.cache.get(config.botAdminsIds[0])}) pour en avoir le cœur net.
+						-# ${config.emojis.cross} Le rôle ${guild?.roles.cache.get(config.irlRoleId)} n'a pas pu vous être attribué. Veuillez contacter un cadratin du Discord (${config.discordModsIds.map(c => guild?.members.cache.get(c)).join(", ")}) pour le recevoir, ainsi que mon développeur (${guild?.members.cache.get(config.botAdminsIds[0])}) pour en avoir le cœur net.
 						`),
 					flags: MessageFlags.Ephemeral,
 				});
@@ -120,7 +120,7 @@ export class IRLRoleButton extends Button {
 				content: stripIndent(`
 					> *Hestia sourit. Elle appose un tampon en forme d'Esperluette en bas du formulaire avant de le ranger.*
 					Bienvenue ! Profitez-bien de votre retraite !\n
-					-# <:round_check:1424065559355592884> Le rôle ${guild?.roles.cache.get(config.irlRoleId)} vous a été attribué. Vous avez à présent accès au salon ${guild?.channels.cache.get(config.irlChannelId)}. Bienvenue !
+					-# ${config.emojis.check} Le rôle ${guild?.roles.cache.get(config.irlRoleId)} vous a été attribué. Vous avez à présent accès au salon ${guild?.channels.cache.get(config.irlChannelId)}. Bienvenue !
 					-# **Rappel** : Le Jardin en tant qu'association n'est pas responsable des IRLs organisées par ses membres.
 					`),
 				flags: MessageFlags.Ephemeral,

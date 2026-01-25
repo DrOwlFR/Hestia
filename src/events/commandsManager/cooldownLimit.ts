@@ -4,6 +4,8 @@ import type { ShewenyClient } from "sheweny";
 import { Event } from "sheweny";
 import stripIndent from "strip-indent";
 
+import config from "../../structures/config";
+
 export class CooldownLimitEvent extends Event {
 	constructor(client: ShewenyClient) {
 		super(client, "cooldownLimit", {
@@ -31,7 +33,7 @@ export class CooldownLimitEvent extends Event {
 		return interaction.reply({
 			content: stripIndent(`
 				— Oulah doucement, pas si vite ! Je n'ai rien compris. Reprenez calmement.\n
-				-# <:warn:1426241617613815949> Vous devez attendre quelques secondes entre chaque commande. Il vous reste **\`${remaining} seconde${remaining > 1 ? "s" : ""}\`** de cooldown sur la commande \`${interaction}\`.
+				-# ${config.emojis.warn} Vous devez attendre quelques secondes entre chaque commande. Il vous reste **\`${remaining} seconde${remaining > 1 ? "s" : ""}\`** de cooldown sur la commande \`${interaction}\`.
 				`),
 			flags: MessageFlags.Ephemeral,
 		});

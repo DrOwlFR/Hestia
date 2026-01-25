@@ -77,7 +77,7 @@ export const rulesMessages = {
 								**Pour accéder au serveur, il vous sera demandé d'accepter le règlement en cliquant sur le bouton vert dédié que vous propose notre robot concierge, Hestia** (voir en bas du salon). **Vous vous engagerez alors à toujours respecter et appliquer les demandes de la modération.** Si vous souhaitez demander un éclaircissement ou soulever un problème, merci de contacter – poliment – en privé un membre de l'équipe (Cadratin du Discord ou Majuscule).
 								❓ **Note** : le bouton vous demandera un code de vérification que vous pourrez obtenir sur le site (en cliquant sur bouton « Lier » sur votre page de profil), ceci afin de s’assurer que vous possédez un compte sur le Jardin avant d’entrer sur le serveur et de vous ajouter le rôle correspondant. Vous pourrez vous déconnecter à tout moment en cliquant sur le bouton rouge (voir en bas du salon), mais attention : vous perdrez l’accès aux salons du Discord.
 
-								Vous êtes maintenant cordialement invité·e à enlever vos chaussures pour profiter de l'⁠<#${config.antechamberChannelId}> et vous présenter dans la ⁠<#${config.portraitGaleryChannelId}> <:content:1400469496325607454>
+								Vous êtes maintenant cordialement invité·e à enlever vos chaussures pour profiter de l'⁠<#${config.antechamberChannelId}> et vous présenter dans la ⁠<#${config.portraitGaleryChannelId}> ${config.emojis.content}
 								**Notez que tant que vous êtes une <@&${config.nonConfirmedUserRoleId}>, seule cette section Antichambre vous sera accessible**.
 								`)),
 		),
@@ -216,7 +216,7 @@ export const rulesMessages = {
 						.setContent(stripIndent(`
 										## Déconnecter votre compte Discord du site
 										Cochez la case rouge (bouton rouge) pour déconnecter votre compte Discord de votre compte sur le site.\n
-										⚠️ **Attention** : vous perdrez l'accès aux différents salons du Manoir (Discord).
+										${config.emojis.warn} **Attention** : vous perdrez l'accès aux différents salons du Manoir (Discord).
 										`)),
 				)
 				.setButtonAccessory(

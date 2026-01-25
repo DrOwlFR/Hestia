@@ -32,7 +32,7 @@ export class IRLRoleRemoveConfirmButton extends Button {
 				> *Hestia hoche la tête et tamponne le formulaire à l'encre rouge.*
 				— À votre guise ! La retraite vous ennuyait ? Je vous comprends, je pense que je travaillerai à ce bureau toute ma vie, j'aime trop mon travail !
 					Cela dit, si vous changez d'avis, n'hésitez pas à repasser me voir !\n
-				-# <:round_check:1424065559355592884> Le rôle d'accès aux IRLs vous a été retiré.
+				-# ${config.emojis.check} Le rôle d'accès aux IRLs vous a été retiré.
 				`),
 			components: [],
 		});
