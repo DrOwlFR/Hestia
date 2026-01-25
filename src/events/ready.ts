@@ -47,6 +47,7 @@ export class ReadyEvent extends Event {
 				`${confirmedUsers} esperluette${confirmedUsers! > 1 ? "s" : ""}`,
 				`${nonConfirmedUsers} graine${nonConfirmedUsers! > 1 ? "s" : ""}`,
 				`Version ${version}`,
+				`Illustration par ${config.illustratorName}`,
 			];
 
 			if (index === statusList.length) index = 0;

@@ -52,6 +52,8 @@ export default {
 	discordModsIds: [""],
 	siteModsIds: [""],
 
+	illustratorName: "",
+
 	autumn: {
 		colorPrimary: 0xF0C841, // "#f0c841"
 		colorSecondary: 0xC98129, // "#c98129"
