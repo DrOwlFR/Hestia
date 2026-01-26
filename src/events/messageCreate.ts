@@ -130,10 +130,14 @@ export class MessageCreateEvent extends Event {
 			{ guildId: message.guild.id, channelId: channelId, year, month },
 			{
 				$setOnInsert: {
-					parentChannelId: channel.isThread() ? channel.parentId : undefined,
+					// Send the field only if the channel is a thread, better than to send "undefined"
+					...(channel.isThread() ? { parentChannelId: channel.parentId } : {}),
 				},
 				$set: {
-					parentChannelName: channel.isThread() ? channel.parent?.name : undefined,
+					categoryId: channel.parent?.parent ? channel.parent.parent.id : channel.parent ? channel.parent.id : null,
+					categoryName: channel.parent?.parent ? channel.parent.parent.name : channel.parent ? channel.parent.name : null,
+					// Send the next field only if the channel is a thread, better than to send "undefined"
+					...(channel.isThread() ? { parentChannelName: channel.parent?.name } : {}),
 					channelName: channel.name,
 				},
 				$inc: { messageCount: 1 },
