@@ -20,6 +20,7 @@ export interface dbUser extends Document {
 	discordUsername: string;
 	totalMessages: number;
 	messagesPerDay: MessagePerDay[],
+	introduced: boolean,
 	joinedAt: Date,
 	__v: number,
 	createdAt: Date,
@@ -35,6 +36,7 @@ export const User = model<dbUser>("User", new Schema({
 	discordUsername: { type: String, required: true, unique: true },
 	totalMessages: { type: Number, required: true, default: 0 },
 	messagesPerDay: { type: [Object], required: true, default: [] },
+	introduced: { type: Boolean, required: true, default: false },
 	joinedAt: { type: Date, required: true, default: new Date() },
 }, { timestamps: true, strict: true }));
 

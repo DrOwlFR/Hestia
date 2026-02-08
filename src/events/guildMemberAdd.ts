@@ -39,6 +39,7 @@ export class GuildMemberAddEvent extends Event {
 						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
 						totalMessages: { $ifNull: ["$totalMessages", 0] },
 						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
+						introduced: { $ifNull: ["$introduced", false] },
 						joinedAt: { $ifNull: ["$joinedAt", member.joinedAt] },
 						__v: { $add: { $ifNull: ["$__v", 0] } },
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
