@@ -30,8 +30,6 @@ export class GuildMemberAddEvent extends Event {
 		if (member.user.bot) return;
 		if (member.guild.id !== config.gardenGuildId) return;
 
-		await this.client.functions.log("dbError", `Erreur lors de la création du document **User** pour l'id discord \`${member.id}\` à son arrivée sur le serveur.\n\`\`\`test\`\`\``);
-
 		try {
 			// Create or update the User document with initial data
 			await User.findOneAndUpdate(
