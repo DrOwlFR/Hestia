@@ -40,7 +40,11 @@ export class CheckIntroducedCommand extends Command {
 		config.discordModsIds.includes(user.id);
 		if (!isAdmin) {
 			return interaction.reply({
-				content: `${config.emojis.cross} Vous n'avez pas les permissions requises pour utiliser cette commande. Cette dernière est réservée à mon Développeur, aux Majuscules et aux Cadratins.`,
+				content: stripIndent(`
+					> *Alors que vous essayez désespérément de faire fonctionner ce mécanisme, vous entendez des talons approcher en claquant sur le sol. Puis… La voix de la Concierge.*
+					— Hep, hep, hep ! Que croyez-vous faire là ? Vous n'avez pas le droit ! Déguerpissez !\n
+					-# ${config.emojis.cross} Vous n'avez pas les permissions suffisantes pour la commande \`${interaction}\`. Cette dernière est réservée à mon Développeur, aux Majuscules et aux Cadratins.
+				`),
 				flags: MessageFlags.Ephemeral,
 			});
 		}

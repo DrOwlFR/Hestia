@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import { ChannelType, GuildMember, MessageFlags, PermissionFlagsBits } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
+import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
 import { rulesMessages } from "../../structures/utils/rulesMessages";
@@ -33,7 +34,11 @@ export class RulesCommand extends Command {
 		const isAdmin = this.client.admins.includes(interaction.user.id) || interaction.member instanceof GuildMember && interaction.member.permissions.has(PermissionFlagsBits.Administrator);
 		if (!isAdmin) {
 			return interaction.reply({
-				content: `${config.emojis.cross} Vous n'avez pas les permissions requises pour utiliser cette commande.`,
+				content: stripIndent(`
+					> *Alors que vous essayez désespérément de faire fonctionner ce mécanisme, vous entendez des talons approcher en claquant sur le sol. Puis… La voix de la Concierge.*
+					— Hep, hep, hep ! Que croyez-vous faire là ? Vous n'avez pas le droit ! Déguerpissez !\n
+					-# ${config.emojis.cross} Vous n'avez pas les permissions suffisantes pour la commande \`${interaction}\`. Cette dernière est réservée à mon Développeur et aux Majuscules.
+				`),
 				flags: MessageFlags.Ephemeral,
 			});
 		}
