@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.6.0-beta", description: "Dernière version en date", value: "1.6.0-beta" },
+				{ label: "v1.6.1", description: "Dernière version en date, première version stable", value: "1.6.1" },
+				{ label: "v1.6.0-beta", value: "1.6.0-beta" },
 				{ label: "v1.5.1-beta", value: "1.5.1-beta" },
 				{ label: "v1.5.0-beta", value: "1.5.0-beta" },
 				{ label: "v1.4.0-beta", value: "1.4.0-beta" },
@@ -29,6 +30,36 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.6.1": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.1
+							*(22 février 2026)*
+							Sortie de la période de bêta, cette version est désormais considérée comme stable !
+							-# Ce changement intervient après l'augmentation de mes disponibilités, qui me permettent de corriger plus rapidement les bugs, rendant la période de bêta moins pertinente.
+							### ➕ Ajouts
+							- \`[présentation]\` - Ajout d'un système qui vérifie que les membres se sont présentés
+							  - \`[commande "checkintroduced"]\` - Création. Elle permet de lister les membres qui n'ont pas encore posté de présentation dans le salon <#${config.portraitGaleryChannelId}>, avec la possibilité de les notifier (réservée à l'équipe du Jardin)
+							- \`[commande statistics channels]\` - Création. Elle permet de visualiser les statistiques d'un salon (ou tous les salons) pour le mois en cours
+							- \`[commande statistics file]\` - Création. Elle permet d'exporter les statistiques sous forme de fichier (réservée à l'équipe du Jardin)
+							### 🔨 Corrections & Modifications
+							- \`[commande "botinfo"]\` - Ajout du crédit de <@${config.adminsDiscordIds[2]}> pour la photo de profil d'Hestia dans la commande
+							- \`[statut animé]\` - Ajout du crédit de <@${config.adminsDiscordIds[2]}> pour la photo de profil d'Hestia
+							  -# - Le statut animé correspond aux messages qui défilent sous le pseudo d'Hestia, dans la liste des membres du serveur.
+							- \`[général]\` - Amélioration de la formulation de certaines réponses du bot
+							-# - \`[tâche "nettoyage de la base de données"]\` - Amélioration de la rapidité d'exécution du nettoyage quotidien de la base de données
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.0-beta...v1.6.1)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL() || ""),
+				),
+		),
 	"1.6.0-beta": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
