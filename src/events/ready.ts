@@ -47,6 +47,7 @@ export class ReadyEvent extends Event {
 				`${confirmedUsers} esperluette${confirmedUsers! > 1 ? "s" : ""}`,
 				`${nonConfirmedUsers} graine${nonConfirmedUsers! > 1 ? "s" : ""}`,
 				`Version ${version}`,
+				`Illustration par ${config.illustratorName}`,
 			];
 
 			if (index === statusList.length) index = 0;
@@ -67,7 +68,7 @@ export class ReadyEvent extends Event {
 			if (!dbCleaningCronLogChannel || dbCleaningCronLogChannel.type !== ChannelType.GuildText) return;
 
 			console.log("⌚ Lancement du nettoyage quotidien de la base de données...");
-			dbCleaningCronLogChannel.send("<a:load:1424326891778867332> Lancement de la boucle quotidienne de nettoyage de la base de données...");
+			dbCleaningCronLogChannel.send(`${config.emojis.loading} Lancement de la boucle quotidienne de nettoyage de la base de données...`);
 			await dailyDBCleaning(gardenGuild, this.client, dbCleaningCronLogChannel);
 		}, {
 			timezone: "Europe/Paris",
@@ -83,7 +84,7 @@ export class ReadyEvent extends Event {
 			if (!seriousRoleCronLogChannel || seriousRoleCronLogChannel.type !== ChannelType.GuildText) return;
 
 			console.log("⌚ Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
-			seriousRoleCronLogChannel.send("<a:load:1424326891778867332> Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
+			seriousRoleCronLogChannel.send(`${config.emojis.loading} Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...`);
 			await dailySeriousRolesUpdate(gardenGuild, this.client, seriousRoleCronLogChannel);
 		}, {
 			timezone: "Europe/Paris",
@@ -96,7 +97,7 @@ export class ReadyEvent extends Event {
 			if (!dbBackupLogChannel || dbBackupLogChannel.type !== ChannelType.GuildText) return;
 
 			console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
-			dbBackupLogChannel.send("<a:load:1424326891778867332> Lancement de la sauvegarde hebdomadaire de la base de données...");
+			dbBackupLogChannel.send(`${config.emojis.loading} Lancement de la sauvegarde hebdomadaire de la base de données...`);
 			await weeklyDBBackup(User, LinkedUser, MessageStats, dbBackupLogChannel);
 		}, {
 			timezone: "Europe/Paris",
@@ -119,7 +120,7 @@ export class ReadyEvent extends Event {
 			if (!seasonsLogChannel || seasonsLogChannel.type !== ChannelType.GuildText) return;
 
 			console.log("⌚ Changement de saison en cours...");
-			seasonsLogChannel.send("<a:load:1424326891778867332> Changement de saison en cours...");
+			seasonsLogChannel.send(`${config.emojis.loading} Changement de saison en cours...`);
 
 			// Edits rules messages with new seasonal colors
 			if (rulesChannel && rulesChannel.type === ChannelType.GuildText) {
@@ -131,9 +132,9 @@ export class ReadyEvent extends Event {
 					"winter": "en hiver ❄️",
 				};
 
-				seasonsLogChannel.send(`<:round_check:1424065559355592884> Nous sommes passés ${seasonTranslate[startingSeason]} !`);
+				seasonsLogChannel.send(`${config.emojis.check} Nous sommes passés ${seasonTranslate[startingSeason]} !`);
 			} else {
-				seasonsLogChannel.send("<:round_cross:1424312051794186260> Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.");
+				seasonsLogChannel.send(`${config.emojis.cross} Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
 			}
 		},
 		{

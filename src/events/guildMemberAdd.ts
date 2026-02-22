@@ -30,8 +30,6 @@ export class GuildMemberAddEvent extends Event {
 		if (member.user.bot) return;
 		if (member.guild.id !== config.gardenGuildId) return;
 
-		await this.client.functions.log("dbError", `Erreur lors de la création du document **User** pour l'id discord \`${member.id}\` à son arrivée sur le serveur.\n\`\`\`test\`\`\``);
-
 		try {
 			// Create or update the User document with initial data
 			await User.findOneAndUpdate(
@@ -41,6 +39,7 @@ export class GuildMemberAddEvent extends Event {
 						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
 						totalMessages: { $ifNull: ["$totalMessages", 0] },
 						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
+						introduced: { $ifNull: ["$introduced", false] },
 						joinedAt: { $ifNull: ["$joinedAt", member.joinedAt] },
 						__v: { $add: { $ifNull: ["$__v", 0] } },
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },

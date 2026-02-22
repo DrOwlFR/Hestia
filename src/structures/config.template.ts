@@ -3,7 +3,7 @@
 /**
  * Configuration template for Hestia bot.
  * Copy to config.ts and fill with actual values for Discord tokens, MongoDB connection, API keys, and Discord IDs.
- * Includes channel IDs, role IDs, moderator IDs, and seasonal color themes.
+ * Includes emojis IDs, channel IDs, role IDs, moderator IDs, admin IDs, etc. and seasonal color themes.
  */
 export default {
 	DISCORD_TOKEN: "",
@@ -51,6 +51,24 @@ export default {
 	adminsDiscordIds: [""],
 	discordModsIds: [""],
 	siteModsIds: [""],
+
+	illustratorName: "",
+
+	emojis: {
+		check: "",
+		cross: "",
+		loading: "",
+		developer: "",
+		highConnection: "",
+		line: "",
+		bot: "",
+		nodejs: "",
+		discordjs: "",
+		sheweny: "",
+		rightBlueArrow: "",
+		warn: "",
+		content: "",
+	},
 
 	autumn: {
 		colorPrimary: 0xF0C841, // "#f0c841"

@@ -4,6 +4,8 @@ import type { ShewenyClient } from "sheweny";
 import { Event } from "sheweny";
 import stripIndent from "strip-indent";
 
+import config from "../../structures/config";
+
 export class ClientMissingPermissionsEvent extends Event {
 	constructor(client: ShewenyClient) {
 		super(client, "clientMissingPermissions", {
@@ -28,8 +30,8 @@ export class ClientMissingPermissionsEvent extends Event {
 		return interaction.reply({
 			content: stripIndent(`
 				> *Hestia réfléchit un instant à votre demande.*
-				Hm, non. Je n'ai pas le droit de faire cela, désolée.\n
-				-# <:round_cross:1424312051794186260> Le bot n'a pas les permissions suffisantes pour effectuer la commande \`${interaction}\`. Permission${missing.length > 1 ? "s" : ""} manquant${missing.length > 1 ? "es" : "e"} : *\`${missing}\`*.
+				— Hm, non. Je n'ai pas le droit de faire cela, désolée.\n
+				-# ${config.emojis.cross} Le bot n'a pas les permissions suffisantes pour effectuer la commande \`${interaction}\`. Permission${missing.length > 1 ? "s" : ""} manquant${missing.length > 1 ? "es" : "e"} : *\`${missing}\`*.
 				`),
 			flags: MessageFlags.Ephemeral,
 		});

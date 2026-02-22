@@ -46,7 +46,7 @@ export class ModalComponent extends Modal {
 				content: stripIndent(`
 					> *Hestia plisse les yeux en regardant la case du code de vérification.*
 					— Hm. Je ne reconnais pas ce code. Étes-vous sûr·e que c'est le bon ?\n
-					-# <:round_cross:1424312051794186260> Le code que vous avez fourni est invalide ou a expiré.
+					-# ${config.emojis.cross} Le code que vous avez fourni est invalide ou a expiré.
 					`),
 				flags: MessageFlags.Ephemeral,
 			});
@@ -57,7 +57,7 @@ export class ModalComponent extends Modal {
 				content: stripIndent(`
 					> *Hestia fronce les sourcils en lisant votre formulaire qu'elle s'empresse de déchirer.*
 					— Mais... Vous avez déjà rempli ce formulaire ! Vous me faites perdre mon temps. Oust ! Nom d'une Esperluette !\n
-					-# <:round_cross:1424312051794186260> Votre compte Discord est déjà associé à un compte sur le site, ou bien un autre compte Discord est déjà associé au compte sur le site. **Si vous pensez que c'est une erreur, veuillez contacter un·e membre de l'équipe**.
+					-# ${config.emojis.cross} Votre compte Discord est déjà associé à un compte sur le site, ou bien un autre compte Discord est déjà associé au compte sur le site. **Si vous pensez que c'est une erreur, veuillez contacter un·e membre de l'équipe**.
 					`),
 				flags: MessageFlags.Ephemeral,
 			});
@@ -67,7 +67,7 @@ export class ModalComponent extends Modal {
 			return modal.reply({
 				content: stripIndent(`
 					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
-					-# <:round_cross:1424312051794186260> Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+					-# ${config.emojis.cross} Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
 					`),
 				flags: MessageFlags.Ephemeral,
 			});
@@ -108,7 +108,7 @@ export class ModalComponent extends Modal {
 					content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
 						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?\n
-						-# <:round_cross:1424312051794186260> Votre compte Discord n'a pas pu être associé correctement à votre compte sur le site du Jardin. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
+						-# ${config.emojis.cross} Votre compte Discord n'a pas pu être associé correctement à votre compte sur le site du Jardin. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
 						`),
 					flags: MessageFlags.Ephemeral,
 				});
@@ -122,7 +122,7 @@ export class ModalComponent extends Modal {
 						> *Hestia vous adresse un immense sourire, et vous tend une clef.*
 						— Bienvenue au Manoir ! Voici la clef de votre chambre. Elle se trouve avec les autres au deuxième étage. Vous avez accès à toutes les pièces du Manoir (sauf le salon fumoir et le salon des évènements IRL, *cf. Règles de vie*).
 							Dirigez-vous vers la ${guild.channels.cache.get(config.portraitGaleryChannelId)} pour dresser le vôtre. Ensuite, vous pourrez rejoindre les autres résident·es du Manoir dans l'${guild.channels.cache.get(config.antechamberChannelId)} ou le ${guild.channels.cache.get(config.loungeChannelId)} pour faire connaissance !\n
-						-# <:round_check:1424065559355592884> Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.confirmedUserRoleId)}. Bienvenue !
+						-# ${config.emojis.check} Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.confirmedUserRoleId)}. Bienvenue !
 					`),
 					flags: MessageFlags.Ephemeral,
 				});
@@ -133,7 +133,7 @@ export class ModalComponent extends Modal {
 					content: stripIndent(`
 						> *Hestia vous adresse un grand sourire.*
 						— Une nouvelle Graine ! Bienvenue ! Déposez vos chaussures à l'entrée, je vous prie. Et dirigez-vous vers la ${guild.channels.cache.get(config.portraitGaleryChannelId)} pour dresser le vôtre ! Ensuite vous pourrez rejoindre tout le monde dans l'${guild.channels.cache.get(config.antechamberChannelId)} pour discuter.\n
-						-# <:round_check:1424065559355592884> Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.nonConfirmedUserRoleId)}. Bienvenue jeune Graine !
+						-# ${config.emojis.check} Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.nonConfirmedUserRoleId)}. Bienvenue jeune Graine !
 						`),
 					flags: MessageFlags.Ephemeral,
 				});

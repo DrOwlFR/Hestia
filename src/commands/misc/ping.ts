@@ -3,6 +3,8 @@ import { connection } from "mongoose";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
+
 export class PingCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
@@ -29,7 +31,7 @@ export class PingCommand extends Command {
 
 		// Send an initial reply to indicate that latency calculation is in progress
 		// in order to avoid being blocked by Discord on the following actions are long
-		await interaction.reply({ content: "Calcul... <a:load:1424326891778867332>", flags: MessageFlags.Ephemeral });
+		await interaction.reply({ content: `${config.emojis.loading} Calcul...`, flags: MessageFlags.Ephemeral });
 
 		// Fetch the reply to calculate bot latency (time between command and response)
 		const tryPong = await interaction.fetchReply();

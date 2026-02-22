@@ -2,6 +2,7 @@ import { Guild, MessageFlags, type StringSelectMenuInteraction } from "discord.j
 import type { ShewenyClient } from "sheweny";
 import { SelectMenu } from "sheweny";
 
+import config from "../../structures/config";
 import { versionsMessages, versionsSelectMenu } from "../../structures/utils/versionsMessages";
 
 export class VersionsSelectMenu extends SelectMenu {
@@ -35,7 +36,7 @@ export class VersionsSelectMenu extends SelectMenu {
 		// If no embed found for the version, inform the user
 		if (!embed) {
 			return selectMenu.update({
-				content: "<:round_cross:1424312051794186260> Cette version n'existe plus.",
+				content: `${config.emojis.cross} Cette version n'existe plus.`,
 				components: [versionsSelectMenu],
 				flags: MessageFlags.IsComponentsV2,
 			});

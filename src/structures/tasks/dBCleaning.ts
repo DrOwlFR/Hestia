@@ -34,54 +34,78 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		const id = jobInfo.options.id || "unknown";
 
 		if (error.response?.status === 429) {
-			logChannel.send(`<:round_cross:1424312051794186260> [${id}] Rate limit atteint. Nouvelle tentative dans 60 secondes...`);
+			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans 60 secondes...`);
 			return 60 * 1000;
 		}
 
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement : \`${error.message}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 
 	// --- Cleaning the Users collection ---
 	try {
 		console.log("⌚ Lancement du nettoyage quotidien de la collection Users...");
-		logChannel.send("<a:load:1424326891778867332> Lancement du nettoyage quotidien de la collection `Users`...");
+		await logChannel.send(`${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`Users\`...`);
 
+		// Fetch all users from the database
 		const users = await User.find();
+		const allLogs: string[] = [];
 
-		for (const dbUser of users) {
-			try {
-				const member = await gardenGuild.members.fetch(dbUser.discordId).catch(() => null);
-				if (!member) {
-					await limiter.schedule(async () => {
+		// For each user, check if they are still in the guild
+		const userTasks = users.map(dbUser =>
+			limiter.schedule(async () => {
+				try {
+					const member = await gardenGuild.members.fetch(dbUser.discordId).catch(() => null);
+					if (!member) {
 						const deleteResponse = await client.functions.deleteUser(dbUser.discordId);
-						if (deleteResponse.status === 204) logChannel.send(`-# La connexion au site de l'ID \`${dbUser.discordId}\` (username : \`${dbUser.discordUsername}\`) a été supprimée car il n'est plus sur le Jardin.`);
-					});
-					await LinkedUser.deleteOne({ discordId: dbUser.discordId });
-					await dbUser.deleteOne();
-					logChannel.send(`-# L'id \`${dbUser.discordId}\` (username : \`${dbUser.discordUsername}\`) a été supprimé.`);
+						if (deleteResponse.status === 204) {
+							allLogs.push(`-# 🧹 La connexion au site de l'ID \`${dbUser.discordId}\` (username : \`${dbUser.discordUsername}\`) a été supprimée car il n'est plus sur le Manoir.`);
+						}
+						await LinkedUser.deleteOne({ discordId: dbUser.discordId });
+						await dbUser.deleteOne();
+						allLogs.push(`-# 🧹 L'ID \`${dbUser.discordId}\` (username : \`${dbUser.discordUsername}\`) a été supprimé.`);
+					}
+					// Sending logs in batches of 10 to avoid message length limits
+					if (allLogs.length >= 10) {
+						const logsToSend = allLogs.splice(0, 10);
+						await logChannel.send({
+							content: logsToSend.join("\n"),
+						});
+					}
+				} catch (err) {
+					console.error(err);
+					await logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
 				}
-			} catch (err) {
-				console.error(err);
-				logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
-			}
+			}),
+		);
+
+		// Wait for all user tasks to complete
+		await Promise.all(userTasks);
+
+		// Final log output after processing all linked users
+		if (allLogs.length > 0) {
+			await logChannel.send({
+				content: allLogs.join("\n"),
+			});
 		}
 
-		logChannel.send("<:round_check:1424065559355592884> Le nettoyage quotidien de la collection `Users` s'est effectué correctement.");
+		await logChannel.send(`${config.emojis.check} Le nettoyage quotidien de la collection \`Users\` s'est effectué correctement.`);
 		console.log("✅ Fin du nettoyage quotidien de la collection Users...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
 	}
 
 	// --- Cleaning the LinkedUsers collection ---
 	try {
 		console.log("⌚ Lancement du nettoyage quotidien de la collection LinkedUsers...");
-		logChannel.send("<a:load:1424326891778867332> Lancement du nettoyage quotidien de la collection `LinkedUsers`...");
+		await logChannel.send(`${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`LinkedUsers\`...`);
 
 		// Fetch all linked users from the database
 		const linkedUsers = await LinkedUser.find();
-		for (const dbLinkedUser of linkedUsers) {
+		const allLogs: string[] = [];
+
+		const linkedUserTasks = linkedUsers.map(dbLinkedUser =>
 			limiter.schedule(async () => {
 				try {
 					const getResponse = await client.functions.getUser(dbLinkedUser.discordId);
@@ -108,7 +132,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 						}
 						await client.functions.deleteUser(dbLinkedUser.discordId);
 						await LinkedUser.deleteOne({ discordId: dbLinkedUser.discordId });
-						logChannel.send(`-# La connexion au site de l'ID \`${dbLinkedUser.discordId}\` (siteId : \`${dbLinkedUser.siteId}\`, username : \`${dbLinkedUser.discordUsername}\`) a été supprimée.`);
+						allLogs.push(`-# 🧹 La connexion au site de l'ID \`${dbLinkedUser.discordId}\` (siteId : \`${dbLinkedUser.siteId}\`, username : \`${dbLinkedUser.discordUsername}\`) a été supprimée car il n'est plus sur le Manoir.`);
 					} else {
 						// If the user exists on the site, sync roles
 						const member = await gardenGuild.members.fetch(dbLinkedUser.discordId).catch(() => null);
@@ -140,35 +164,60 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 
 							if (isNonConfirmed && !hasNonConfirmedRole) {
 								toAdd.push(config.nonConfirmedUserRoleId);
+								allLogs.push(`-# ➕ Rôle Graine de l'ID \`${member.user.id}\` ajouté.`);
 							} else if (!isNonConfirmed && hasNonConfirmedRole) {
 								toRemove.push(config.nonConfirmedUserRoleId);
+								allLogs.push(`-# 🧹 Rôle Graine de l'ID \`${member.user.id}\` retiré.`);
 							}
 
 							if (isConfirmed && !hasConfirmedRole) {
 								toAdd.push(config.confirmedUserRoleId);
+								allLogs.push(`-# ➕ Rôle Esperluette de l'ID \`${member.user.id}\` ajouté.`);
 							} else if (!isConfirmed && hasConfirmedRole) {
-								toRemove.push(config.confirmedUserRoleId);
+								toRemove.push(config.confirmedUserRoleId,
+									config.livingRoomRoleId,
+									config.workshopRoleId,
+									config.libraryRoleId,
+									config.terraceRoleId,
+									config.seriousRoleId,
+									config.irlRoleId);
+								allLogs.push(`-# 🧹 Rôles Esperluette et accessoires de l'ID \`${member.user.id}\` retiré.`);
 							}
 
 							// Apply role changes
 							if (toAdd.length) await memberRoles.add(toAdd);
 							if (toRemove.length) await memberRoles.remove(toRemove);
+
+							// Sending logs in batches of 10 to avoid message length limits
+							if (allLogs.length >= 10) {
+								const logsToSend = allLogs.splice(0, 10);
+								await logChannel.send({
+									content: logsToSend.join("\n"),
+								});
+							}
 						}
 					}
 				} catch (err) {
 					console.error(`Erreur lors de la suppression du LinkedUser ${dbLinkedUser.discordId}:`, err);
 					logChannel.send(`Erreur lors de la vérification du LinkedUser \`${dbLinkedUser.discordId}\` : ${err}`);
 				}
+			}),
+		);
+
+		await Promise.all(linkedUserTasks);
+
+		// Final log output after processing all linked users
+		if (allLogs.length > 0) {
+			await logChannel.send({
+				content: allLogs.join("\n"),
 			});
 		}
 
-		await limiter.stop({ dropWaitingJobs: false });
-
-		logChannel.send("<:round_check:1424065559355592884> Le nettoyage quotidien de la collection `LinkedUsers` s'est effectué correctement.");
+		await logChannel.send(`${config.emojis.check} Le nettoyage quotidien de la collection \`LinkedUsers\` s'est effectué correctement.`);
 		console.log("✅ Fin du nettoyage quotidien de la collection LinkedUsers...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
 	}
-	logChannel.send("<:round_check:1424065559355592884> Fin de la boucle quotidienne de nettoyage de la base de données.");
+	logChannel.send(`${config.emojis.check} Fin de la boucle quotidienne de nettoyage de la base de données.`);
 }

@@ -20,6 +20,7 @@ export interface dbUser extends Document {
 	discordUsername: string;
 	totalMessages: number;
 	messagesPerDay: MessagePerDay[],
+	introduced: boolean,
 	joinedAt: Date,
 	__v: number,
 	createdAt: Date,
@@ -35,6 +36,7 @@ export const User = model<dbUser>("User", new Schema({
 	discordUsername: { type: String, required: true, unique: true },
 	totalMessages: { type: Number, required: true, default: 0 },
 	messagesPerDay: { type: [Object], required: true, default: [] },
+	introduced: { type: Boolean, required: true, default: false },
 	joinedAt: { type: Date, required: true, default: new Date() },
 }, { timestamps: true, strict: true }));
 
@@ -74,6 +76,8 @@ export interface messageStats extends Document {
 	channelId: string,
 	parentChannelId?: string,
 	parentChannelName?: string,
+	categoryName: string,
+	categoryId: string,
 	channelName: string,
 	year: number,
 	month: number,
@@ -91,6 +95,8 @@ const MessageStatsSchema = new Schema<messageStats>({
 	parentChannelId: { type: String }, // for threads only
 	// eslint-disable-next-line no-inline-comments
 	parentChannelName: { type: String }, // for threads only
+	categoryName: { type: String, required: true },
+	categoryId: { type: String, required: true },
 	channelName: { type: String, required: true },
 	year: { type: Number, required: true },
 	month: { type: Number, required: true },

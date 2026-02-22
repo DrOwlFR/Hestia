@@ -30,10 +30,10 @@ export async function backupCollection<T extends Document = Document>(Model: Mod
 
 		await fs.promises.writeFile(`${collectionName}-${formattedDateTime}.json`, data, "utf8");
 
-		logChannel.send(`<:round_check:1424065559355592884> La sauvegarde hebdomadaire de la collection \`${collectionName}\` s'est effectuée correctement.`);
+		logChannel.send(`${config.emojis.check} La sauvegarde hebdomadaire de la collection \`${collectionName}\` s'est effectuée correctement.`);
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`<:round_cross:1424312051794186260> <@${config.botAdminsIds[0]}> La sauvegarde hebdomadaire de la collection \`${collectionName}\` a échoué : \`${err}\``);
+		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> La sauvegarde hebdomadaire de la collection \`${collectionName}\` a échoué : \`${err}\``);
 	}
 }
 
@@ -55,5 +55,5 @@ export async function weeklyDBBackup(User: Model<dbUser>, LinkedUser: Model<link
 		backupCollection(MessagesStats, "MessagesStats", logChannel),
 	]);
 	console.log("✅ Fin du script de sauvegarde hebdomadaire de la base de données.");
-	logChannel.send("<:round_check:1424065559355592884> Fin du script de sauvegarde hebdomadaire de la base de données.");
+	logChannel.send(`${config.emojis.check} Fin du script de sauvegarde hebdomadaire de la base de données.`);
 }

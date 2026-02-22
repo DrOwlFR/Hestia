@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import { ChannelType, GuildMember, MessageFlags, PermissionFlagsBits } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
+import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
 import { updateRulesMessages } from "../../structures/tasks/seasonsSystem";
@@ -33,7 +34,11 @@ export class RulesCommand extends Command {
 		const isAdmin = this.client.admins.includes(interaction.user.id) || interaction.member instanceof GuildMember && interaction.member.permissions.has(PermissionFlagsBits.Administrator);
 		if (!isAdmin) {
 			return interaction.reply({
-				content: "<:round_cross:1424312051794186260> Vous n'avez pas les permissions requises pour utiliser cette commande.",
+				content: stripIndent(`
+					> *Alors que vous essayez désespérément de faire fonctionner ce mécanisme, vous entendez des talons approcher en claquant sur le sol. Puis… La voix de la Concierge.*
+					— Hep, hep, hep ! Que croyez-vous faire là ? Vous n'avez pas le droit ! Déguerpissez !\n
+					-# ${config.emojis.cross} Vous n'avez pas les permissions suffisantes pour la commande \`${interaction}\`. Cette dernière est réservée à mon Développeur et aux Majuscules.
+				`),
 				flags: MessageFlags.Ephemeral,
 			});
 		}
@@ -41,16 +46,16 @@ export class RulesCommand extends Command {
 		// Get the rules channel and verify the command is used there (to be sure that the admin supervises the edit)
 		const rulesChannel = interaction.channel;
 		if (!rulesChannel || rulesChannel.id !== config.rulesChannelId || rulesChannel.type !== ChannelType.GuildText) {
-			return interaction.reply({ content: "<:round_cross:1424312051794186260> Vous devez vous trouver dans le salon des règles pour utiliser cette commande.", flags: MessageFlags.Ephemeral });
+			return interaction.reply({ content: `${config.emojis.cross} Vous devez vous trouver dans le salon des règles pour utiliser cette commande.`, flags: MessageFlags.Ephemeral });
 		}
 
 		// Reply with a loading message while editing the rules
-		await interaction.reply({ content: "<a:load:1424326891778867332> Édition des règles en cours...", flags: MessageFlags.Ephemeral });
+		await interaction.reply({ content: `${config.emojis.loading} Édition des règles en cours...`, flags: MessageFlags.Ephemeral });
 
 		// Update the rules messages in the rules channel
 		await updateRulesMessages(rulesChannel, this.client);
 
 		// Follow up with a success message
-		return interaction.followUp({ content: "<:round_check:1424065559355592884> Les règles ont été éditées correctement.", flags: MessageFlags.Ephemeral });
+		return interaction.followUp({ content: `${config.emojis.check} Les règles ont été éditées correctement.`, flags: MessageFlags.Ephemeral });
 	}
 }

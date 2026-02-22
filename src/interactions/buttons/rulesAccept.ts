@@ -4,6 +4,8 @@ import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
 
+import config from "../../structures/config";
+
 export class RulesAcceptButton extends Button {
 	constructor(client: ShewenyClient) {
 		super(client, ["rulesAcceptButton"]);
@@ -29,7 +31,7 @@ export class RulesAcceptButton extends Button {
 				content: stripIndent(`
 								> *Hestia fronce les sourcils en lisant votre formulaire qu'elle s'empresse de déchirer.*
 								— Mais... Vous avez déjà rempli ce formulaire ! Vous me faites perdre mon temps. Oust ! Nom d'une Esperluette !\n
-								-# <:round_cross:1424312051794186260> Votre compte Discord est déjà associé à un compte sur le site, ou bien un autre compte Discord est déjà associé au compte sur le site. **Si vous pensez que c'est une erreur, veuillez contacter un·e membre de l'équipe**.
+								-# ${config.emojis.cross} Votre compte Discord est déjà associé à un compte sur le site, ou bien un autre compte Discord est déjà associé au compte sur le site. **Si vous pensez que c'est une erreur, veuillez contacter un·e membre de l'équipe**.
 								`),
 				flags: MessageFlags.Ephemeral,
 			});
@@ -39,7 +41,7 @@ export class RulesAcceptButton extends Button {
 			return button.update({
 				content: stripIndent(`
 					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
-					-# <:round_cross:1424312051794186260> Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+					-# ${config.emojis.cross} Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
 					`),
 				components: [],
 			});

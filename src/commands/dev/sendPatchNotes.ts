@@ -2,6 +2,7 @@ import { ApplicationCommandOptionType, type AutocompleteInteraction, ChannelType
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
 import { versionsMessages } from "../../structures/utils/versionsMessages";
 
 export class SendPatchNotesCommand extends Command {
@@ -47,12 +48,12 @@ export class SendPatchNotesCommand extends Command {
 		// Get the corresponding version message and check if it exists
 		const versions = versionsMessages(this.client);
 		if (!Object.prototype.hasOwnProperty.call(versions, version)) {
-			await interaction.reply({ content: `<:round_cross:1424312051794186260> La version \`${version}\` est introuvable, veuillez selectionner une version existante.`, ephemeral: true });
+			await interaction.reply({ content: `${config.emojis.cross} La version \`${version}\` est introuvable, veuillez selectionner une version existante.`, ephemeral: true });
 			return;
 		}
 
 		// Acknowledge the command and inform about sending process
-		await interaction.reply({ content: `<:round_check:1424065559355592884> Envoi de la note de patch de la version \`${version}\` en cours...`, flags: MessageFlags.Ephemeral });
+		await interaction.reply({ content: `${config.emojis.loading} Envoi de la note de patch de la version \`${version}\` en cours...`, flags: MessageFlags.Ephemeral });
 
 		// Send the version message in the current channel
 		await channel.send({

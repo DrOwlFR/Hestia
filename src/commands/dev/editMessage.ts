@@ -2,6 +2,8 @@ import { type ChatInputCommandInteraction, MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
+import config from "../../structures/config";
+
 export class EditMessageCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
@@ -30,7 +32,7 @@ export class EditMessageCommand extends Command {
 		// Fetch the message from the channel; if fetching fails, reply with an ephemeral error
 		const message = await interaction.channel?.messages.fetch(messageToEditId).catch(err => {
 			interaction.reply({
-				content: `<:round_cross:1424312051794186260> Le message n'a pas pu être fetch : \`${err}\``,
+				content: `${config.emojis.cross} Le message n'a pas pu être fetch : \`${err}\``,
 				flags: MessageFlags.Ephemeral,
 			});
 			return null;
@@ -47,14 +49,14 @@ export class EditMessageCommand extends Command {
 
 			// On success: send an ephemeral confirmation to the user
 			return interaction.reply({
-				content: "<:round_check:1424065559355592884> Message édité avec succès.",
+				content: `${config.emojis.check} Message édité avec succès.`,
 				flags: MessageFlags.Ephemeral,
 			});
 		}
 		catch (err) {
 			// On error: send an ephemeral error reply with the error details
 			return interaction.reply({
-				content: `<:round_cross:1424312051794186260> Erreur lors de l'édition du message : \`${err}\``,
+				content: `${config.emojis.cross} Erreur lors de l'édition du message : \`${err}\``,
 				flags: MessageFlags.Ephemeral,
 			});
 		}
