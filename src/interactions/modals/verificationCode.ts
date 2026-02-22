@@ -1,0 +1,143 @@
+import type { ModalSubmitInteraction } from "discord.js";
+import { GuildMember, MessageFlags } from "discord.js";
+import type { Document } from "mongoose";
+import type { ShewenyClient } from "sheweny";
+import { Modal } from "sheweny";
+import stripIndent from "strip-indent";
+
+import config from "../../structures/config";
+import { LinkedUser } from "../../structures/database/models";
+import type { responseJson } from "../../types";
+
+export class ModalComponent extends Modal {
+	constructor(client: ShewenyClient) {
+		super(client, ["verificationCodeModal"]);
+	}
+
+	/**
+	 * Execute: main handler for the verification code modal submission.
+	 * Summary: Processes the verification code to link the Discord account to the site account, creates or updates the LinkedUser document, and assigns roles based on confirmation status.
+	 * Steps:
+	 * - Check if interaction is in the correct guild
+	 * - Retrieve verification code and attempt to connect user
+	 * - Handle errors: 404 (invalid code), 409 (already linked), 429 (rate limit)
+	 * - If successful, create or update LinkedUser document in database
+	 * - Handle database errors
+	 * - Assign confirmed or non-confirmed role and send welcome message
+	 * @param modal - The modal submit interaction triggered by the user.
+	 */
+	async execute(modal: ModalSubmitInteraction) {
+
+		const { fields, guild, member, user } = modal;
+
+		// Only allow in the site's guild and ensure member is valid
+		if (guild?.id !== config.gardenGuildId) return;
+		if (!member || !(member instanceof GuildMember)) return;
+
+		// Get code from the input and connect user
+		const code = fields.getTextInputValue("verificationCode");
+		const { id, username } = user;
+
+		const connectResponse = await this.client.functions.connectUser(code, id, username);
+
+		// Handle invalid code
+		if (connectResponse.status === 404) {
+			return modal.reply({
+				content: stripIndent(`
+					> *Hestia plisse les yeux en regardant la case du code de vérification.*
+					— Hm. Je ne reconnais pas ce code. Étes-vous sûr·e que c'est le bon ?\n
+					-# ${config.emojis.cross} Le code que vous avez fourni est invalide ou a expiré.
+					`),
+				flags: MessageFlags.Ephemeral,
+			});
+		}
+		// Handle already linked
+		if (connectResponse.status === 409) {
+			return modal.reply({
+				content: stripIndent(`
+					> *Hestia fronce les sourcils en lisant votre formulaire qu'elle s'empresse de déchirer.*
+					— Mais... Vous avez déjà rempli ce formulaire ! Vous me faites perdre mon temps. Oust ! Nom d'une Esperluette !\n
+					-# ${config.emojis.cross} Votre compte Discord est déjà associé à un compte sur le site, ou bien un autre compte Discord est déjà associé au compte sur le site. **Si vous pensez que c'est une erreur, veuillez contacter un·e membre de l'équipe**.
+					`),
+				flags: MessageFlags.Ephemeral,
+			});
+		}
+		// Handle rate limit
+		if (connectResponse.status === 429) {
+			return modal.reply({
+				content: stripIndent(`
+					— Oulah doucement, pas si vite ! Du calme. Reprenez calmement.\n
+					-# ${config.emojis.cross} Limite d'interaction avec le site atteinte. Réessayez dans 60 secondes.
+					`),
+				flags: MessageFlags.Ephemeral,
+			});
+		}
+
+		// Parse response
+		const connectResponseJson = (await connectResponse.json() as responseJson);
+
+		// If connection successful
+		if (connectResponseJson.success) {
+
+			// Create or update LinkedUser document
+			let document: Document | null = await LinkedUser.findOne({ discordId: user.id });
+			if (!document) {
+				document = await LinkedUser.create({
+					discordId: user.id,
+					siteId: connectResponseJson.userId,
+					discordUsername: user.username,
+					roles: connectResponseJson.roles,
+				});
+			} else {
+				document = await LinkedUser.findOneAndUpdate(
+					{ discordId: user.id },
+					{
+						siteId: connectResponseJson.userId,
+						discordUsername: user.username,
+						roles: connectResponseJson.roles,
+					},
+					{ new: true },
+				);
+			}
+
+			// Handle database error
+			if (!document) {
+				await this.client.functions.deleteUser(user.id);
+				await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
+				return modal.reply({
+					content: stripIndent(`
+						> *Hestia fronce les sourcils, visiblement contrariée.*
+						— Hm, non, ça ne fonctionne pas. Nom d'une Esperluette, pourquoi ça ne fonctionne pas ?\n
+						-# ${config.emojis.cross} Votre compte Discord n'a pas pu être associé correctement à votre compte sur le site du Jardin. Veuillez réessayez. Si le problème persiste, contactez un·e membre de l'équipe.
+						`),
+					flags: MessageFlags.Ephemeral,
+				});
+			}
+
+			// Assign role based on confirmation status
+			if (connectResponseJson.roles!.find(r => r === "user-confirmed")) {
+				member.roles.add(config.confirmedUserRoleId);
+				return modal.reply({
+					content: stripIndent(`
+						> *Hestia vous adresse un immense sourire, et vous tend une clef.*
+						— Bienvenue au Manoir ! Voici la clef de votre chambre. Elle se trouve avec les autres au deuxième étage. Vous avez accès à toutes les pièces du Manoir (sauf le salon fumoir et le salon des évènements IRL, *cf. Règles de vie*).
+							Dirigez-vous vers la ${guild.channels.cache.get(config.portraitGaleryChannelId)} pour dresser le vôtre. Ensuite, vous pourrez rejoindre les autres résident·es du Manoir dans l'${guild.channels.cache.get(config.antechamberChannelId)} ou le ${guild.channels.cache.get(config.loungeChannelId)} pour faire connaissance !\n
+						-# ${config.emojis.check} Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.confirmedUserRoleId)}. Bienvenue !
+					`),
+					flags: MessageFlags.Ephemeral,
+				});
+			}
+			else {
+				member.roles.add(config.nonConfirmedUserRoleId);
+				return modal.reply({
+					content: stripIndent(`
+						> *Hestia vous adresse un grand sourire.*
+						— Une nouvelle Graine ! Bienvenue ! Déposez vos chaussures à l'entrée, je vous prie. Et dirigez-vous vers la ${guild.channels.cache.get(config.portraitGaleryChannelId)} pour dresser le vôtre ! Ensuite vous pourrez rejoindre tout le monde dans l'${guild.channels.cache.get(config.antechamberChannelId)} pour discuter.\n
+						-# ${config.emojis.check} Votre compte Discord est connecté au site du Jardin. Vous avez reçu le rôle ${guild?.roles.cache.get(config.nonConfirmedUserRoleId)}. Bienvenue jeune Graine !
+						`),
+					flags: MessageFlags.Ephemeral,
+				});
+			}
+		}
+	}
+};

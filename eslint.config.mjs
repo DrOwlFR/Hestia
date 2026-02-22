@@ -1,5 +1,12 @@
+/**
+ * ESLint configuration for TypeScript project.
+ * Enforces code style, import sorting, and TypeScript best practices.
+ * Includes rules for consistent formatting, type-only imports, and linting standards.
+ */
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import importPlugin from "eslint-plugin-import";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 export default [
 	{
@@ -10,9 +17,18 @@ export default [
 		},
 		plugins: {
 			"@typescript-eslint": tseslint,
+			"import": importPlugin,
+			"simple-import-sort": simpleImportSort,
 		},
 		rules: {
 			...tseslint.configs.recommended.rules,
+			"@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports", "disallowTypeAnnotations": true, "fixStyle": "separate-type-imports" }],
+			"import/no-duplicates": "error",
+			"import/order": ["error", { "alphabetize": { "order": "asc", "caseInsensitive": true } }],
+			"simple-import-sort/imports": ["error", {
+				groups: [['^(assert|buffer|child_process|cluster|crypto|dns|events|fs|http|https|net|os|path|stream|timers|util|zlib)(/.*|$)'], ['^'], ['^\\.']]
+			}],
+			"simple-import-sort/exports": "error",
 			"@typescript-eslint/no-unused-vars": "warn",
 			"no-console": "warn",
 			"arrow-spacing": ["warn", { "before": true, "after": true }],
@@ -38,7 +54,7 @@ export default [
 			"no-lonely-if": "error",
 			"no-multi-assign": "error",
 			"no-multi-spaces": "error",
-			"no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1, "maxBOF": 0 }],
+			"no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1, "maxBOF": 0 }],
 			"no-new-object": "error",
 			"no-shadow": ["error", { "allow": ["err", "resolve", "reject"] }],
 			"no-trailing-spaces": ["error"],

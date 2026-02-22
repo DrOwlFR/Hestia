@@ -1,6 +1,10 @@
-import { MessageFlags, type ChatInputCommandInteraction } from "discord.js";
-import { Event } from "sheweny";
+import type { ChatInputCommandInteraction } from "discord.js";
+import { MessageFlags } from "discord.js";
 import type { ShewenyClient } from "sheweny";
+import { Event } from "sheweny";
+import stripIndent from "strip-indent";
+
+import config from "../../structures/config";
 
 export class CooldownLimitEvent extends Event {
 	constructor(client: ShewenyClient) {
@@ -11,11 +15,26 @@ export class CooldownLimitEvent extends Event {
 		});
 	}
 
+	/**
+	 * Execute: handler for the `cooldownLimit` event.
+	 * Summary: Triggered when a user attempts to use a command while on cooldown.
+	 * Behavior:
+	 * - Receives the interaction and the remaining cooldown time in milliseconds
+	 * - Calculates the remaining time in seconds and replies with an ephemeral message
+	 * @param interaction - The command interaction on cooldown.
+	 * @param time - The remaining cooldown time in milliseconds.
+	 */
 	async execute(interaction: ChatInputCommandInteraction, time: number) {
 
+		// Calculate the remaining cooldown time in seconds
 		const remaining = Math.round(time / 1000);
+
+		// Reply with an ephemeral message informing the user of the cooldown
 		return interaction.reply({
-			content: `<:warn:1426241617613815949> Du calme. Il te reste **\`${remaining} seconde${remaining > 1 ? "s" : ""}\`** de cooldown sur la commande \`${interaction}\`.`,
+			content: stripIndent(`
+				— Oulah doucement, pas si vite ! Je n'ai rien compris. Reprenez calmement.\n
+				-# ${config.emojis.warn} Vous devez attendre quelques secondes entre chaque commande. Il vous reste **\`${remaining} seconde${remaining > 1 ? "s" : ""}\`** de cooldown sur la commande \`${interaction}\`.
+				`),
 			flags: MessageFlags.Ephemeral,
 		});
 
