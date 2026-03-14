@@ -45,7 +45,7 @@ export function getCurrentSeason(date = new Date()): Season {
 		{ season: "spring", date: new Date(y, 2, 20) },
 		{ season: "summer", date: new Date(y, 5, 21) },
 		{ season: "autumn", date: new Date(y, 8, 23) },
-		{ season: "winter", date: new Date(y, 12, 21) },
+		{ season: "winter", date: new Date(y, 11, 21) },
 	];
 
 	// If before the 20th of march → winter of last year
