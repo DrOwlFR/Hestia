@@ -51,7 +51,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.6.1": new ContainerBuilder()
@@ -81,7 +81,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.6.0-beta": new ContainerBuilder()
@@ -117,7 +117,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.5.1-beta": new ContainerBuilder()
@@ -139,7 +139,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.5.0-beta": new ContainerBuilder()
@@ -167,7 +167,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.4.0-beta": new ContainerBuilder()
@@ -192,7 +192,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.3.1-beta": new ContainerBuilder()
@@ -215,7 +215,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.3.0-beta": new ContainerBuilder()
@@ -254,7 +254,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.2.1-beta": new ContainerBuilder()
@@ -274,7 +274,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.2.0-beta": new ContainerBuilder()
@@ -305,7 +305,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.1.1-beta": new ContainerBuilder()
@@ -324,7 +324,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.1.0-beta": new ContainerBuilder()
@@ -350,7 +350,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.0.1-beta": new ContainerBuilder()
@@ -371,7 +371,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.0.0-beta": new ContainerBuilder()
@@ -401,7 +401,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 } as const);
