@@ -46,6 +46,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 							- \`[commande "checkintroduced"]\` - La commande ne liste plus les membres qui n'ont pas lié leur compte Discord au site (plus pertinent, puisqu'ils ne peuvent pas accéder au salon de présentation sans compte lié)
 							- \`[commande statistics file]\` - Ajout de l'heure dans le nom du fichier exporté.
 							- \`[saisons]\` - Correction de la date de début de l'hiver.
+							- \`[global]\` - Changement de la taille d'affichage de l'avatar d'Hestia dans plusieurs commandes (help, version), par défaut trop petite, ce qui floutait l'image.
 
 							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.1...v1.6.2)
 				`)))
