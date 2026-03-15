@@ -112,4 +112,15 @@ async function log(this: ShewenyClient, type: LogChannel, message: string): Prom
 	await channel.send(message);
 }
 
-export { connectUser, delay, deleteUser, embed, getUser, log };
+/**
+ * formatLocalDateTime: formats a Date object into a string with local date and time.
+ * Summary: Converts a Date object into a string format "YYYY-MM-DD_HHhMM" using local time.
+ * @param date - The Date object to format. Defaults to the current date and time if not provided.
+ * @returns A formatted date-time string in the format "YYYY-MM-DD_HHhMM".
+ */
+function formatDateTime(date: Date = new Date()): string {
+	const pad = (n: number) => String(n).padStart(2, "0");
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}_${pad(date.getHours())}h${pad(date.getMinutes())}`;
+}
+
+export { connectUser, delay, deleteUser, embed, formatDateTime, getUser, log };
