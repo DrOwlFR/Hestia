@@ -38,8 +38,28 @@ export class NotIntroducedMentionButton extends Button {
 			});
 		}
 
-		// Re-fetch users who are not introduced
-		const members = await User.find({ introduced: false }).select("discordId").lean();
+		// Re-fetch users from the database who are not introduced and have a linked account with "user" or "user-confirmed" roles
+		const members = await User.aggregate([
+			{ $match: { introduced: false } },
+			// Join with linked_users collection to check for roles
+			{
+				$lookup: {
+					from: "linked_users",
+					// Match the discordId from users with the discordId in linked_users
+					let: { discordId: "$discordId" },
+					// Match linked_users with the same discordId and check if they have "user" or "user-confirmed" roles
+					pipeline: [
+						{ $match: { $expr: { $eq: ["$discordId", "$$discordId"] } } },
+						{ $match: { roles: { $in: ["user", "user-confirmed"] } } },
+					],
+					as: "member",
+				},
+			},
+			// Only keep users who have a corresponding member with the specified roles
+			{ $match: { member: { $ne: [] } } },
+			// Send only the discordId for the final output
+			{ $project: { discordId: 1 } },
+		]);
 
 		// If there are not introduced members, mention them in the presentation channel
 		if (members.length !== 0) {

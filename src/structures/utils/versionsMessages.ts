@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.6.1", description: "Dernière version en date, première version stable", value: "1.6.1" },
+				{ label: "v1.6.2", description: "Dernière version en date", value: "1.6.2" },
+				{ label: "v1.6.1", description: "Première version stable", value: "1.6.1" },
 				{ label: "v1.6.0-beta", value: "1.6.0-beta" },
 				{ label: "v1.5.1-beta", value: "1.5.1-beta" },
 				{ label: "v1.5.0-beta", value: "1.5.0-beta" },
@@ -30,6 +31,30 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.6.2": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.2
+							*(15 mars 2026)*
+							### ➕ Ajout
+							- \`[règles de vie]\` - Ajout du logo du Jardin dans le premier message des règles de vie (qui changera selon les saisons)
+							### 🔨 Corrections & Modifications
+							- \`[commande "checkintroduced"]\` - La commande ne liste plus les membres qui n'ont pas lié leur compte Discord au site (plus pertinent, puisqu'ils ne peuvent pas accéder au salon de présentation sans compte lié)
+							- \`[commande statistics file]\` - Ajout de l'heure dans le nom du fichier exporté.
+							- \`[saisons]\` - Correction de la date de début de l'hiver.
+							- \`[global]\` - Changement de la taille d'affichage de l'avatar d'Hestia dans plusieurs commandes (help, version), par défaut trop petite, ce qui floutait l'image.
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.1...v1.6.2)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.6.1": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
@@ -57,7 +82,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.6.0-beta": new ContainerBuilder()
@@ -93,7 +118,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.5.1-beta": new ContainerBuilder()
@@ -115,7 +140,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.5.0-beta": new ContainerBuilder()
@@ -143,7 +168,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.4.0-beta": new ContainerBuilder()
@@ -168,7 +193,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.3.1-beta": new ContainerBuilder()
@@ -191,7 +216,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.3.0-beta": new ContainerBuilder()
@@ -230,7 +255,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.2.1-beta": new ContainerBuilder()
@@ -250,7 +275,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.2.0-beta": new ContainerBuilder()
@@ -281,7 +306,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.1.1-beta": new ContainerBuilder()
@@ -300,7 +325,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.1.0-beta": new ContainerBuilder()
@@ -326,7 +351,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.0.1-beta": new ContainerBuilder()
@@ -347,7 +372,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 	"1.0.0-beta": new ContainerBuilder()
@@ -377,7 +402,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 				`)))
 				.setThumbnailAccessory(
 					new ThumbnailBuilder()
-						.setURL(client.user?.displayAvatarURL() || ""),
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
 				),
 		),
 } as const);

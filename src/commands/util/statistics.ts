@@ -218,7 +218,7 @@ export class StatisticsCommand extends Command {
 						— Voilà toutes nos statistiques, organisées par année, mois, catégorie, salon et fil. Bon courage !\n
 						-# ${config.emojis.check} Voici l'export des statistiques des messages du serveur, au format CSV :
 						`),
-					files: [{ attachment: csvBuffer, name: `statistiques_${new Date().toISOString().split("T")[0]}.csv` }],
+					files: [{ attachment: csvBuffer, name: `statistiques_${this.client.functions.formatDateTime()}.csv` }],
 				});
 				break;
 		}
