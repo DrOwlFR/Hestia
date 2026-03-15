@@ -53,7 +53,7 @@ export class VersionCommand extends Command {
 					`)))
 							.setThumbnailAccessory(
 								new ThumbnailBuilder()
-									.setURL(this.client.user?.displayAvatarURL() || ""),
+									.setURL(this.client.user?.displayAvatarURL({ size: 1024 }) || ""),
 							),
 					),
 				versionsSelectMenu,

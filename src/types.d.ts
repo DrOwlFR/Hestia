@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import type { EmbedBuilder } from "discord.js";
 
 import type { LogChannel } from "./structures/utils/functions";
@@ -15,15 +16,11 @@ declare module "sheweny" {
 		functions: {
 			// embed: () => EmbedBuilder,
 			embed: Function,
-			// eslint-disable-next-line no-unused-vars
+			formatDateTime: (date?: Date) => string,
 			delay: (ms: number) => Promise<void>,
-			// eslint-disable-next-line no-unused-vars
 			log: (type: LogChannel, message: string) => Promise<void>,
-			// eslint-disable-next-line no-unused-vars
 			connectUser: (code: string, discordId: string, username: string) => Promise<Response>,
-			// eslint-disable-next-line no-unused-vars
 			getUser: (discordId: string) => Promise<Response>,
-			// eslint-disable-next-line no-unused-vars
 			deleteUser: (discordId: string) => Promise<Response>,
 		}
 	}

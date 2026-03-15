@@ -40,7 +40,7 @@ export class HelpCommand extends Command {
 		// Initialize the embed with author and thumbnail
 		const embed = this.client.functions.embed()
 			.setAuthor({ name: "Voici la liste de mes commandes.", iconURL: interaction.user.displayAvatarURL() })
-			.setThumbnail(this.client.user?.displayAvatarURL());
+			.setThumbnail(this.client.user?.displayAvatarURL({ size: 1024 }) || "");
 
 		// If no specific command is provided, display the general help with categories
 		if (!interaction.options.getString("commande", false)) {
