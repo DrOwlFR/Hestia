@@ -1,5 +1,4 @@
-import { ButtonBuilder } from "@discordjs/builders";
-import { ButtonStyle, ContainerBuilder, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ContainerBuilder, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, ThumbnailBuilder } from "discord.js";
 import stripIndent from "strip-indent";
 
 import config from "../config";
@@ -17,9 +16,11 @@ const colors = config[season];
 export const rulesMessages = {
 	intro: new ContainerBuilder()
 		.setAccentColor(colors.colorPrimary)
-		.addTextDisplayComponents(
-			new TextDisplayBuilder()
-				.setContent(stripIndent(`
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
 								# Bienvenue dans le Manoir du Jardin des Esperluettes !
 								Ce serveur Discord est un satellite du site éponyme, que vous pouvez découvrir juste ici : [Jardin des Esperluettes](https://jd-esperluettes.fr/). Nous appelons ce serveur le Manoir (une enclave au milieu du Jardin que représente le site).
 
@@ -27,6 +28,14 @@ export const rulesMessages = {
 
 								> ❗  Attention, des détails de ces règles de vie peuvent être sujets à changement puisque la communauté est encore en phase de croissance 🌱. Nous vous informerons le cas échéant et vous serez alors tenus de vous mettre à jour.
 						`)),
+				)
+				.setThumbnailAccessory(
+					new ThumbnailBuilder({
+						media: {
+							url: colors.logo,
+						},
+					}),
+				),
 		),
 
 	rules1: new ContainerBuilder()
