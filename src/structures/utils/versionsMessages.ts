@@ -41,7 +41,7 @@ export const versionsMessages = (client: ShewenyClient) => ({
 							## Notes de patch - Version 1.6.2
 							*(15 mars 2026)*
 							### ➕ Ajout
-							- \`[règles de vie]\` - Ajout du logo du Jardon dans le premier message des règles de vie (qui changera selon les saisons)
+							- \`[règles de vie]\` - Ajout du logo du Jardin dans le premier message des règles de vie (qui changera selon les saisons)
 							### 🔨 Corrections & Modifications
 							- \`[commande "checkintroduced"]\` - La commande ne liste plus les membres qui n'ont pas lié leur compte Discord au site (plus pertinent, puisqu'ils ne peuvent pas accéder au salon de présentation sans compte lié)
 							- \`[commande statistics file]\` - Ajout de l'heure dans le nom du fichier exporté.
