@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.6.2", description: "Dernière version en date", value: "1.6.2" },
+				{ label: "v1.6.3", description: "Dernière version en date", value: "1.6.3" },
+				{ label: "v1.6.2", value: "1.6.2" },
 				{ label: "v1.6.1", description: "Première version stable", value: "1.6.1" },
 				{ label: "v1.6.0-beta", value: "1.6.0-beta" },
 				{ label: "v1.5.1-beta", value: "1.5.1-beta" },
@@ -31,6 +32,25 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.6.3": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.3
+							*(19 mars 2026)*
+							### ➕ Ajout
+							- \`[saisons]\` - Ajout du thème printanier pour les règles de vie ! 🌸
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.2...v1.6.3)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.6.2": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
