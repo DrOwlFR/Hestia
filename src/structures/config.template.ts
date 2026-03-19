@@ -84,11 +84,11 @@ export default {
 		colorTertiary: 0xB59031, // "#b59031"
 		logo: "", // Seasonal logo URL for winter
 	},
-	spring: { // Placeholder: same as autumn for now
-		colorPrimary: 0xF0C841, // "#f0c841"
-		colorSecondary: 0xC98129, // "#c98129"
-		colorAccent: 0xA4345C, // "#a4345c"
-		colorTertiary: 0x639DA5, // "#639da5"
+	spring: {
+		colorPrimary: 0xBDEA00, // "#bdea00"
+		colorSecondary: 0x76A003, // "#76a003"
+		colorAccent: 0xEF5E76, // "#ef5e76"
+		colorTertiary: 0x898AC7, // "#898ac7"
 		logo: "", // Seasonal logo URL for spring
 	},
 	summer: { // Placeholder: same as autumn for now
