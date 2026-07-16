@@ -48,6 +48,10 @@ export default {
 	arobaseRoleId: "",
 	guillemetRoleId: "",
 
+	pronounsHeHimRoleId: "",
+	pronounsSheHerRoleId: "",
+	pronounsTheyThemRoleId: "",
+
 	adminsDiscordIds: [""],
 	discordModsIds: [""],
 	siteModsIds: [""],
@@ -68,6 +72,12 @@ export default {
 		rightBlueArrow: "",
 		warn: "",
 		content: "",
+		brokenChain: "",
+		handshake: "",
+		checkWhite: "",
+		male: "",
+		female: "",
+		nonBinary: "",
 	},
 
 	autumn: {

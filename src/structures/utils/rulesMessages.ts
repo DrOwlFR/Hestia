@@ -1,4 +1,4 @@
-import { ButtonBuilder, ButtonStyle, ContainerBuilder, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, ThumbnailBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, ThumbnailBuilder } from "discord.js";
 import stripIndent from "strip-indent";
 
 import config from "../config";
@@ -188,7 +188,39 @@ export function getRulesMessages() {
 							.setCustomId("rulesAcceptButton")
 							.setStyle(ButtonStyle.Success)
 							.setLabel("Accepter")
-							.setEmoji({ name: "✅" }),
+							.setEmoji(config.emojis.checkWhite),
+					),
+			)
+			.addSeparatorComponents(
+				new SeparatorBuilder()
+					.setDivider(true)
+					.setSpacing(SeparatorSpacingSize.Large),
+			)
+			.addTextDisplayComponents(
+				new TextDisplayBuilder()
+					.setContent(stripIndent(`
+						## Pronoms personnels
+						Cochez la ou les cases grises (boutons gris) correspondant à vos pronoms personnels.
+						`)),
+			)
+			.addActionRowComponents(
+				new ActionRowBuilder<ButtonBuilder>()
+					.addComponents(
+						new ButtonBuilder()
+							.setCustomId("pronounsHeHimButton")
+							.setStyle(ButtonStyle.Secondary)
+							.setLabel("Il")
+							.setEmoji(config.emojis.male),
+						new ButtonBuilder()
+							.setCustomId("pronounsSheHerButton")
+							.setStyle(ButtonStyle.Secondary)
+							.setLabel("Elle")
+							.setEmoji(config.emojis.female),
+						new ButtonBuilder()
+							.setCustomId("pronounsTheyThemButton")
+							.setStyle(ButtonStyle.Secondary)
+							.setLabel("Iel")
+							.setEmoji(config.emojis.nonBinary),
 					),
 			)
 			.addSeparatorComponents(
@@ -212,7 +244,7 @@ export function getRulesMessages() {
 							.setCustomId("irlRoleButton")
 							.setStyle(ButtonStyle.Primary)
 							.setLabel("Obtenir l'accès")
-							.setEmoji({ name: "🤝" }),
+							.setEmoji(config.emojis.handshake),
 					),
 			)
 			.addSeparatorComponents(
@@ -235,7 +267,7 @@ export function getRulesMessages() {
 							.setCustomId("disconnectButton")
 							.setStyle(ButtonStyle.Danger)
 							.setLabel("Déconnecter")
-							.setEmoji({ name: "⛓️‍💥" }),
+							.setEmoji(config.emojis.brokenChain),
 					),
 			),
 	};
