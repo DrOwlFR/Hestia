@@ -7,7 +7,7 @@
 		"start": "node ./dist/src/index.js",
 		"build-dev": "tsc --watch",
 		"build": "tsc",
-		"build-force": "tsc --force",
+		"build-force": "tsc --build --force",
 		"prepare": "husky install"
 	},
 	"dependencies": {
@@ -26,6 +26,7 @@
 		"eslint": "^9.36.0",
 		"eslint-plugin-import": "^2.32.0",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"eslint-plugin-sort-destructure-keys": "^3.0.0",
 		"husky": "^9.1.7",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
