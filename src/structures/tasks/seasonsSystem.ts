@@ -1,7 +1,7 @@
 import type { TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
-import { rulesMessages } from "../utils/rulesMessages";
+import { getRulesMessages } from "../utils/rulesMessages";
 
 type Season = "spring" | "summer" | "autumn" | "winter";
 
@@ -76,6 +76,8 @@ export async function updateRulesMessages(channel: TextChannel, client: ShewenyC
 	const botMessages = (await channel.messages.fetch())
 		.filter(msg => msg.author.id === client.user!.id)
 		.reverse();
+
+	const rulesMessages = getRulesMessages();
 
 	const rulesMessagesList = [
 		rulesMessages.intro,

@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.6.3", description: "Dernière version en date", value: "1.6.3" },
+				{ label: "v1.6.4", description: "Dernière version en date", value: "1.6.4" },
+				{ label: "v1.6.3", value: "1.6.3" },
 				{ label: "v1.6.2", value: "1.6.2" },
 				{ label: "v1.6.1", description: "Première version stable", value: "1.6.1" },
 				{ label: "v1.6.0-beta", value: "1.6.0-beta" },
@@ -32,6 +33,29 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.6.4": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.4
+							*(16 juillet 2026)*
+							### ➕ Ajout
+							- \`[saisons]\` - Ajout du thème estival pour les règles de vie ! ☀️
+							### 🔨 Corrections & Modifications
+							- \`[règles de vie]\` - Ajout d'une case à cocher dans le formulaire d'acceptation des règles
+							- \`[saisons]\` - Correction d'un bug qui empêchait le changement automatique du thème des règles de vie
+							-# - \`[tâches automatiques]\` - Amélioration globale de la rapidité et de l'efficacité d'exécution des tâches automatiques (nettoyage de la base de données, gestion du rôle du fumoir, sauvegarde de la base de données)
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.3...v1.6.4)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.6.3": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(

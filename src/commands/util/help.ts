@@ -75,7 +75,7 @@ export class HelpCommand extends Command {
 		const lines = `${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}${config.emojis.line}`;
 
 		// Set embed details for the specific command
-		embed.setAuthor({ name: (interaction.member as GuildMember).nickname, iconURL: interaction.user.displayAvatarURL() });
+		embed.setAuthor({ name: (interaction.member as GuildMember).nickname ?? interaction.user.username, iconURL: interaction.user.displayAvatarURL() });
 		embed.setTitle(`${command.name} ${command.adminsOnly ? `— ${config.emojis.warn} Dev Only ${config.emojis.warn}` : ""} ${command.userPermissions.toString() ? `— ${config.emojis.warn} Requiert : *${command.userPermissions}* ${config.emojis.warn}` : ""}`);
 		embed.setDescription(`${command.description}`);
 		embed.addFields({ name: "Utilisation", value: `${command.usage}`, inline: true });

@@ -1,5 +1,5 @@
 import type { ButtonInteraction } from "discord.js";
-import { ActionRowBuilder, MessageFlags, ModalBuilder, TextDisplayBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { CheckboxGroupBuilder, CheckboxGroupOptionBuilder, LabelBuilder, MessageFlags, ModalBuilder, TextDisplayBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 import stripIndent from "strip-indent";
@@ -56,15 +56,29 @@ export class RulesAcceptButton extends Button {
 					new TextDisplayBuilder()
 						.setContent("**Rappel** : Pour obtenir votre code de vérification. Rendez-vous sur votre page de profil du site, et cliquez sur le bouton « Lier »."),
 				)
-				.addComponents(
-					new ActionRowBuilder<TextInputBuilder>()
-						.addComponents(
-							new TextInputBuilder({
-								custom_id: "verificationCode",
-								style: TextInputStyle.Short,
-								label: "Code de vérification",
-								required: true,
-							}),
+				.addLabelComponents(
+					new LabelBuilder()
+						.setLabel("Code de vérification")
+						.setTextInputComponent(
+							new TextInputBuilder()
+								.setCustomId("verificationCode")
+								.setStyle(TextInputStyle.Short)
+								.setRequired(true),
+						),
+					new LabelBuilder()
+						.setLabel("Accepter les règles")
+						.setCheckboxGroupComponent(
+							new CheckboxGroupBuilder()
+								.setCustomId("rulesAcceptCheckbox")
+								.setOptions(
+									new CheckboxGroupOptionBuilder()
+										.setValue("accept")
+										.setLabel("J'ai lu et j'accepte les règles du Manoir")
+										.setDefault(false),
+								)
+								.setMinValues(1)
+								.setMaxValues(1)
+								.setRequired(true),
 						),
 				),
 		);
