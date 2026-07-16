@@ -7,6 +7,7 @@
 		"start": "node ./dist/src/index.js",
 		"build-dev": "tsc --watch",
 		"build": "tsc",
+		"build-force": "tsc --force",
 		"prepare": "husky install"
 	},
 	"dependencies": {
