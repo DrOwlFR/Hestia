@@ -50,12 +50,12 @@ export class PronounsButtons extends Button {
 								.setCustomId(entry.removeCancelId)
 								.setLabel("Non ! J'ai changé d'avis")
 								.setStyle(ButtonStyle.Danger)
-								.setEmoji("✖️"),
+								.setEmoji(`${config.emojis.crossWhite}`),
 							new ButtonBuilder()
 								.setCustomId(entry.removeConfirmId)
 								.setLabel("Oui, me retirer ce pronom")
 								.setStyle(ButtonStyle.Primary)
-								.setEmoji("⛓️‍💥"),
+								.setEmoji(`${config.emojis.brokenChain}`),
 						),
 				],
 				flags: MessageFlags.Ephemeral,

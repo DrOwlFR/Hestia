@@ -75,6 +75,7 @@ export default {
 		brokenChain: "",
 		handshake: "",
 		checkWhite: "",
+		crossWhite: "",
 		male: "",
 		female: "",
 		nonBinary: "",
