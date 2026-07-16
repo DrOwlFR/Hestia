@@ -1,6 +1,5 @@
 import type { ModalSubmitInteraction } from "discord.js";
 import { GuildMember, MessageFlags } from "discord.js";
-import type { Document } from "mongoose";
 import type { ShewenyClient } from "sheweny";
 import { Modal } from "sheweny";
 import stripIndent from "strip-indent";
@@ -79,26 +78,19 @@ export class ModalComponent extends Modal {
 		// If connection successful
 		if (connectResponseJson.success) {
 
-			// Create or update LinkedUser document
-			let document: Document | null = await LinkedUser.findOne({ discordId: user.id });
-			if (!document) {
-				document = await LinkedUser.create({
-					discordId: user.id,
-					siteId: connectResponseJson.userId,
-					discordUsername: user.username,
-					roles: connectResponseJson.roles,
-				});
-			} else {
-				document = await LinkedUser.findOneAndUpdate(
-					{ discordId: user.id },
-					{
+			// Create or update LinkedUser document in one atomic operation
+			const document = await LinkedUser.findOneAndUpdate(
+				{ discordId: user.id },
+				{
+					$setOnInsert: { discordId: user.id },
+					$set: {
 						siteId: connectResponseJson.userId,
 						discordUsername: user.username,
 						roles: connectResponseJson.roles,
 					},
-					{ new: true },
-				);
-			}
+				},
+				{ new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
+			);
 
 			// Handle database error
 			if (!document) {

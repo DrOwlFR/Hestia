@@ -41,7 +41,7 @@ export class BotInfoCommand extends Command {
 			embeds: [
 				client.functions.embed()
 					.setTitle(`Informations sur __${client.user?.username}__`)
-					.setThumbnail(client.user?.displayAvatarURL({ size: 1024 }))
+					.setThumbnail(client.user?.displayAvatarURL({ size: 1024 }) ?? null)
 					.addFields([
 						{ name: "🩷 Surnom", value: `Philibert Annick de la Botte de Sept Lieues (par <@${config.adminsDiscordIds[0]}>)` },
 						{ name: "💚 Marraine", value: `<@${config.discordModsIds[0]}>` },

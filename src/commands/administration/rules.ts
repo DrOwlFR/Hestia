@@ -5,7 +5,7 @@ import { Command } from "sheweny";
 import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
-import { rulesMessages } from "../../structures/utils/rulesMessages";
+import { getRulesMessages } from "../../structures/utils/rulesMessages";
 
 export class RulesCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -51,6 +51,8 @@ export class RulesCommand extends Command {
 		if (!channel || channel.type !== ChannelType.GuildText) {
 			return interaction.followUp({ content: `${config.emojis.cross} Cette commande doit être utilisée dans un salon textuel.`, flags: MessageFlags.Ephemeral });
 		}
+
+		const rulesMessages = getRulesMessages();
 
 		// Sending the rules messages one by one
 		await channel.send({

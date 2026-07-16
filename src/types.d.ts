@@ -14,8 +14,7 @@ declare module "sheweny" {
 	 */
 	export interface ShewenyClient {
 		functions: {
-			// embed: () => EmbedBuilder,
-			embed: Function,
+			embed: () => EmbedBuilder,
 			formatDateTime: (date?: Date) => string,
 			delay: (ms: number) => Promise<void>,
 			log: (type: LogChannel, message: string) => Promise<void>,
