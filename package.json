@@ -1,6 +1,6 @@
 {
 	"name": "hestia",
-	"version": "1.6.3",
+	"version": "1.6.4",
 	"description": "",
 	"main": "dist/src/index.js",
 	"scripts": {
