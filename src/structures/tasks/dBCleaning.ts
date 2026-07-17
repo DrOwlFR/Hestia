@@ -3,7 +3,7 @@ import Bottleneck from "bottleneck";
 import type { Guild, TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
-// import type { responseJson } from "../../types";
+import type { responseJson } from "../../types";
 import config from "../config";
 import { LinkedUser, User } from "../database/models";
 
@@ -191,9 +191,8 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 						// If the user exists on the site, sync roles
 						if (member) {
 							// Sync roles between DB and site account
-							// const getResponseJson = await getResponse.json() as responseJson;
-							// const rolesApi = getResponseJson.roles || [];
-							const rolesApi = ["user"];
+							const getResponseJson = await getResponse.json() as responseJson;
+							const rolesApi = getResponseJson.roles || [];
 							const rolesDb = dbLinkedUser.roles;
 							const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
 							if (rolesDiffer) {
