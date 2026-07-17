@@ -7,15 +7,15 @@ import config from "../../structures/config";
 import { LinkedUser } from "../../structures/database/models";
 import type { responseJson } from "../../types";
 
-export class CleaningRolesCommand extends Command {
+export class CleanRolesCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
-			name: "cleaningroles",
+			name: "cleanroles",
 			description: "Retire le rôle & aux membres qui ne sont pas connectés au site.",
 			category: "Dev",
 			adminsOnly: true,
-			usage: "cleaningroles",
-			examples: ["cleaningroles"],
+			usage: "cleanroles",
+			examples: ["cleanroles"],
 		});
 	}
 
