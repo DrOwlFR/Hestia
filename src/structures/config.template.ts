@@ -43,14 +43,14 @@ export default {
 	seriousRoleId: "",
 	irlRoleId: "",
 
+	pronounsHeHimRoleId: "",
+	pronounsSheHerRoleId: "",
+	pronounsTheyThemRoleId: "",
+
 	adminRoleId: "",
 	modRoleId: "",
 	arobaseRoleId: "",
 	guillemetRoleId: "",
-
-	pronounsHeHimRoleId: "",
-	pronounsSheHerRoleId: "",
-	pronounsTheyThemRoleId: "",
 
 	adminsDiscordIds: [""],
 	discordModsIds: [""],
