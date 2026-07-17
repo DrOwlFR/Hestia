@@ -39,7 +39,7 @@ export class MessageCreateEvent extends Event {
 		// Handles daily message increments, field initialization, and ensures consistent field ordering in the document (just because I love that).
 		// Uses updatePipeline for advanced operations not possible with standard upsert.
 		try {
-			await User.findOneAndUpdate(
+			await User.updateOne(
 				{ discordId: message.author.id },
 				[
 					{
@@ -108,7 +108,7 @@ export class MessageCreateEvent extends Event {
 					},
 					{ $unset: "isNewDay" },
 				],
-				{ upsert: true },
+				{ upsert: true, updatePipeline: true },
 			);
 		}
 		catch (err) {
@@ -119,7 +119,7 @@ export class MessageCreateEvent extends Event {
 		// If the message is sent in the portrait gallery channel, mark the user as having introduced themselves if not already done
 		if (message.channel.id === config.portraitGaleryChannelId) {
 			try {
-				await User.findOneAndUpdate(
+				await User.updateOne(
 					{
 						discordId: message.author.id,
 						introduced: { $ne: true },

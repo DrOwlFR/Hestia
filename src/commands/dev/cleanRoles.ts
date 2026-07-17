@@ -120,9 +120,11 @@ export class CleanRolesCommand extends Command {
 					const rolesDb = linked.roles;
 					const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
 					if (rolesDiffer) {
-						await LinkedUser.findOneAndUpdate(
+						await LinkedUser.updateOne(
 							{ discordId: member.id },
-							{ roles: rolesApi },
+							{
+								$set: { roles: rolesApi },
+							},
 						);
 						logs.push(`🔄 Les rôles du membre ${member} ont été mis à jour dans la BDD.`);
 					}

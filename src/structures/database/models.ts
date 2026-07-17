@@ -33,7 +33,7 @@ export interface dbUser extends Document {
  */
 export const User = model<dbUser>("User", new Schema({
 	discordId: { type: String, required: true, unique: true },
-	discordUsername: { type: String, required: true, unique: true },
+	discordUsername: { type: String, required: true },
 	totalMessages: { type: Number, required: true, default: 0 },
 	messagesPerDay: { type: [Object], required: true, default: [] },
 	introduced: { type: Boolean, required: true, default: false },
@@ -62,7 +62,7 @@ export interface linkedUser extends Document {
 export const LinkedUser = model<linkedUser>("linked_user", new Schema({
 	discordId: { type: String, required: true, unique: true },
 	siteId: { type: Number, required: true, unique: true },
-	discordUsername: { type: String, required: true, unique: true },
+	discordUsername: { type: String, required: true },
 	roles: { type: [String], required: true },
 }, { timestamps: true, strict: true }));
 

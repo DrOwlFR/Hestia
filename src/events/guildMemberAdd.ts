@@ -32,7 +32,7 @@ export class GuildMemberAddEvent extends Event {
 
 		try {
 			// Create or update the User document with initial data
-			await User.findOneAndUpdate(
+			await User.updateOne(
 				{ discordId: member.id },
 				[{
 					$set: {

@@ -196,9 +196,11 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 							const rolesDb = dbLinkedUser.roles;
 							const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
 							if (rolesDiffer) {
-								await LinkedUser.findOneAndUpdate(
+								await LinkedUser.updateOne(
 									{ discordId: dbLinkedUser.discordId },
-									{ roles: rolesApi },
+									{
+										$set: { roles: rolesApi },
+									},
 								);
 							}
 
