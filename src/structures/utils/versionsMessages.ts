@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.6.4", description: "Dernière version en date", value: "1.6.4" },
+				{ label: "v1.6.5", description: "Dernière version en date", value: "1.6.5" },
+				{ label: "v1.6.4", value: "1.6.4" },
 				{ label: "v1.6.3", value: "1.6.3" },
 				{ label: "v1.6.2", value: "1.6.2" },
 				{ label: "v1.6.1", description: "Première version stable", value: "1.6.1" },
@@ -33,6 +34,25 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.6.5": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.5 - *Correctif d'urgence*
+							*(17 juillet 2026)*
+							### 🔨 Correction
+							-# - \`[tâches de nettoyage de la base de données]\` - Suppression d'une ligne de code de test qui empêchait le nettoyage de la base de données de s'exécuter correctement.
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.4...v1.6.5)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.6.4": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
