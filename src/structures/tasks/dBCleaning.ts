@@ -118,6 +118,25 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 						await LinkedUser.deleteOne({ discordId: dbUser.discordId });
 						await dbUser.deleteOne();
 						allLogs.push(`-# 🧹 L'ID \`${dbUser.discordId}\` (username : \`${dbUser.discordUsername}\`) a été supprimé.`);
+					} else {
+						// If the user is still in the guild, check if their roles have changed and update the database accordingly
+						const accessoryRoles = [config.livingRoomRoleId,
+							config.workshopRoleId,
+							config.libraryRoleId,
+							config.terraceRoleId,
+							config.seriousRoleId,
+							config.irlRoleId];
+						const accessoryRolesGuild = member.roles.cache.map(r => r.id).filter(id => accessoryRoles.includes(id)) || [];
+						const accessoryRolesDb = dbUser.accessoryRoles || [];
+						const rolesDiffer = accessoryRolesGuild.length !== accessoryRolesDb.length || !accessoryRolesGuild.every(role => accessoryRolesDb.includes(role));
+						if (rolesDiffer) {
+							await User.updateOne(
+								{ discordId: dbUser.discordId },
+								{
+									$set: { accessoryRoles: accessoryRolesGuild },
+								},
+							);
+						}
 					}
 				} catch (err) {
 					console.error(err);
