@@ -5,7 +5,7 @@ import { Command } from "sheweny";
 import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
-import { updateRulesMessages } from "../../structures/tasks/seasonsSystem";
+import { getCurrentSeason, updateRulesMessages } from "../../structures/tasks/seasonsSystem";
 
 export class RulesCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -53,7 +53,7 @@ export class RulesCommand extends Command {
 		await interaction.reply({ content: `${config.emojis.loading} Édition des règles en cours...`, flags: MessageFlags.Ephemeral });
 
 		// Update the rules messages in the rules channel
-		await updateRulesMessages(rulesChannel, this.client);
+		await updateRulesMessages(rulesChannel, this.client, getCurrentSeason());
 
 		// Follow up with a success message
 		return interaction.followUp({ content: `${config.emojis.check} Les règles ont été éditées correctement.`, flags: MessageFlags.Ephemeral });

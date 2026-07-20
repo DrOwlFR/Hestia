@@ -1,9 +1,12 @@
-import type { TextChannel } from "discord.js";
+import type { Guild, TextChannel } from "discord.js";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { ShewenyClient } from "sheweny";
 
+// import config from "../config";
 import { getRulesMessages } from "../utils/rulesMessages";
 
-type Season = "spring" | "summer" | "autumn" | "winter";
+export type Season = "spring" | "summer" | "autumn" | "winter";
 
 const seasonStartDates: Record<Season, { month: number; day: number }> = {
 	spring: { month: 3, day: 20 },
@@ -70,14 +73,15 @@ export function getCurrentSeason(date = new Date()): Season {
  * - Edit each message with corresponding rule component from rulesMessagesList
  * @param channel - The text channel containing the rules messages.
  * @param client - The Sheweny client.
+ * @param season - The season to update rules for.
  */
-export async function updateRulesMessages(channel: TextChannel, client: ShewenyClient): Promise<void> {
+export async function updateRulesMessages(channel: TextChannel, client: ShewenyClient, season: Season): Promise<void> {
 
 	const botMessages = (await channel.messages.fetch())
 		.filter(msg => msg.author.id === client.user!.id)
 		.reverse();
 
-	const rulesMessages = getRulesMessages();
+	const rulesMessages = getRulesMessages(season);
 
 	const rulesMessagesList = [
 		rulesMessages.intro,
@@ -100,4 +104,12 @@ export async function updateRulesMessages(channel: TextChannel, client: ShewenyC
 			],
 		});
 	}
+}
+
+export async function updateGuildIcon(gardenGuild: Guild, season: Season): Promise<void> {
+	const iconPath = resolve(process.cwd(), "src/structures/utils/guildIcons", `${season}.png`);
+	const icon = await readFile(iconPath);
+	await gardenGuild.edit({
+		icon,
+	});
 }

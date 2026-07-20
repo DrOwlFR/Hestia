@@ -11,7 +11,7 @@ import config from "../structures/config";
 import { LinkedUser, MessageStats, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
-import { getSeasonStartingToday, updateRulesMessages } from "../structures/tasks/seasonsSystem";
+import { getCurrentSeason, getSeasonStartingToday, updateGuildIcon, updateRulesMessages } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
 
 export class ReadyEvent extends Event {
@@ -103,12 +103,25 @@ export class ReadyEvent extends Event {
 			timezone: "Europe/Paris",
 		});
 
+		// Fetch the garden guild to ensure we have the latest data (for seasonal updates and thread joining)
+		let gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
+		if (!gardenGuild) {
+			try {
+				gardenGuild = await this.client.guilds.fetch(config.gardenGuildId);
+			} catch (error) {
+				console.error("Impossible de récupérer la guilde du Jardin pour les tâches saisonnières et les threads.", error);
+				return;
+			}
+		}
+
 		// --- Season theme system ---
 
 		// On each start up (in case the bot was down on the day the season changed), check current season and edit the rules messages color
-		const rulesChannel = this.client.channels.cache.get(config.rulesChannelId);
-		if (rulesChannel && rulesChannel.type === ChannelType.GuildText) {
-			await updateRulesMessages(rulesChannel, this.client);
+		const startupRulesChannel = this.client.channels.cache.get(config.rulesChannelId);
+		if (startupRulesChannel && startupRulesChannel.type === ChannelType.GuildText) {
+			const currentSeason = getCurrentSeason();
+			await updateRulesMessages(startupRulesChannel, this.client, currentSeason);
+			await updateGuildIcon(gardenGuild, currentSeason);
 		}
 
 		// Each day at 00:05, check if a new season is starting, if not, do nothing. If yes, edit rules messages.
@@ -122,20 +135,23 @@ export class ReadyEvent extends Event {
 			console.log("⌚ Changement de saison en cours...");
 			seasonsLogChannel.send(`${config.emojis.loading} Changement de saison en cours...`);
 
-			// Edits rules messages with new seasonal colors
-			if (rulesChannel && rulesChannel.type === ChannelType.GuildText) {
-				await updateRulesMessages(rulesChannel, this.client);
-				const seasonTranslate = {
-					"spring": "au printemps 🌸",
-					"summer": "en été ☀️",
-					"autumn": "en automne 🍂",
-					"winter": "en hiver ❄️",
-				};
-
-				seasonsLogChannel.send(`${config.emojis.check} Nous sommes passés ${seasonTranslate[startingSeason]} !`);
-			} else {
-				seasonsLogChannel.send(`${config.emojis.cross} Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
+			const rulesChannel = this.client.channels.cache.get(config.rulesChannelId);
+			if (!rulesChannel || rulesChannel.type !== ChannelType.GuildText) {
+				await seasonsLogChannel.send(`${config.emojis.cross} Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
+				return;
 			}
+
+			// Edits rules messages with new seasonal colors
+			await updateRulesMessages(rulesChannel, this.client, startingSeason);
+			await updateGuildIcon(gardenGuild, startingSeason);
+			const seasonTranslate = {
+				"spring": "au printemps 🌸",
+				"summer": "en été ☀️",
+				"autumn": "en automne 🍂",
+				"winter": "en hiver ❄️",
+			};
+
+			seasonsLogChannel.send(`${config.emojis.check} Nous sommes passés ${seasonTranslate[startingSeason]} !`);
 		},
 		{
 			timezone: "Europe/Paris",
@@ -144,8 +160,7 @@ export class ReadyEvent extends Event {
 
 		// --- Threads joining system ---
 
-		// Fetch the guild and its channels to join active threads
-		const gardenGuild = await this.client.guilds.fetch(config.gardenGuildId);
+		// Fetch all channels in the guild
 		const channels = await gardenGuild.channels.fetch();
 
 		// Rate limiter to avoid hitting Discord's API limits when joining threads

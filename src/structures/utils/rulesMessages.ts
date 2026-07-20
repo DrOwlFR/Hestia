@@ -2,12 +2,12 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Section
 import stripIndent from "strip-indent";
 
 import config from "../config";
-import { getCurrentSeason } from "../tasks/seasonsSystem";
+import { getCurrentSeason, type Season } from "../tasks/seasonsSystem";
 
-export function getRulesMessages() {
+export function getRulesMessages(season?: Season) {
 	// Get the current season and apply corresponding color theme to rules messages
-	const season = getCurrentSeason();
-	const colors = config[season];
+	const currentSeason = season ?? getCurrentSeason();
+	const colors = config[currentSeason];
 
 	/**
 	 * rulesMessages: contains all rule and info message components with seasonal theming.
