@@ -26,7 +26,12 @@ export async function backupCollection<T extends Document = Document>(Model: Mod
 		const data = mongo.BSON.EJSON.stringify(docs, { relaxed: false });
 
 		const now = new Date();
-		const formattedDateTime = now.toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
+		const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+		const timezoneOffset = -now.getTimezoneOffset();
+		const timezoneSign = timezoneOffset >= 0 ? "+" : "-";
+		const timezoneHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, "0");
+		const timezoneMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, "0");
+		const formattedDateTime = `${localDate.toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19)}_UTC${timezoneSign}${timezoneHours}-${timezoneMinutes}`;
 
 		await fs.promises.writeFile(`${collectionName}-${formattedDateTime}.json`, data, "utf8");
 
