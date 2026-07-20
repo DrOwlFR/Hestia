@@ -60,4 +60,4 @@ When the bot starts, Sheweny auto-registers slash commands for the guild IDs lis
 - Keep configuration secrets in `config.ts`; **do not commit them**.
 
 ## License
-Creative Commons BY-NC-SA (see LICENSE.md).
+The source code is under Creative Commons BY-NC-SA license (see LICENSE.md). The images and assets are under All Rights Reserved by the original authors.
