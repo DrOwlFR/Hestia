@@ -82,7 +82,7 @@ async function deleteUser(userId: string): Promise<Response> {
 }
 
 // Log channels types
-export type LogChannel = "generalError" | "dbError" | "dbCleaningCron" | "dbBackupCron" | "seriousRoleCron" | "seasonsCron";
+export type LogChannel = "generalError" | "dbError" | "dbCleaningCron" | "dbBackupCron" | "seriousRoleCron" | "seasonsCron" | "notificationsCron";
 
 // Mapping of log channel types to their Discord channel IDs
 const LOG_CHANNELS: Record<LogChannel, string> = {
@@ -92,6 +92,7 @@ const LOG_CHANNELS: Record<LogChannel, string> = {
 	dbBackupCron: config.dbBackupCronChannelId,
 	seriousRoleCron: config.seriousRoleCronChannelId,
 	seasonsCron: config.seasonsCronChannelId,
+	notificationsCron: config.notificationsCronChannelId,
 };
 
 /**
