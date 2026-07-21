@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import Bottleneck from "bottleneck";
 import type { ThreadChannel } from "discord.js";
-import { ActivityType, ChannelType, Guild } from "discord.js";
+import { ActivityType, ChannelType } from "discord.js";
 import { schedule } from "node-cron";
 import type { ShewenyClient } from "sheweny";
 import { Event } from "sheweny";
@@ -11,8 +11,9 @@ import config from "../structures/config";
 import { LinkedUser, MessageStats, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
-import { getCurrentSeason, getSeasonStartingToday, updateGuildIcon, updateRulesMessages } from "../structures/tasks/seasonsSystem";
+import { getCurrentSeason, getSeasonStartingToday, updateSeasonalTheme } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
+import { getGardenGuild } from "../structures/utils/functions";
 
 export class ReadyEvent extends Event {
 	constructor(client: ShewenyClient) {
@@ -36,12 +37,13 @@ export class ReadyEvent extends Event {
 
 		// Bot status messages
 		let index = 0;
-		setInterval(() => {
-			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
+		setInterval(async () => {
+			const gardenGuild = await getGardenGuild(this.client);
+			if (!gardenGuild) return;
 
-			const users = gardenGuild!.members.cache.filter(member => !member.user.bot).size;
-			const confirmedUsers = gardenGuild?.roles.cache.get(config.confirmedUserRoleId)?.members.size;
-			const nonConfirmedUsers = gardenGuild?.roles.cache.get(config.nonConfirmedUserRoleId)?.members.size;
+			const users = gardenGuild.members.cache.filter(member => !member.user.bot).size;
+			const confirmedUsers = gardenGuild.roles.cache.get(config.confirmedUserRoleId)?.members.size;
+			const nonConfirmedUsers = gardenGuild.roles.cache.get(config.nonConfirmedUserRoleId)?.members.size;
 			const statusList = [
 				`${users} membre${users > 1 ? "s" : ""}`,
 				`${confirmedUsers} esperluette${confirmedUsers! > 1 ? "s" : ""}`,
@@ -61,15 +63,7 @@ export class ReadyEvent extends Event {
 		// --- DB cleaning cron: everyday at 1 AM ---
 		// Cleans the Users and LinkedUsers collections: removes users no longer in guild, deletes site links, removes roles
 		schedule("0 1 * * *", async () => {
-			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
-			if (!(gardenGuild instanceof Guild)) return;
-
-			const dbCleaningCronLogChannel = this.client.channels.cache.get("1427009582076788846");
-			if (!dbCleaningCronLogChannel || dbCleaningCronLogChannel.type !== ChannelType.GuildText) return;
-
-			console.log("⌚ Lancement du nettoyage quotidien de la base de données...");
-			dbCleaningCronLogChannel.send(`${config.emojis.loading} Lancement de la boucle quotidienne de nettoyage de la base de données...`);
-			await dailyDBCleaning(gardenGuild, this.client, dbCleaningCronLogChannel);
+			await dailyDBCleaning(this.client);
 		}, {
 			timezone: "Europe/Paris",
 		});
@@ -77,15 +71,7 @@ export class ReadyEvent extends Event {
 		// --- Serious role adding/removing cron: everyday at 2AM ---
 		// Updates 'serious' role based on message count (50+ in last 30 days for confirmed users)
 		schedule("0 2 * * *", async () => {
-			const gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
-			if (!(gardenGuild instanceof Guild)) return;
-
-			const seriousRoleCronLogChannel = this.client.channels.cache.get("1426975372716806316");
-			if (!seriousRoleCronLogChannel || seriousRoleCronLogChannel.type !== ChannelType.GuildText) return;
-
-			console.log("⌚ Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
-			seriousRoleCronLogChannel.send(`${config.emojis.loading} Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...`);
-			await dailySeriousRolesUpdate(gardenGuild, this.client, seriousRoleCronLogChannel);
+			await dailySeriousRolesUpdate(this.client);
 		}, {
 			timezone: "Europe/Paris",
 		});
@@ -93,67 +79,25 @@ export class ReadyEvent extends Event {
 		// --- DB saving cron: every monday at 3AM ---
 		// Backs up Users, LinkedUsers, and MessageStats collections to JSON files
 		schedule("0 3 * * 1", async () => {
-			const dbBackupLogChannel = this.client.channels.cache.get("1426661664475975762");
-			if (!dbBackupLogChannel || dbBackupLogChannel.type !== ChannelType.GuildText) return;
-
-			console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
-			dbBackupLogChannel.send(`${config.emojis.loading} Lancement de la sauvegarde hebdomadaire de la base de données...`);
-			await weeklyDBBackup(User, LinkedUser, MessageStats, dbBackupLogChannel);
+			await weeklyDBBackup(this.client, User, LinkedUser, MessageStats);
 		}, {
 			timezone: "Europe/Paris",
 		});
 
-		// Fetch the garden guild to ensure we have the latest data (for seasonal updates and thread joining)
-		let gardenGuild = this.client.guilds.cache.get(config.gardenGuildId);
-		if (!gardenGuild) {
-			try {
-				gardenGuild = await this.client.guilds.fetch(config.gardenGuildId);
-			} catch (error) {
-				console.error("Impossible de récupérer la guilde du Jardin pour les tâches saisonnières et les threads.", error);
-				return;
-			}
-		}
-
 		// --- Season theme system ---
 
-		// On each start up (in case the bot was down on the day the season changed), check current season and edit the rules messages color
-		const startupRulesChannel = this.client.channels.cache.get(config.rulesChannelId);
-		if (startupRulesChannel && startupRulesChannel.type === ChannelType.GuildText) {
-			const currentSeason = getCurrentSeason();
-			await updateRulesMessages(startupRulesChannel, this.client, currentSeason);
-			await updateGuildIcon(gardenGuild, currentSeason);
-		}
+		// On each start up (in case the bot was down on the day the season changed), check current season and edit the rules messages color and guild icon accordingly
+		const currentSeason = getCurrentSeason();
+		await updateSeasonalTheme(this.client, currentSeason);
 
 		// Each day at 00:05, check if a new season is starting, if not, do nothing. If yes, edit rules messages.
 		schedule("5 0 * * *", async () => {
 			const startingSeason = getSeasonStartingToday();
 			if (!startingSeason) return;
 
-			const seasonsLogChannel = this.client.channels.cache.get("1459323515030212780");
-			if (!seasonsLogChannel || seasonsLogChannel.type !== ChannelType.GuildText) return;
-
-			console.log("⌚ Changement de saison en cours...");
-			seasonsLogChannel.send(`${config.emojis.loading} Changement de saison en cours...`);
-
-			const rulesChannel = this.client.channels.cache.get(config.rulesChannelId);
-			if (!rulesChannel || rulesChannel.type !== ChannelType.GuildText) {
-				await seasonsLogChannel.send(`${config.emojis.cross} Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
-				return;
-			}
-
-			// Edits rules messages with new seasonal colors
-			await updateRulesMessages(rulesChannel, this.client, startingSeason);
-			await updateGuildIcon(gardenGuild, startingSeason);
-			const seasonTranslate = {
-				"spring": "au printemps 🌸",
-				"summer": "en été ☀️",
-				"autumn": "en automne 🍂",
-				"winter": "en hiver ❄️",
-			};
-
-			seasonsLogChannel.send(`${config.emojis.check} Nous sommes passés ${seasonTranslate[startingSeason]} !`);
-		},
-		{
+			// Edits rules messages and guild icon with new seasonal colors
+			await updateSeasonalTheme(this.client, startingSeason);
+		}, {
 			timezone: "Europe/Paris",
 		},
 		);
@@ -161,6 +105,8 @@ export class ReadyEvent extends Event {
 		// --- Threads joining system ---
 
 		// Fetch all channels in the guild
+		const gardenGuild = await getGardenGuild(this.client);
+		if (!gardenGuild) return;
 		const channels = await gardenGuild.channels.fetch();
 
 		// Rate limiter to avoid hitting Discord's API limits when joining threads

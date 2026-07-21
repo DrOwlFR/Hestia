@@ -6,6 +6,7 @@ import stripIndent from "strip-indent";
 
 import config from "../../../structures/config";
 import { type dbUser, User } from "../../../structures/database/models";
+import { sendLog } from "../../../structures/utils/functions";
 
 export class IRLRoleButton extends Button {
 	constructor(client: ShewenyClient) {
@@ -80,7 +81,7 @@ export class IRLRoleButton extends Button {
 		catch (err) {
 			// eslint-disable-next-line no-console
 			console.error(err);
-			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.\n\`\`\`${err}\`\`\``);
+			await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.\n\`\`\`${err}\`\`\``);
 			return button.reply({
 				content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*

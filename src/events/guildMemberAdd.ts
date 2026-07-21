@@ -4,6 +4,7 @@ import { Event } from "sheweny";
 
 import config from "../structures/config";
 import { User } from "../structures/database/models";
+import { sendLog } from "../structures/utils/functions";
 
 export class GuildMemberAddEvent extends Event {
 	constructor(client: ShewenyClient) {
@@ -53,7 +54,7 @@ export class GuildMemberAddEvent extends Event {
 			// Log the error to console and notify admins in a channel
 			// eslint-disable-next-line no-console
 			console.error(err);
-			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lors de son **arrivée sur le serveur**. À vérifier.\n\`\`\`${err}\`\`\``);
+			await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lors de son **arrivée sur le serveur**. À vérifier.\n\`\`\`${err}\`\`\``);
 		}
 
 	}

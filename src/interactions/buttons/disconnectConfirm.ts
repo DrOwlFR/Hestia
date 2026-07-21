@@ -5,6 +5,7 @@ import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
 import { LinkedUser } from "../../structures/database/models";
+import { sendLog } from "../../structures/utils/functions";
 import type { responseJson } from "../../types";
 
 export class DisconnectConfirmButton extends Button {
@@ -66,7 +67,7 @@ export class DisconnectConfirmButton extends Button {
 			// Delete from LinkedUser collection and log if deletion failed
 			const deleteResult = await LinkedUser.deleteOne({ discordId: user.id, siteId: getResponseJson.userId }).catch(() => null);
 			if (!deleteResult || deleteResult.deletedCount === 0) {
-				await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`);
+				await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été supprimé correctement. À vérifier.`);
 			}
 
 			const memberRoles = member.roles;

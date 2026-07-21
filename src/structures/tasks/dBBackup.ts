@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 import fs from "fs";
 
-import type { TextChannel } from "discord.js";
 import type { Document, Model } from "mongoose";
 import { mongo } from "mongoose";
+import type { ShewenyClient } from "sheweny";
 
 import config from "../config";
 import type { dbUser, linkedUser, messageStats } from "../database/models";
+import { sendLog } from "../utils/functions";
 
 /**
  * backupCollection: backs up a MongoDB collection to a JSON file.
@@ -16,11 +17,11 @@ import type { dbUser, linkedUser, messageStats } from "../database/models";
  * - Stringify documents to BSON EJSON
  * - Generate timestamped filename and write file
  * - Send success/error message to log channel
+ * @param client - The ShewenyClient instance for logging.
  * @param Model - The Mongoose model for the collection to backup.
  * @param collectionName - The name of the collection for the filename.
- * @param logChannel - The Discord channel to send log messages.
  */
-export async function backupCollection<T extends Document = Document>(Model: Model<T>, collectionName: string, logChannel: TextChannel) {
+export async function backupCollection<T extends Document = Document>(client: ShewenyClient, Model: Model<T>, collectionName: string) {
 	try {
 		const docs = await Model.find().lean();
 		const data = mongo.BSON.EJSON.stringify(docs, { relaxed: false });
@@ -35,10 +36,10 @@ export async function backupCollection<T extends Document = Document>(Model: Mod
 
 		await fs.promises.writeFile(`${collectionName}-${formattedDateTime}.json`, data, "utf8");
 
-		logChannel.send(`${config.emojis.check} La sauvegarde hebdomadaire de la collection \`${collectionName}\` s'est effectuée correctement.`);
+		await sendLog(client, "dbBackupCron", `${config.emojis.check} La sauvegarde hebdomadaire de la collection \`${collectionName}\` s'est effectuée correctement.`);
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> La sauvegarde hebdomadaire de la collection \`${collectionName}\` a échoué : \`${err}\``);
+		await sendLog(client, "dbBackupCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> La sauvegarde hebdomadaire de la collection \`${collectionName}\` a échoué : \`${err}\``);
 	}
 }
 
@@ -48,17 +49,19 @@ export async function backupCollection<T extends Document = Document>(Model: Mod
  * Steps:
  * - Run backupCollection for each model in parallel
  * - Log completion to console and channel
+ * @param client - The ShewenyClient instance for logging.
  * @param User - The User model.
  * @param LinkedUser - The LinkedUser model.
  * @param MessagesStats - The MessagesStats model.
- * @param logChannel - The Discord channel to send log messages.
  */
-export async function weeklyDBBackup(User: Model<dbUser>, LinkedUser: Model<linkedUser>, MessagesStats: Model<messageStats>, logChannel: TextChannel) {
+export async function weeklyDBBackup(client: ShewenyClient, User: Model<dbUser>, LinkedUser: Model<linkedUser>, MessagesStats: Model<messageStats>) {
+	console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
+	await sendLog(client, "dbBackupCron", `${config.emojis.loading} Lancement de la sauvegarde hebdomadaire de la base de données...`);
 	await Promise.all([
-		backupCollection(User, "Users", logChannel),
-		backupCollection(LinkedUser, "LinkedUsers", logChannel),
-		backupCollection(MessagesStats, "MessagesStats", logChannel),
+		backupCollection(client, User, "Users"),
+		backupCollection(client, LinkedUser, "LinkedUsers"),
+		backupCollection(client, MessagesStats, "MessagesStats"),
 	]);
 	console.log("✅ Fin du script de sauvegarde hebdomadaire de la base de données.");
-	logChannel.send(`${config.emojis.check} Fin du script de sauvegarde hebdomadaire de la base de données.`);
+	await sendLog(client, "dbBackupCron", `${config.emojis.check} Fin du script de sauvegarde hebdomadaire de la base de données.`);
 }
