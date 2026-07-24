@@ -11,7 +11,7 @@ import config from "../structures/config";
 import { LinkedUser, MessageStats, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
-import { getCurrentSeason, getSeasonStartingToday, updateSeasonalTheme } from "../structures/tasks/seasonsSystem";
+import { getCurrentSeason, getSeasonStartingToday, updateGuildIcon, updateRulesMessages, updateSeasonalTheme } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
 import { getGardenGuild } from "../structures/utils/functions";
 
@@ -88,7 +88,8 @@ export class ReadyEvent extends Event {
 
 		// On each start up (in case the bot was down on the day the season changed), check current season and edit the rules messages color and guild icon accordingly
 		const currentSeason = getCurrentSeason();
-		await updateSeasonalTheme(this.client, currentSeason);
+		await updateRulesMessages(this.client, currentSeason);
+		await updateGuildIcon(this.client, currentSeason);
 
 		// Each day at 00:05, check if a new season is starting, if not, do nothing. If yes, edit rules messages.
 		schedule("5 0 * * *", async () => {

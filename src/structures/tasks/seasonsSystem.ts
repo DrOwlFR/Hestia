@@ -1,4 +1,4 @@
-import { ChannelType, type TextChannel } from "discord.js";
+import { ChannelType } from "discord.js";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { ShewenyClient } from "sheweny";
@@ -79,10 +79,16 @@ export function getCurrentSeason(date = new Date()): Season {
  * @param channel - The text channel containing the rules messages.
  * @param season - The season to use for the rules messages, defaults to current season.
  */
-export async function updateRulesMessages(client: ShewenyClient, channel: TextChannel, season?: Season): Promise<void> {
+export async function updateRulesMessages(client: ShewenyClient, season?: Season): Promise<void> {
+
+	const rulesChannel = client.channels.cache.get(config.rulesChannelId);
+	if (!rulesChannel || rulesChannel.type !== ChannelType.GuildText) {
+		await sendLog(client, "seasonsCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
+		return;
+	}
 
 	// Fetch bot messages in the rules channel, ordered from oldest to newest
-	const botMessages = (await channel.messages.fetch())
+	const botMessages = (await rulesChannel.messages.fetch())
 		.filter(msg => msg.author.id === client.user!.id)
 		.reverse();
 
@@ -155,16 +161,9 @@ export async function updateSeasonalTheme(client: ShewenyClient, season: Season)
 	console.log("⌚ Changement de saison en cours...");
 	await sendLog(client, "seasonsCron", `${config.emojis.loading} Changement de saison en cours...`);
 
-	// Get the rules channel and verify it exists
-	const rulesChannel = client.channels.cache.get(config.rulesChannelId);
-	if (!rulesChannel || rulesChannel.type !== ChannelType.GuildText) {
-		await sendLog(client, "seasonsCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
-		return;
-	}
-
 	// Update the guild icon and rules messages for the new season
 	await updateGuildIcon(client, season);
-	await updateRulesMessages(client, rulesChannel, season);
+	await updateRulesMessages(client, season);
 
 	const seasonTranslate = {
 		"spring": "au printemps 🌸",
