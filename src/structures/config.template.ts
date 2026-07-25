@@ -87,6 +87,7 @@ export default {
 		colorAccent: 0xA4345C, // "#a4345c"
 		colorTertiary: 0x639DA5, // "#639da5"
 		logo: "", // Seasonal logo URL for autumn
+		favicon: "", // Seasonal favicon URL for autumn
 	},
 	winter: {
 		colorPrimary: 0x6B98AA, // "#6b98aa"
@@ -94,6 +95,7 @@ export default {
 		colorAccent: 0xB53762, // "#b53762"
 		colorTertiary: 0xB59031, // "#b59031"
 		logo: "", // Seasonal logo URL for winter
+		favicon: "", // Seasonal favicon URL for winter
 	},
 	spring: {
 		colorPrimary: 0x76A003, // "#76a003"
@@ -101,6 +103,7 @@ export default {
 		colorAccent: 0xEF5E76, // "#ef5e76"
 		colorTertiary: 0xAD6373, // "#ad6373"
 		logo: "", // Seasonal logo URL for spring
+		favicon: "", // Seasonal favicon URL for spring
 	},
 	summer: {
 		colorPrimary: 0xF24469, // "#f24469"
@@ -108,6 +111,7 @@ export default {
 		colorAccent: 0x0078c1, // "#0078c1"
 		colorTertiary: 0x83a00c, // "#83a00c"
 		logo: "", // Seasonal logo URL for summer
+		favicon: "", // Seasonal favicon URL for summer
 	},
 
 	githubRepositoryUrl: "",

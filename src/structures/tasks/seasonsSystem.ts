@@ -151,8 +151,8 @@ export async function updateGuildIcon(client: ShewenyClient, season: Season): Pr
  * Summary: When a new season starts, this function updates the guild's icon and edits the rules messages to reflect the seasonal theme.
  * Steps:
  * - Update the guild icon based on the new season
- * - Get the rules channel and verify it exists
- * - Update the rules messages in the rules channel with seasonal components
+ * - Update the rules messages with seasonal components
+ * - Log the seasonal change with a message indicating the new season
  * @param client - The Sheweny client.
  * @param season - The new season to update the theme for.
  */
@@ -165,6 +165,7 @@ export async function updateSeasonalTheme(client: ShewenyClient, season: Season)
 	await updateGuildIcon(client, season);
 	await updateRulesMessages(client, season);
 
+	// Log the seasonal change with a message indicating the new season
 	const seasonTranslate = {
 		"spring": "au printemps 🌸",
 		"summer": "en été ☀️",
@@ -173,4 +174,29 @@ export async function updateSeasonalTheme(client: ShewenyClient, season: Season)
 	};
 
 	await sendLog(client, "seasonsCron", `${config.emojis.check} Nous sommes passés ${seasonTranslate[season]} !`);
+}
+
+/**
+ * pickRandomSeasonColor: picks a random color from the current season's color palette.
+ * Summary: Selects a random color from the seasonal configuration for use in embeds or messages.
+ * Steps:
+ * - Get the current season (or use provided season)
+ * - Retrieve the color palette for the season from config
+ * - Randomly select one of the colors from the palette
+ * @param season - The season to pick a color from, defaults to current season.
+ * @returns - A random color value from the seasonal palette.
+ */
+export function pickRandomSeasonColor(season?: Season): number {
+	// Get the current season (or use provided season)
+	season ??= getCurrentSeason();
+
+	// Retrieve the color palette for the season from config
+	const seasonObject = config[season];
+	const number = Math.floor(Math.random() * 4);
+
+	// Randomly select one of the colors from the palette
+	const key = Object.keys(seasonObject) as (keyof typeof seasonObject)[];
+
+	// Return the randomly selected color value
+	return seasonObject[key[number]] as number;
 }
