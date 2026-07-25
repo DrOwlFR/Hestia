@@ -11,7 +11,7 @@ import config from "../structures/config";
 import { LinkedUser, MessageStats, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
-import { sendNotifications } from "../structures/tasks/notifications/notifications";
+import { sendNotifications } from "../structures/tasks/notifications/notificationsProcessor";
 import { getCurrentSeason, getSeasonStartingToday, updateGuildIcon, updateRulesMessages, updateSeasonalTheme } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
 import { getGardenGuild } from "../structures/utils/functions";
@@ -61,7 +61,7 @@ export class ReadyEvent extends Event {
 			index++;
 		}, 7000);
 
-		// -- - Notifications sending cron: every 1 minutes ---
+		// --- Notifications sending cron: every 1 minutes ---
 		schedule("*/1 * * * *", async () => {
 			await sendNotifications(this.client);
 		});
