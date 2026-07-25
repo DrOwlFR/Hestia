@@ -1,5 +1,7 @@
 import type { ShewenyClient } from "sheweny";
 
+import config from "../../../config";
+import { sendLog } from "../../../utils/functions";
 import { createNotificationEmbed } from "../utils/embedFunction";
 import type { NotificationItem } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
@@ -22,6 +24,8 @@ export async function handleDefaultNotification(client: ShewenyClient, notificat
 			await handleSendingError(client, error, userId, failedRecipients);
 		}
 	}
+
+	await sendLog(client, "notificationsCron", `${config.emojis.warn} <@${config.botAdminsIds[0]}> Nouveau type de notification reçu : \`${notification.type}\`. Notification par défaut envoyée à la place.`);
 
 	return failedRecipients;
 }
