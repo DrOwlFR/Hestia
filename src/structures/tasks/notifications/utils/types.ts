@@ -181,6 +181,20 @@ export interface FollowNewStoryData {
 	story_slug: string,
 }
 
+// Quote notification data interfaces
+
+export interface QuoteChapterQuotedData {
+	quoter_id: number,
+	quoter_name: string,
+	quoter_slug: string,
+	chapter_id: number,
+	chapter_title: string,
+	chapter_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+}
+
 // --- Individual notification type interfaces extending the base notification interface ---
 
 // Comments notification types
@@ -300,6 +314,13 @@ export interface FollowNewStoryNotification extends BaseNotification {
 	data: FollowNewStoryData;
 }
 
+// Quote notification types
+
+export interface QuoteChapterQuotedNotification extends BaseNotification {
+	type: "quote.chapter_quoted";
+	data: QuoteChapterQuotedData;
+}
+
 // Fallback notification type for unrecognized notification types
 export interface FallbackNotification extends BaseNotification {
 	type: string,
@@ -328,7 +349,8 @@ export type NotificationItem =
 | AuthPromotionAcceptedNotification
 | AuthPromotionRejectedNotification
 | FollowNewFollowerNotification
-| FollowNewStoryNotification;
+| FollowNewStoryNotification
+| QuoteChapterQuotedNotification;
 
 // Interface for pagination metadata
 export interface Pagination {

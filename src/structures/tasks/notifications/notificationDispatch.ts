@@ -6,6 +6,7 @@ import { handleDefaultNotification } from "./handlers/defaultHandler";
 import { handleFollowNewFollower, handleFollowNewStory } from "./handlers/followHandler";
 import { handleAuthPromotionAccepted, handleAuthPromotionRejected } from "./handlers/moderationHandler";
 import { handleNewsPublished } from "./handlers/newsHandler";
+import { handleQuoteChapterQuoted } from "./handlers/quoteHandler";
 import { handleReadlistChapterPublished, handleReadlistChapterUnpublished, handleReadlistStoryAdded, handleReadlistStoryCompleted, handleReadlistStoryDeleted, handleReadlistStoryRepublished, handleReadlistStoryUnpublished } from "./handlers/readlistHandler";
 import type { NotificationItem } from "./utils/types";
 
@@ -34,6 +35,7 @@ const handlers: Record<string, NotificationHandler> = {
 	"auth.promotion.rejected": handleAuthPromotionRejected as NotificationHandler,
 	"follow.new_follower": handleFollowNewFollower as NotificationHandler,
 	"follow.new_story": handleFollowNewStory as NotificationHandler,
+	"quote.chapter_quoted": handleQuoteChapterQuoted as NotificationHandler,
 };
 
 export async function dispatchNotifications(client: ShewenyClient, notification: NotificationItem): Promise<string[]> {
