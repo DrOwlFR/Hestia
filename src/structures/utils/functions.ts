@@ -125,13 +125,26 @@ function formatDateTime(date: Date = new Date()): string {
 	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}_${pad(date.getHours())}h${pad(date.getMinutes())}`;
 }
 
+/**
+ * getGardenGuild: retrieves the site's Discord guild (server).
+ * Summary: Fetches the guild object for the configured guild ID, either from cache or by fetching from Discord API.
+ * Steps:
+ * - Attempt to get the guild from the client's cache using the configured guild ID.
+ * - If not found in cache, attempt to fetch the guild from Discord API.
+ * - If fetching fails, log an error and return null.
+ * @param client - The ShewenyClient instance used to access the guilds cache and fetch guilds.
+ * @returns - A promise that resolves to the Guild object if found, or null if not found or an error occurred.
+ */
 async function getGardenGuild(client: ShewenyClient): Promise<Guild | null> {
+	// Attempt to get the guild from the client's cache using the configured guild ID
 	let guild = client.guilds.cache.get(config.gardenGuildId);
 
+	// If not found in cache, attempt to fetch the guild from Discord API
 	if (!guild) {
 		try {
 			guild = await client.guilds.fetch(config.gardenGuildId);
 		} catch (error) {
+			// If fetching fails, log an error and return null
 			await sendLog(client, "generalError", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Impossible de récupérer le serveur du Jardin.`);
 			return null;
 		}
