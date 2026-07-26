@@ -11,7 +11,7 @@ import config from "../structures/config";
 import { LinkedUser, MessageStats, User } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
-import { sendNotifications } from "../structures/tasks/notifications/notificationsProcessor";
+import { sendNotifications } from "../structures/tasks/notifications/services/notificationsProcessor";
 import { getCurrentSeason, getSeasonStartingToday, updateGuildIcon, updateRulesMessages, updateSeasonalTheme } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
 import { getGardenGuild } from "../structures/utils/functions";

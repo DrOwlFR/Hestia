@@ -1,9 +1,9 @@
 import type { ShewenyClient } from "sheweny";
 
-import config from "../../config";
-import { sendLog } from "../../utils/functions";
-import { dispatchNotifications } from "./notificationDispatch";
-import type { NotificationsJson } from "./utils/types";
+import config from "../../../config";
+import { sendLog } from "../../../utils/functions";
+import { dispatchNotifications } from "../notificationDispatch";
+import type { NotificationsJson } from "../utils/types";
 
 /**
  * sendNotifications: retrieves pending notifications from the site API, dispatches them to the appropriate handlers, and marks them as sent.
