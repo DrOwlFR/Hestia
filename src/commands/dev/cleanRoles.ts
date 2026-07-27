@@ -7,15 +7,15 @@ import config from "../../structures/config";
 import { LinkedUser } from "../../structures/database/models";
 import type { responseJson } from "../../types";
 
-export class CleaningRolesCommand extends Command {
+export class CleanRolesCommand extends Command {
 	constructor(client: ShewenyClient) {
 		super(client, {
-			name: "cleaningroles",
+			name: "cleanroles",
 			description: "Retire le rôle & aux membres qui ne sont pas connectés au site.",
 			category: "Dev",
 			adminsOnly: true,
-			usage: "cleaningroles",
-			examples: ["cleaningroles"],
+			usage: "cleanroles",
+			examples: ["cleanroles"],
 		});
 	}
 
@@ -120,9 +120,11 @@ export class CleaningRolesCommand extends Command {
 					const rolesDb = linked.roles;
 					const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
 					if (rolesDiffer) {
-						await LinkedUser.findOneAndUpdate(
+						await LinkedUser.updateOne(
 							{ discordId: member.id },
-							{ roles: rolesApi },
+							{
+								$set: { roles: rolesApi },
+							},
 						);
 						logs.push(`🔄 Les rôles du membre ${member} ont été mis à jour dans la BDD.`);
 					}

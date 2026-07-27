@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import Bottleneck from "bottleneck";
-import type { Guild, TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
 import type { responseJson } from "../../types";
 import config from "../config";
 import { LinkedUser, User } from "../database/models";
+import { getGardenGuild, sendLog } from "../utils/functions";
 
 /**
  * dailyDBCleaning: performs daily cleanup of database collections.
@@ -15,11 +15,15 @@ import { LinkedUser, User } from "../database/models";
  * - Clean Users collection: for each user not in guild, delete site link, remove from LinkedUsers and Users
  * - Clean LinkedUsers collection: for linked users with no site account, remove roles and delete from DB
  * - Log progress and completion
- * @param gardenGuild - The Discord guild to check membership.
  * @param client - The Sheweny client for API functions.
- * @param logChannel - The Discord channel to send log messages.
  */
-export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient, logChannel: TextChannel) {
+export async function dailyDBCleaning(client: ShewenyClient) {
+
+	console.log("⌚ Lancement du nettoyage quotidien de la base de données...");
+	await sendLog(client, "dbCleaningCron", `${config.emojis.loading} Lancement de la boucle quotidienne de nettoyage de la base de données...`);
+
+	const gardenGuild = await getGardenGuild(client);
+	if (!gardenGuild) return;
 
 	// --- Limiters initialisation ---
 	// Bottleneck limiters to manage rate limits for site API calls during the cleaning process.
@@ -56,11 +60,11 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		if (error.response?.status === 429) {
 			// default to 60 seconds if no retryAfter provided
 			const delay = retryAfter ? retryAfter * 1000 : 60 * 1000;
-			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
+			await sendLog(client, "dbCleaningCron", `${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
 			return delay;
 		}
 
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 	deleteLimiter.on("failed", async (error, jobInfo) => {
@@ -71,11 +75,11 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		if (error.response?.status === 429) {
 			// default to 60 seconds if no retryAfter provided
 			const delay = retryAfter ? retryAfter * 1000 : 60 * 1000;
-			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
+			await sendLog(client, "dbCleaningCron", `${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
 			return delay;
 		}
 
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 	fetchLimiter.on("failed", async (error, jobInfo) => {
@@ -86,18 +90,18 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		if (error.response?.status === 429) {
 			// default to 60 seconds if no retryAfter provided
 			const delay = retryAfter ? retryAfter * 1000 : 60 * 1000;
-			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
+			await sendLog(client, "dbCleaningCron", `${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
 			return delay;
 		}
 
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 
 	// --- Cleaning the Users collection ---
 	try {
 		console.log("⌚ Lancement du nettoyage quotidien de la collection Users...");
-		await logChannel.send(`${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`Users\`...`);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`Users\`...`);
 
 		// Fetch all users from the database
 		const users = await User.find();
@@ -118,10 +122,29 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 						await LinkedUser.deleteOne({ discordId: dbUser.discordId });
 						await dbUser.deleteOne();
 						allLogs.push(`-# 🧹 L'ID \`${dbUser.discordId}\` (username : \`${dbUser.discordUsername}\`) a été supprimé.`);
+					} else {
+						// If the user is still in the guild, check if their roles have changed and update the database accordingly
+						const accessoryRoles = [config.livingRoomRoleId,
+							config.workshopRoleId,
+							config.libraryRoleId,
+							config.terraceRoleId,
+							config.seriousRoleId,
+							config.irlRoleId];
+						const accessoryRolesGuild = member.roles.cache.map(r => r.id).filter(id => accessoryRoles.includes(id)) || [];
+						const accessoryRolesDb = dbUser.accessoryRoles || [];
+						const rolesDiffer = accessoryRolesGuild.length !== accessoryRolesDb.length || !accessoryRolesGuild.every(role => accessoryRolesDb.includes(role));
+						if (rolesDiffer) {
+							await User.updateOne(
+								{ discordId: dbUser.discordId },
+								{
+									$set: { accessoryRoles: accessoryRolesGuild },
+								},
+							);
+						}
 					}
 				} catch (err) {
 					console.error(err);
-					await logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
+					await sendLog(client, "dbCleaningCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Erreur lors de la suppression de l'utilisateur ${dbUser.discordId} : \`${err}\``);
 				}
 			}),
 		);
@@ -132,20 +155,20 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		// Log output after processing all users
 		while (allLogs.length > 0) {
 			const logsToSend = allLogs.splice(0, 10);
-			await logChannel.send({ content: logsToSend.join("\n") });
+			await sendLog(client, "dbCleaningCron", logsToSend.join("\n"));
 		}
 
-		await logChannel.send(`${config.emojis.check} Le nettoyage quotidien de la collection \`Users\` s'est effectué correctement.`);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.check} Le nettoyage quotidien de la collection \`Users\` s'est effectué correctement.`);
 		console.log("✅ Fin du nettoyage quotidien de la collection Users...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`Users\` ne s'est pas effectué correctement :\n\`${err}\``);
 	}
 
 	// --- Cleaning the LinkedUsers collection ---
 	try {
 		console.log("⌚ Lancement du nettoyage quotidien de la collection LinkedUsers...");
-		await logChannel.send(`${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`LinkedUsers\`...`);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.loading} Lancement du nettoyage quotidien de la collection \`LinkedUsers\`...`);
 
 		// Fetch all linked users from the database
 		const linkedUsers = await LinkedUser.find();
@@ -196,9 +219,11 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 							const rolesDb = dbLinkedUser.roles;
 							const rolesDiffer = rolesApi.length !== rolesDb.length || !rolesApi.every(role => rolesDb.includes(role));
 							if (rolesDiffer) {
-								await LinkedUser.findOneAndUpdate(
+								await LinkedUser.updateOne(
 									{ discordId: dbLinkedUser.discordId },
-									{ roles: rolesApi },
+									{
+										$set: { roles: rolesApi },
+									},
 								);
 							}
 
@@ -255,7 +280,7 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 				}
 			} catch (err) {
 				console.error(`Erreur lors de la suppression du LinkedUser ${dbLinkedUser.discordId}:`, err);
-				logChannel.send(`Erreur lors de la vérification du LinkedUser \`${dbLinkedUser.discordId}\` : ${err}`);
+				await sendLog(client, "dbCleaningCron", `Erreur lors de la vérification du LinkedUser \`${dbLinkedUser.discordId}\` : ${err}`);
 			}
 		});
 
@@ -264,14 +289,14 @@ export async function dailyDBCleaning(gardenGuild: Guild, client: ShewenyClient,
 		// Log output after processing all users
 		while (allLogs.length > 0) {
 			const logsToSend = allLogs.splice(0, 10);
-			await logChannel.send({ content: logsToSend.join("\n") });
+			await sendLog(client, "dbCleaningCron", logsToSend.join("\n"));
 		}
 
-		await logChannel.send(`${config.emojis.check} Le nettoyage quotidien de la collection \`LinkedUsers\` s'est effectué correctement.`);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.check} Le nettoyage quotidien de la collection \`LinkedUsers\` s'est effectué correctement.`);
 		console.log("✅ Fin du nettoyage quotidien de la collection LinkedUsers...");
 	} catch (err) {
 		console.error(err);
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
+		await sendLog(client, "dbCleaningCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la collection \`LinkedUsers\` ne s'est pas effectué correctement :\`${err}\``);
 	}
-	logChannel.send(`${config.emojis.check} Fin de la boucle quotidienne de nettoyage de la base de données.`);
+	await sendLog(client, "dbCleaningCron", `${config.emojis.check} Fin de la boucle quotidienne de nettoyage de la base de données.`);
 }

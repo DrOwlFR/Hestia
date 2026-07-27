@@ -1,19 +1,20 @@
 {
 	"name": "hestia",
-	"version": "1.6.5",
+	"version": "1.7.0",
 	"description": "",
 	"main": "dist/src/index.js",
 	"scripts": {
 		"start": "node ./dist/src/index.js",
 		"build-dev": "tsc --watch",
 		"build": "tsc",
+		"build-force": "tsc --build --force",
 		"prepare": "husky install"
 	},
 	"dependencies": {
 		"bottleneck": "^2.19.5",
-		"discord.js": "^14.26.2",
-		"mongoose": "^8.21.0",
-		"node-cron": "^4.2.1",
+		"discord.js": "^14.27.0",
+		"mongoose": "^9.7.4",
+		"node-cron": "^4.6.0",
 		"sheweny": "^4.2.1",
 		"strip-indent": "^4.1.1"
 	},
@@ -25,6 +26,7 @@
 		"eslint": "^9.36.0",
 		"eslint-plugin-import": "^2.32.0",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"eslint-plugin-sort-destructure-keys": "^3.0.0",
 		"husky": "^9.1.7",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"

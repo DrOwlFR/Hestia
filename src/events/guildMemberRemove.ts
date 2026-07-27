@@ -4,6 +4,7 @@ import { Event } from "sheweny";
 
 import config from "../structures/config";
 import { LinkedUser, User } from "../structures/database/models";
+import { sendLog } from "../structures/utils/functions";
 
 export class GuildMemberRemoveEvent extends Event {
 	constructor(client: ShewenyClient) {
@@ -36,8 +37,7 @@ export class GuildMemberRemoveEvent extends Event {
 				const userDelete = await User.deleteOne({ discordId: member.id });
 				// Check if deletion was successful and log if not
 				if (userDelete.deletedCount === 0) {
-					await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
-				}
+					await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);				}
 			}
 			catch (err) {
 				// eslint-disable-next-line no-console
@@ -51,7 +51,7 @@ export class GuildMemberRemoveEvent extends Event {
 				const linkedUserDelete = await LinkedUser.deleteOne({ discordId: member.id });
 				// Check if deletion was successful and log if not
 				if (linkedUserDelete.deletedCount === 0) {
-					await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **LinkedUser** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
+					await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document **LinkedUser** de l'id discord \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
 				}
 			}
 			catch (err) {
@@ -67,7 +67,7 @@ export class GuildMemberRemoveEvent extends Event {
 		if (deleteResponse.status === 404) { return; }
 		else if (deleteResponse.status === 204) { return; }
 		else {
-			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le lien avec le site de l'utilisateur \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
+			await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le lien avec le site de l'utilisateur \`${member.id}\` n'a pas été supprimé correctement lors de son **départ du serveur**. À vérifier.`);
 		}
 
 	}

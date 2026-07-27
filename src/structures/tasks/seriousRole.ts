@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import Bottleneck from "bottleneck";
-import type { Guild, TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
 import config from "../config";
 import { LinkedUser, User } from "../database/models";
+import { getGardenGuild, sendLog } from "../utils/functions";
 
 /**
  * dailySeriousRolesUpdate: updates the 'serious' role based on message activity.
@@ -14,11 +14,15 @@ import { LinkedUser, User } from "../database/models";
  * - For each user: pause every 40 iterations, check guild membership, clean old message data, calculate 30-day sum
  * - If confirmed user and sum >=50, add role; if sum <50, remove role
  * - Log progress and completion
- * @param gardenGuild - The Discord guild.
  * @param client - The Sheweny client.
- * @param logChannel - The channel to log updates.
  */
-export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: ShewenyClient, logChannel: TextChannel) {
+export async function dailySeriousRolesUpdate(client: ShewenyClient) {
+	console.log("⌚ Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...");
+	await sendLog(client, "seriousRoleCron", `${config.emojis.loading} Lancement de la boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir...`);
+
+	const gardenGuild = await getGardenGuild(client);
+	if (!gardenGuild) return;
+
 	const todayTime = new Date().getTime();
 	const dbUsers = await User.find();
 	const allLogs: string[] = [];
@@ -58,11 +62,11 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 		if (error.response?.status === 429) {
 			// default to 60 seconds if no retryAfter provided
 			const delay = retryAfter ? retryAfter * 1000 : 60 * 1000;
-			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
+			await sendLog(client, "seriousRoleCron", `${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
 			return delay;
 		}
 
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
+		await sendLog(client, "seriousRoleCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 	deleteLimiter.on("failed", async (error, jobInfo) => {
@@ -73,11 +77,11 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 		if (error.response?.status === 429) {
 			// default to 60 seconds if no retryAfter provided
 			const delay = retryAfter ? retryAfter * 1000 : 60 * 1000;
-			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
+			await sendLog(client, "seriousRoleCron", `${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
 			return delay;
 		}
 
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
+		await sendLog(client, "seriousRoleCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 	fetchLimiter.on("failed", async (error, jobInfo) => {
@@ -88,11 +92,11 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 		if (error.response?.status === 429) {
 			// default to 60 seconds if no retryAfter provided
 			const delay = retryAfter ? retryAfter * 1000 : 60 * 1000;
-			logChannel.send(`${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
+			await sendLog(client, "seriousRoleCron", `${config.emojis.cross} [${id}] Rate limit atteint. Nouvelle tentative dans ${delay / 1000} secondes...`);
 			return delay;
 		}
 
-		logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
+		await sendLog(client, "seriousRoleCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Le nettoyage quotidien de la base de données ne s'est pas effectué correctement : \`${error.message}\``);
 		return null;
 	});
 
@@ -144,7 +148,7 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 			}
 			catch (err) {
 				console.error(err);
-				logChannel.send(`${config.emojis.cross} <@${config.botAdminsIds[0]}> La boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir ne s'est pas effectuée correctement : \`${err}\``);
+				await sendLog(client, "seriousRoleCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> La boucle quotidienne d'ajouts/suppressions du rôle d'accès au fumoir ne s'est pas effectuée correctement : \`${err}\``);
 			}
 		}),
 	);
@@ -154,9 +158,9 @@ export async function dailySeriousRolesUpdate(gardenGuild: Guild, client: Shewen
 	// Log output after processing all users
 	while (allLogs.length > 0) {
 		const logsToSend = allLogs.splice(0, 10);
-		await logChannel.send({ content: logsToSend.join("\n") });
+		await sendLog(client, "seriousRoleCron", logsToSend.join("\n"));
 	}
 
-	logChannel.send(`${config.emojis.check} Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.`);
+	await sendLog(client, "seriousRoleCron", `${config.emojis.check} Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.`);
 	console.log("✅ Fin de la boucle quotidienne d'ajout/suppression du rôle d'accès au fumoir.");
 }

@@ -7,6 +7,7 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import sortDestructureKeys from "eslint-plugin-sort-destructure-keys";
 
 export default [
 	{
@@ -19,17 +20,29 @@ export default [
 			"@typescript-eslint": tseslint,
 			"import": importPlugin,
 			"simple-import-sort": simpleImportSort,
+			"sort-destructure-keys": sortDestructureKeys,
 		},
 		rules: {
 			...tseslint.configs.recommended.rules,
+
+			// Enforce consistent type imports
 			"@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports", "disallowTypeAnnotations": true, "fixStyle": "separate-type-imports" }],
+
+			// Import sorting rules
 			"import/no-duplicates": "error",
-			"import/order": ["error", { "alphabetize": { "order": "asc", "caseInsensitive": true } }],
 			"simple-import-sort/imports": ["error", {
 				groups: [['^(assert|buffer|child_process|cluster|crypto|dns|events|fs|http|https|net|os|path|stream|timers|util|zlib)(/.*|$)'], ['^'], ['^\\.']]
 			}],
 			"simple-import-sort/exports": "error",
-			"@typescript-eslint/no-unused-vars": "warn",
+
+			// Handling of unused variables
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": ["warn", { "caughtErrors": "none" }],
+
+			// Alphabetical sorting of destructured keys
+			"sort-destructure-keys/sort-destructure-keys": ["error", { "caseSensitive": false }],
+
+			// Other rules
 			"no-console": "warn",
 			"arrow-spacing": ["warn", { "before": true, "after": true }],
 			"comma-dangle": ["error", "always-multiline"],
@@ -58,7 +71,6 @@ export default [
 			"no-new-object": "error",
 			"no-shadow": ["error", { "allow": ["err", "resolve", "reject"] }],
 			"no-trailing-spaces": ["error"],
-			"no-unused-vars": ["error", { "caughtErrors": "none" }],
 			"no-useless-concat": "error",
 			"no-useless-escape": "error",
 			"no-whitespace-before-property": "error",

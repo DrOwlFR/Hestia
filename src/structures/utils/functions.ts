@@ -1,3 +1,4 @@
+import type { Guild } from "discord.js";
 import { ChannelType, EmbedBuilder } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
@@ -81,16 +82,17 @@ async function deleteUser(userId: string): Promise<Response> {
 }
 
 // Log channels types
-export type LogChannel = "generalError" |"dbError" | "dbCleaningCron" | "seriousRoleCron" | "saveDbCron" | "seasonsCron";
+export type LogChannel = "generalError" | "dbError" | "dbCleaningCron" | "dbBackupCron" | "seriousRoleCron" | "seasonsCron" | "notificationsCron";
 
 // Mapping of log channel types to their Discord channel IDs
 const LOG_CHANNELS: Record<LogChannel, string> = {
 	generalError: config.errorChannelId,
 	dbError: config.dbErrorChannelId,
 	dbCleaningCron: config.dbCleaningCronChannelId,
+	dbBackupCron: config.dbBackupCronChannelId,
 	seriousRoleCron: config.seriousRoleCronChannelId,
-	saveDbCron: config.saveDbCronChannelId,
 	seasonsCron: config.seasonsCronChannelId,
+	notificationsCron: config.notificationsCronChannelId,
 };
 
 /**
@@ -101,12 +103,12 @@ const LOG_CHANNELS: Record<LogChannel, string> = {
  * @param message - The log message content.
  * @returns A promise that resolves when the message is sent or an error is thrown if the channel is not found.
  */
-async function log(this: ShewenyClient, type: LogChannel, message: string): Promise<void> {
+async function sendLog(client: ShewenyClient, type: LogChannel, message: string): Promise<void> {
 	const channelId = LOG_CHANNELS[type];
-	const channel = this.channels.cache.get(channelId);
+	const channel = client.channels.cache.get(channelId);
 
 	if (!channel || channel.type !== ChannelType.GuildText) {
-		throw new Error(`Channel de log "${type}" introuvable`);
+		throw new Error(`${config.emojis.cross} <@${config.botAdminsIds[0]}> Channel de log "${type}" introuvable`);
 	}
 
 	await channel.send(message);
@@ -123,4 +125,31 @@ function formatDateTime(date: Date = new Date()): string {
 	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}_${pad(date.getHours())}h${pad(date.getMinutes())}`;
 }
 
-export { connectUser, delay, deleteUser, embed, formatDateTime, getUser, log };
+/**
+ * getGardenGuild: retrieves the site's Discord guild (server).
+ * Summary: Fetches the guild object for the configured guild ID, either from cache or by fetching from Discord API.
+ * Steps:
+ * - Attempt to get the guild from the client's cache using the configured guild ID.
+ * - If not found in cache, attempt to fetch the guild from Discord API.
+ * - If fetching fails, log an error and return null.
+ * @param client - The ShewenyClient instance used to access the guilds cache and fetch guilds.
+ * @returns - A promise that resolves to the Guild object if found, or null if not found or an error occurred.
+ */
+async function getGardenGuild(client: ShewenyClient): Promise<Guild | null> {
+	// Attempt to get the guild from the client's cache using the configured guild ID
+	let guild = client.guilds.cache.get(config.gardenGuildId);
+
+	// If not found in cache, attempt to fetch the guild from Discord API
+	if (!guild) {
+		try {
+			guild = await client.guilds.fetch(config.gardenGuildId);
+		} catch (error) {
+			// If fetching fails, log an error and return null
+			await sendLog(client, "generalError", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Impossible de récupérer le serveur du Jardin.`);
+			return null;
+		}
+	}
+	return guild;
+}
+
+export { connectUser, delay, deleteUser, embed, formatDateTime, getGardenGuild, getUser, sendLog };

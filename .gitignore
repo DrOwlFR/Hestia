@@ -1,4 +1,5 @@
 dist
 node_modules
 src/structures/config.ts
+src/structures/utils/guildIcons/
 package-lock.json

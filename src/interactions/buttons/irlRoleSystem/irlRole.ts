@@ -6,6 +6,7 @@ import stripIndent from "strip-indent";
 
 import config from "../../../structures/config";
 import { type dbUser, User } from "../../../structures/database/models";
+import { sendLog } from "../../../structures/utils/functions";
 
 export class IRLRoleButton extends Button {
 	constructor(client: ShewenyClient) {
@@ -26,7 +27,7 @@ export class IRLRoleButton extends Button {
 	 */
 	async execute(button: ButtonInteraction) {
 
-		const { guildId, member, guild } = button;
+		const { guild, guildId, member } = button;
 
 		// Only allow in the site's guild and ensure member is valid
 		if (guildId !== config.gardenGuildId) return;
@@ -43,13 +44,13 @@ export class IRLRoleButton extends Button {
 								custom_id: "irlRoleRemoveCancelButton",
 								label: "Non ! J'ai changé d'avis",
 								style: ButtonStyle.Danger,
-								emoji: "✖️",
+								emoji: `${config.emojis.crossWhite}`,
 							}),
 							new ButtonBuilder({
 								custom_id: "irlRoleRemoveConfirmButton",
 								label: "Oui, me retirer l'accès",
 								style: ButtonStyle.Primary,
-								emoji: "⛓️‍💥",
+								emoji: `${config.emojis.brokenChain}`,
 							}),
 						),
 				],
@@ -67,6 +68,7 @@ export class IRLRoleButton extends Button {
 						discordUsername: { $ifNull: ["$discordUsername", member?.user.username] },
 						totalMessages: { $ifNull: ["$totalMessages", 0] },
 						messagesPerDay: { $ifNull: ["$messagesPerDay", []] },
+						accessoryRoles: { $ifNull: ["$accessoryRoles", []] },
 						introduced: { $ifNull: ["$introduced", false] },
 						joinedAt: { $ifNull: ["$joinedAt", member.joinedAt] },
 						__v: { $add: { $ifNull: ["$__v", 0] } },
@@ -79,7 +81,7 @@ export class IRLRoleButton extends Button {
 		catch (err) {
 			// eslint-disable-next-line no-console
 			console.error(err);
-			await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.\n\`\`\`${err}\`\`\``);
+			await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document **User** de l'id discord \`${member.id}\` n'a pas été créé correctement lorsqu'il a cliqué sur **le bouton du rôle IRL**. À vérifier.\n\`\`\`${err}\`\`\``);
 			return button.reply({
 				content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
@@ -105,27 +107,29 @@ export class IRLRoleButton extends Button {
 		// Check eligibility: 61+ days joined and 300+ messages
 		if (memberData && ((Date.now() - memberData?.joinedAt.getTime()) / (1000 * 60 * 60 * 24)) >= 61 && (memberData.totalMessages >= 300)) {
 			// Assign the IRL role
-			member.roles.add(config.irlRoleId).catch(err => {
+			try {
+				await member.roles.add(config.irlRoleId);
+				return button.reply({
+					content: stripIndent(`
+						> *Hestia sourit. Elle appose un tampon en forme d'Esperluette en bas du formulaire avant de le ranger.*
+						Bienvenue ! Profitez-bien de votre retraite !\n
+						-# ${config.emojis.check} Le rôle ${guild?.roles.cache.get(config.irlRoleId)} vous a été attribué. Vous avez à présent accès au salon ${guild?.channels.cache.get(config.irlChannelId)}. Bienvenue !
+						-# **Rappel** : Le Jardin en tant qu'association n'est pas responsable des IRLs organisées par ses membres.
+						`),
+					flags: MessageFlags.Ephemeral,
+				});
+			} catch (err) {
 				// eslint-disable-next-line no-console
 				console.error(err);
 				return button.reply({
 					content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*
 						— Hm, où est-ce que... Je ne trouve plus les clefs de la salle des retraités...\n
-						-# ${config.emojis.cross} Le rôle ${guild?.roles.cache.get(config.irlRoleId)} n'a pas pu vous être attribué. Veuillez contacter un cadratin du Discord (${config.discordModsIds.map(c => guild?.members.cache.get(c)).join(", ")}) pour le recevoir, ainsi que mon développeur (${guild?.members.cache.get(config.botAdminsIds[0])}) pour en avoir le cœur net.
+						-# ${config.emojis.cross} Le rôle n'a pas pu vous être attribué. Veuillez contacter un cadratin du Discord (${config.discordModsIds.map(c => guild?.members.cache.get(c)).join(", ")}) pour le recevoir, ainsi que mon développeur (${guild?.members.cache.get(config.botAdminsIds[0])}) pour en avoir le cœur net.
 						`),
 					flags: MessageFlags.Ephemeral,
 				});
-			});
-			return button.reply({
-				content: stripIndent(`
-					> *Hestia sourit. Elle appose un tampon en forme d'Esperluette en bas du formulaire avant de le ranger.*
-					Bienvenue ! Profitez-bien de votre retraite !\n
-					-# ${config.emojis.check} Le rôle ${guild?.roles.cache.get(config.irlRoleId)} vous a été attribué. Vous avez à présent accès au salon ${guild?.channels.cache.get(config.irlChannelId)}. Bienvenue !
-					-# **Rappel** : Le Jardin en tant qu'association n'est pas responsable des IRLs organisées par ses membres.
-					`),
-				flags: MessageFlags.Ephemeral,
-			});
+			}
 		} else {
 			// Deny access if criteria not met
 			return button.reply({
