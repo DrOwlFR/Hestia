@@ -10,7 +10,7 @@ import { LinkedUser } from "../../../database/models";
  * @param siteId - The site ID for which to find the corresponding Discord ID in the LinkedUser database model.
  * @returns - A promise that resolves to the Discord ID if found, or undefined if not found.
  */
-export async function getDiscordIdFromSiteId(siteId: number): Promise<string | undefined> {
-	const linkedUser = await LinkedUser.findOne({ siteId });
+export async function getDiscordIdFromSiteId(siteId: number | null): Promise<string | undefined> {
+	const linkedUser = await LinkedUser.findOne({ siteId: siteId });
 	return linkedUser?.discordId;
 }

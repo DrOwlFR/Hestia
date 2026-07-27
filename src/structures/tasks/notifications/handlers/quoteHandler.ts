@@ -63,12 +63,12 @@ export async function handleQuoteChapterQuoted(client: ShewenyClient, notificati
 	const { data } = notification;
 
 	// Get the Discord ID of the quoter using their site ID from the notification data and construct a mention string if the Discord ID is found
-	const discordId = await getDiscordIdFromSiteId(data.quoter_id);
-	const mention = discordId ? `(<@${discordId}>)` : "";
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
 
 	// Construct the title and description for the notification about the quoted chapter
 	const title = "🪶 Nouvelle citation";
-	const description = `**[${data.quoter_name}](${config.APILink}/profile/${data.quoter_slug})** ${mention} a cité votre chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» dans l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.quoter_name}](${config.APILink}/profile/${data.quoter_slug})**${mention} a cité votre chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» dans l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendFollowNotification with the constructed title and description to send the notification to the recipients
 	return sendQuoteNotification(client, notification, data.quoter_name, title, description);

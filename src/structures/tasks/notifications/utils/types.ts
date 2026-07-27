@@ -3,6 +3,7 @@
 // --- Common field interface for all notification types ---
 interface BaseNotification {
 	id: number;
+	sourceUserId: number | null;
 	avatarUrl?: string | null;
 	defaultText: string;
 	recipients: string[];

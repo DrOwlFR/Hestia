@@ -1,6 +1,7 @@
 import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
+import { getDiscordIdFromSiteId } from "../services/userService";
 import { createNotificationEmbed } from "../utils/embedFunction";
 import type { NotificationItem, StoryChapterCommentNotification, StoryChapterReplyCommentNotification, StoryChapterRootCommentNotification } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
@@ -50,6 +51,7 @@ async function sendCommentNotification(client: ShewenyClient, notification: Noti
  * handleChapterComment: handles notifications for new comments on story chapters
  * Summary: This function determines whether the comment is a reply or a root comment and constructs the appropriate title and description for the notification. It then calls sendCommentNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who made the comment using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Determine the title and description based on whether the comment is a reply or a root comment
  * - Call sendCommentNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -59,10 +61,14 @@ async function sendCommentNotification(client: ShewenyClient, notification: Noti
 export async function handleChapterComment(client: ShewenyClient, notification: StoryChapterCommentNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who made the comment using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Determine the title and description based on whether the comment is a reply or a root comment
 	const title = data.is_reply ? "💬 Nouvelle réponse à un commentaire" : "💬 Nouveau commentaire";
 	const action = data.is_reply ? "répondu à un commentaire sur" : "commenté";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})** a ${action} le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a ${action} le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCommentNotification to send the notification to the recipients
 	return await sendCommentNotification(client, notification, data.author_name, title, description);
@@ -72,6 +78,7 @@ export async function handleChapterComment(client: ShewenyClient, notification: 
  * handleChapterRootComment: handles notifications for root comments on story chapters
  * Summary: This function constructs the title and description for a root comment notification and calls sendCommentNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who made the root comment using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the root comment notification
  * - Call sendCommentNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -81,9 +88,13 @@ export async function handleChapterComment(client: ShewenyClient, notification: 
 export async function handleChapterRootComment(client: ShewenyClient, notification: StoryChapterRootCommentNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who made the root comment using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the root comment notification
 	const title = "💬 Nouveau commentaire";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})** a commenté le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a commenté le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCommentNotification to send the notification to the recipients
 	return await sendCommentNotification(client, notification, data.author_name, title, description);
@@ -93,6 +104,7 @@ export async function handleChapterRootComment(client: ShewenyClient, notificati
  * handleChapterReplyComment: handles notifications for reply comments on story chapters
  * Summary: This function constructs the title and description for a reply comment notification and calls sendCommentNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who made the reply comment using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the reply comment notification
  * - Call sendCommentNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -102,9 +114,13 @@ export async function handleChapterRootComment(client: ShewenyClient, notificati
 export async function handleChapterReplyComment(client: ShewenyClient, notification: StoryChapterReplyCommentNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who made the reply comment using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the reply comment notification
 	const title = "💬 Nouvelle réponse à un commentaire";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})** a répondu à un commentaire sur le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a répondu à un commentaire sur le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCommentNotification to send the notification to the recipients
 	return await sendCommentNotification(client, notification, data.author_name, title, description);

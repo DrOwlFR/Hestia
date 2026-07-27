@@ -1,6 +1,7 @@
 import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
+import { getDiscordIdFromSiteId } from "../services/userService";
 import { createNotificationEmbed } from "../utils/embedFunction";
 import type { NotificationItem, StoryCoAuthorChapterCreatedNotification, StoryCoAuthorChapterDeletedNotification, StoryCoAuthorChapterUpdatedNotification, StoryCollaboratorLeftNotification, StoryCollaboratorRemovedNotification, StoryCollaboratorRoleGivenNotification } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
@@ -50,6 +51,7 @@ async function sendCollaborationNotification(client: ShewenyClient, notification
  * handleStoryCoAuthorChapterCreated: handles notifications for new co-author chapters
  * Summary: This function constructs the appropriate title and description for the notification about a new co-author chapter and calls sendCollaborationNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who created the co-author chapter using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the new co-author chapter.
  * - Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -59,9 +61,13 @@ async function sendCollaborationNotification(client: ShewenyClient, notification
 export async function handleStoryCoAuthorChapterCreated(client: ShewenyClient, notification: StoryCoAuthorChapterCreatedNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who created the co-author chapter using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the new co-author chapter
 	const title = "🤝 Nouveau chapitre co-écrit publié";
-	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})** a publié un nouveau chapitre co-écrit à «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} a publié un nouveau chapitre co-écrit à «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients
 	return await sendCollaborationNotification(client, notification, data.user_name, title, description);
@@ -71,6 +77,7 @@ export async function handleStoryCoAuthorChapterCreated(client: ShewenyClient, n
  * handleStoryCoAuthorChapterUpdated: handles notifications for updated co-author chapters
  * Summary: This function constructs the appropriate title and description for the notification about an updated co-author chapter and calls sendCollaborationNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who updated the co-author chapter using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the updated co-author chapter.
  * - Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -80,9 +87,13 @@ export async function handleStoryCoAuthorChapterCreated(client: ShewenyClient, n
 export async function handleStoryCoAuthorChapterUpdated(client: ShewenyClient, notification: StoryCoAuthorChapterUpdatedNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who updated the co-author chapter using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the updated co-author chapter
 	const title = "🤝 Chapitre co-écrit mis à jour";
-	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})** a mis à jour le chapitre co-écrit «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} a mis à jour le chapitre co-écrit «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients
 	return await sendCollaborationNotification(client, notification, data.user_name, title, description);
@@ -92,6 +103,7 @@ export async function handleStoryCoAuthorChapterUpdated(client: ShewenyClient, n
  * handleStoryCoAuthorChapterDeleted: handles notifications for deleted co-author chapters
  * Summary: This function constructs the appropriate title and description for the notification about a deleted co-author chapter and calls sendCollaborationNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who deleted the co-author chapter using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the deleted co-author chapter.
  * - Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -101,9 +113,13 @@ export async function handleStoryCoAuthorChapterUpdated(client: ShewenyClient, n
 export async function handleStoryCoAuthorChapterDeleted(client: ShewenyClient, notification: StoryCoAuthorChapterDeletedNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who deleted the co-author chapter using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the deleted co-author chapter
 	const title = "🤝 Chapitre co-écrit supprimé";
-	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})** a supprimé le chapitre co-écrit «\u00A0**${data.chapter_title}**\u00A0» de l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} a supprimé le chapitre co-écrit «\u00A0**${data.chapter_title}**\u00A0» de l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients
 	return await sendCollaborationNotification(client, notification, data.user_name, title, description);
@@ -113,6 +129,7 @@ export async function handleStoryCoAuthorChapterDeleted(client: ShewenyClient, n
  * handleStoryCollaboratorRoleGiven: handles notifications for when a collaborator role is given
  * Summary: This function constructs the appropriate title and description for the notification about a collaborator role being given and calls sendCollaborationNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who gave the collaborator role using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the collaborator role being given.
  * - Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -122,10 +139,14 @@ export async function handleStoryCoAuthorChapterDeleted(client: ShewenyClient, n
 export async function handleStoryCollaboratorRoleGiven(client: ShewenyClient, notification: StoryCollaboratorRoleGivenNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who gave the collaborator role using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the collaborator role being given
 	const role = data.role === "author" ? "coauteurice" : "bêta-lecteurice";
 	const title = `🤝 Nouveau rôle de **${role}** attribué`;
-	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})** vous a attribué le rôle de **${role}** sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} vous a attribué le rôle de **${role}** sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients
 	return await sendCollaborationNotification(client, notification, data.user_name, title, description);
@@ -135,6 +156,7 @@ export async function handleStoryCollaboratorRoleGiven(client: ShewenyClient, no
  * handleStoryCollaboratorRoleRemoved: handles notifications for when a collaborator role is removed
  * Summary: This function constructs the appropriate title and description for the notification about a collaborator role being removed and calls sendCollaborationNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who removed the collaborator role using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the collaborator role being removed.
  * - Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -144,9 +166,13 @@ export async function handleStoryCollaboratorRoleGiven(client: ShewenyClient, no
 export async function handleStoryCollaboratorRoleRemoved(client: ShewenyClient, notification: StoryCollaboratorRemovedNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who removed the collaborator role using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the collaborator role being removed
 	const title = "🤝 Rôle de bêta-lecteurice supprimé";
-	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})** vous a retiré le rôle de **bêta-lecteurice** sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} vous a retiré le rôle de **bêta-lecteurice** sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients
 	return await sendCollaborationNotification(client, notification, data.user_name, title, description);
@@ -156,6 +182,7 @@ export async function handleStoryCollaboratorRoleRemoved(client: ShewenyClient, 
  * handleStoryCollaboratorLeft: handles notifications for when a collaborator leaves
  * Summary: This function constructs the appropriate title and description for the notification about a collaborator leaving and calls sendCollaborationNotification to send the notification to the recipients.
  * Steps:
+ * - Get the Discord ID of the user who left the collaboration using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the collaborator leaving.
  * - Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -165,9 +192,13 @@ export async function handleStoryCollaboratorRoleRemoved(client: ShewenyClient, 
 export async function handleStoryCollaboratorLeft(client: ShewenyClient, notification: StoryCollaboratorLeftNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the user who left the collaboration using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the collaborator leaving
 	const title = "🤝 Départ d'un(e) collaborateurice";
-	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})** ne collabore plus sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} ne collabore plus sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCollaborationNotification with the constructed title and description to send the notification to the recipients
 	return await sendCollaborationNotification(client, notification, data.user_name, title, description);

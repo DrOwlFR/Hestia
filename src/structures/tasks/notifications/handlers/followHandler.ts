@@ -1,6 +1,7 @@
 import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
+import { getDiscordIdFromSiteId } from "../services/userService";
 import { createNotificationEmbed } from "../utils/embedFunction";
 import type { FollowNewFollowerNotification, FollowNewStoryNotification, NotificationItem } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
@@ -50,6 +51,7 @@ async function sendFollowNotification(client: ShewenyClient, notification: Notif
  * handleFollowNewFollower: handles the notification for a user who has gained a new follower.
  * Summary: This function constructs the title and description for the notification embed, informing the user that they have a new follower. It then calls sendFollowNotification to send the notification to the recipients and returns the array of failed recipient IDs.
  * Steps:
+ * - Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the new follower.
  * - Call sendFollowNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -59,9 +61,13 @@ async function sendFollowNotification(client: ShewenyClient, notification: Notif
 export async function handleFollowNewFollower(client: ShewenyClient, notification: FollowNewFollowerNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the new co-author chapter
 	const title = "👤 Nouveau follower";
-	const description = `**[${data.follower_name}](${config.APILink}/profile/${data.follower_slug})** vous suit.`;
+	const description = `**[${data.follower_name}](${config.APILink}/profile/${data.follower_slug})**${mention} vous suit.`;
 
 	// Call sendFollowNotification with the constructed title and description to send the notification to the recipients
 	return await sendFollowNotification(client, notification, data.follower_name, title, description);
@@ -71,6 +77,7 @@ export async function handleFollowNewFollower(client: ShewenyClient, notificatio
  * handleFollowNewStory: handles the notification for a user who has published a new story.
  * Summary: This function constructs the title and description for the notification embed, informing the user that a new story has been published. It then calls sendFollowNotification to send the notification to the recipients and returns the array of failed recipient IDs.
  * Steps:
+ * - Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found.
  * - Construct the title and description for the notification about the new story.
  * - Call sendFollowNotification with the constructed title and description to send the notification to the recipients.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
@@ -80,9 +87,13 @@ export async function handleFollowNewFollower(client: ShewenyClient, notificatio
 export async function handleFollowNewStory(client: ShewenyClient, notification: FollowNewStoryNotification): Promise<string[]> {
 	const { data } = notification;
 
+	// Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
 	// Construct the title and description for the notification about the new co-author chapter
 	const title = "📚 Nouvelle histoire publiée";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})** a publié une nouvelle histoire : «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a publié une nouvelle histoire : «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendFollowNotification with the constructed title and description to send the notification to the recipients
 	return await sendFollowNotification(client, notification, data.author_name, title, description);
