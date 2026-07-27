@@ -12,7 +12,9 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.6.4", description: "Dernière version en date", value: "1.6.4" },
+				{ label: "v1.7.0", description: "Dernière version en date", value: "1.7.0" },
+				{ label: "v1.6.5", value: "1.6.5" },
+				{ label: "v1.6.4", value: "1.6.4" },
 				{ label: "v1.6.3", value: "1.6.3" },
 				{ label: "v1.6.2", value: "1.6.2" },
 				{ label: "v1.6.1", description: "Première version stable", value: "1.6.1" },
@@ -33,6 +35,51 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.7.0": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.7.0 - __Les Notifications !__
+							*(27 juillet 2026)*
+							### 🚀 La grande nouveauté
+							Les **notifications** sont arrivées à la conciergerie ! Une annonce va être faite sur le serveur pour vous expliquer comment cela fonctionne.
+							### ➕ Ajouts
+							- \`[règles de vie]\` - Ajout de boutons qui gère l'ajout de rôles pour les pronoms (Suggestion de ClaireDeLune)
+							- \`[saisons]\` - Ajout du changement automatique de l'image du Serveur selon les saisons
+							- \`[tâche de nettoyage de la base de données]\` - Ajout du stockage des rôles accessoires
+							### 🔨 Corrections
+							- \`[règles de vie]\` - Changement des emojis dans le message du formulaire pour uniformer les couleurs
+							-# - \`[technique]\` - Ajouts de commandes pour moi afin de gérer la base de données depuis Hestia, et beaucoup de petites mises à jour accessoires
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.5...v1.7.0)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
+	"1.6.5": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.6.5 - *Correctif d'urgence*
+							*(17 juillet 2026)*
+							### 🔨 Correction
+							-# - \`[tâches de nettoyage de la base de données]\` - Suppression d'une ligne de code de test qui empêchait le nettoyage de la base de données de s'exécuter correctement.
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.6.4...v1.6.5)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.6.4": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(

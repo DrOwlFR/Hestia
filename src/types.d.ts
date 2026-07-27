@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-vars */
 import type { EmbedBuilder } from "discord.js";
-
-import type { LogChannel } from "./structures/utils/functions";
 
 /**
  * Augmentation of Sheweny's ShewenyClient interface.
@@ -17,7 +14,6 @@ declare module "sheweny" {
 			embed: () => EmbedBuilder,
 			formatDateTime: (date?: Date) => string,
 			delay: (ms: number) => Promise<void>,
-			log: (type: LogChannel, message: string) => Promise<void>,
 			connectUser: (code: string, discordId: string, username: string) => Promise<Response>,
 			getUser: (discordId: string) => Promise<Response>,
 			deleteUser: (discordId: string) => Promise<Response>,

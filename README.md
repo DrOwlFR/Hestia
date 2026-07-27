@@ -10,6 +10,7 @@ The name "*Hestia*" refers to the Greek goddess of hearth and home, symbolizing 
 - Role sync with external site API, plus seasonal color themes
 - Moderation helpers (rules posting, message edit, emit events for debugging)
 - Cron-based maintenance (backups, role cleanups)
+- Seasonal themes (rules messages, guild icon)
 
 ## Tech stack
 - Node.js + TypeScript
@@ -21,6 +22,12 @@ The name "*Hestia*" refers to the Greek goddess of hearth and home, symbolizing 
 - Node.js 20+ and npm
 - Discord application with a bot token and needed intents (Guilds, Members, Messages, Presences)
 - MongoDB instance
+
+### Bot necessary permissions
+- Read Messages/View Channels
+- Send Messages
+- Manage Roles
+- Manage Guild (for seasonal icon updates)
 
 ## Quick start
 1. Clone the repo and install dependencies:
@@ -60,4 +67,4 @@ When the bot starts, Sheweny auto-registers slash commands for the guild IDs lis
 - Keep configuration secrets in `config.ts`; **do not commit them**.
 
 ## License
-Creative Commons BY-NC-SA (see LICENSE.md).
+The source code is under Creative Commons BY-NC-SA license (see LICENSE.md). The images and assets are under All Rights Reserved by the original authors.

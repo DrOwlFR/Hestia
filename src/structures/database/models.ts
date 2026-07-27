@@ -20,6 +20,7 @@ export interface dbUser extends Document {
 	discordUsername: string;
 	totalMessages: number;
 	messagesPerDay: MessagePerDay[],
+	accessoryRoles: string[],
 	introduced: boolean,
 	joinedAt: Date,
 	__v: number,
@@ -33,9 +34,10 @@ export interface dbUser extends Document {
  */
 export const User = model<dbUser>("User", new Schema({
 	discordId: { type: String, required: true, unique: true },
-	discordUsername: { type: String, required: true, unique: true },
+	discordUsername: { type: String, required: true },
 	totalMessages: { type: Number, required: true, default: 0 },
 	messagesPerDay: { type: [Object], required: true, default: [] },
+	accessoryRoles: { type: [String], required: true, default: [] },
 	introduced: { type: Boolean, required: true, default: false },
 	joinedAt: { type: Date, required: true, default: new Date() },
 }, { timestamps: true, strict: true }));
@@ -62,7 +64,7 @@ export interface linkedUser extends Document {
 export const LinkedUser = model<linkedUser>("linked_user", new Schema({
 	discordId: { type: String, required: true, unique: true },
 	siteId: { type: Number, required: true, unique: true },
-	discordUsername: { type: String, required: true, unique: true },
+	discordUsername: { type: String, required: true },
 	roles: { type: [String], required: true },
 }, { timestamps: true, strict: true }));
 

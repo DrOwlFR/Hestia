@@ -6,6 +6,7 @@ import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
 import { LinkedUser } from "../../structures/database/models";
+import { sendLog } from "../../structures/utils/functions";
 import type { responseJson } from "../../types";
 
 export class ModalComponent extends Modal {
@@ -95,7 +96,7 @@ export class ModalComponent extends Modal {
 			// Handle database error
 			if (!document) {
 				await this.client.functions.deleteUser(user.id);
-				await this.client.functions.log("dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
+				await sendLog(this.client, "dbError", `<@${config.botAdminsIds[0]}> Le document LinkedUser de l'id discord \`${user.id}\` n'a pas été créé correctement. À vérifier.`);
 				return modal.reply({
 					content: stripIndent(`
 						> *Hestia fronce les sourcils, visiblement contrariée.*

@@ -53,7 +53,7 @@ export class RulesCommand extends Command {
 		await interaction.reply({ content: `${config.emojis.loading} Édition des règles en cours...`, flags: MessageFlags.Ephemeral });
 
 		// Update the rules messages in the rules channel
-		await updateRulesMessages(rulesChannel, this.client);
+		await updateRulesMessages(this.client);
 
 		// Follow up with a success message
 		return interaction.followUp({ content: `${config.emojis.check} Les règles ont été éditées correctement.`, flags: MessageFlags.Ephemeral });

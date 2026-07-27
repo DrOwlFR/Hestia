@@ -1,9 +1,13 @@
-import type { TextChannel } from "discord.js";
+import { ChannelType } from "discord.js";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { ShewenyClient } from "sheweny";
 
+import config from "../config";
+import { getGardenGuild, sendLog } from "../utils/functions";
 import { getRulesMessages } from "../utils/rulesMessages";
 
-type Season = "spring" | "summer" | "autumn" | "winter";
+export type Season = "spring" | "summer" | "autumn" | "winter";
 
 const seasonStartDates: Record<Season, { month: number; day: number }> = {
 	spring: { month: 3, day: 20 },
@@ -66,19 +70,33 @@ export function getCurrentSeason(date = new Date()): Season {
  * updateRulesMessages: updates the rules messages with seasonal components.
  * Summary: Fetches bot messages in the rules channel and edits them with updated seasonal rule components.
  * Steps:
- * - Fetch bot messages in the channel
+ * - Fetch bot messages in the channel, ordered from oldest to newest
+ * - Get the current season (or use provided season)
+ * - Retrieve the rules messages for the current season
+ * - Create a list of rule components to update
  * - Edit each message with corresponding rule component from rulesMessagesList
- * @param channel - The text channel containing the rules messages.
  * @param client - The Sheweny client.
+ * @param channel - The text channel containing the rules messages.
+ * @param season - The season to use for the rules messages, defaults to current season.
  */
-export async function updateRulesMessages(channel: TextChannel, client: ShewenyClient): Promise<void> {
+export async function updateRulesMessages(client: ShewenyClient, season?: Season): Promise<void> {
 
-	const botMessages = (await channel.messages.fetch())
+	const rulesChannel = client.channels.cache.get(config.rulesChannelId);
+	if (!rulesChannel || rulesChannel.type !== ChannelType.GuildText) {
+		await sendLog(client, "seasonsCron", `${config.emojis.cross} <@${config.botAdminsIds[0]}> Impossible de mettre à jour les messages des règles, le salon des règles est introuvable.`);
+		return;
+	}
+
+	// Fetch bot messages in the rules channel, ordered from oldest to newest
+	const botMessages = (await rulesChannel.messages.fetch())
 		.filter(msg => msg.author.id === client.user!.id)
 		.reverse();
 
-	const rulesMessages = getRulesMessages();
+	// Get the current season (or use provided season) and retrieve the rules messages
+	const currentSeason = season ?? getCurrentSeason();
+	const rulesMessages = getRulesMessages(currentSeason);
 
+	// Create a list of rule components to update
 	const rulesMessagesList = [
 		rulesMessages.intro,
 		rulesMessages.rules1,
@@ -91,6 +109,7 @@ export async function updateRulesMessages(channel: TextChannel, client: ShewenyC
 		rulesMessages.form,
 	];
 
+	// Edit each message with corresponding rule component from rulesMessagesList
 	for (let i = 0; i < botMessages.size; i++) {
 		const message = botMessages.at(i);
 		if (!message) continue;
@@ -100,4 +119,84 @@ export async function updateRulesMessages(channel: TextChannel, client: ShewenyC
 			],
 		});
 	}
+}
+
+/**
+ * updateGuildIcon: updates the guild icon based on the current season.
+ * Summary: Reads the seasonal icon file and updates the guild's icon accordingly.
+ * Steps:
+ * - Get the garden guild
+ * - Read the seasonal icon file from disk
+ * - Update the guild's icon with the new image
+ * @param client - The Sheweny client.
+ * @param season - The season to update the guild icon for.
+ */
+export async function updateGuildIcon(client: ShewenyClient, season: Season): Promise<void> {
+	// Get the garden guild
+	const gardenGuild = await getGardenGuild(client);
+	if (!gardenGuild) return;
+
+	// Read the seasonal icon file
+	const iconPath = resolve(process.cwd(), "src/structures/utils/guildIcons", `${season}.png`);
+	const icon = await readFile(iconPath);
+
+	// Update the guild's icon
+	await gardenGuild.edit({
+		icon,
+	});
+}
+
+/**
+ * updateSeasonalTheme: updates the guild icon and rules messages for a new season.
+ * Summary: When a new season starts, this function updates the guild's icon and edits the rules messages to reflect the seasonal theme.
+ * Steps:
+ * - Update the guild icon based on the new season
+ * - Update the rules messages with seasonal components
+ * - Log the seasonal change with a message indicating the new season
+ * @param client - The Sheweny client.
+ * @param season - The new season to update the theme for.
+ */
+export async function updateSeasonalTheme(client: ShewenyClient, season: Season): Promise<void> {
+
+	console.log("⌚ Changement de saison en cours...");
+	await sendLog(client, "seasonsCron", `${config.emojis.loading} Changement de saison en cours...`);
+
+	// Update the guild icon and rules messages for the new season
+	await updateGuildIcon(client, season);
+	await updateRulesMessages(client, season);
+
+	// Log the seasonal change with a message indicating the new season
+	const seasonTranslate = {
+		"spring": "au printemps 🌸",
+		"summer": "en été ☀️",
+		"autumn": "en automne 🍂",
+		"winter": "en hiver ❄️",
+	};
+
+	await sendLog(client, "seasonsCron", `${config.emojis.check} Nous sommes passés ${seasonTranslate[season]} !`);
+}
+
+/**
+ * pickRandomSeasonColor: picks a random color from the current season's color palette.
+ * Summary: Selects a random color from the seasonal configuration for use in embeds or messages.
+ * Steps:
+ * - Get the current season (or use provided season)
+ * - Retrieve the color palette for the season from config
+ * - Randomly select one of the colors from the palette
+ * @param season - The season to pick a color from, defaults to current season.
+ * @returns - A random color value from the seasonal palette.
+ */
+export function pickRandomSeasonColor(season?: Season): number {
+	// Get the current season (or use provided season)
+	season ??= getCurrentSeason();
+
+	// Retrieve the color palette for the season from config
+	const seasonObject = config[season];
+	const number = Math.floor(Math.random() * 4);
+
+	// Randomly select one of the colors from the palette
+	const key = Object.keys(seasonObject) as (keyof typeof seasonObject)[];
+
+	// Return the randomly selected color value
+	return seasonObject[key[number]] as number;
 }
