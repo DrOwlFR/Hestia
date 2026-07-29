@@ -25,7 +25,7 @@ async function sendModerationNotification(client: ShewenyClient, notification: N
 
 	// Get the current season and its corresponding icon from the configuration
 	const currentSeason = getCurrentSeason();
-	const icon = config[currentSeason].logo;
+	const icon = config[currentSeason].favicon;
 
 	// Create the notification embed using the provided title and description
 	const embed = createNotificationEmbed({
@@ -39,12 +39,12 @@ async function sendModerationNotification(client: ShewenyClient, notification: N
 	});
 
 	// Iterate over each recipient in the notification's recipients array, attempt to send the embed and add any failed recipient IDs to the failedRecipients array (through the handleSendingError function)
-	for (const usedId of notification.recipients) {
+	for (const userId of notification.recipients) {
 		try {
-			const user = await client.users.fetch(usedId);
+			const user = await client.users.fetch(userId);
 			await user.send({ embeds: [embed] });
 		} catch (error) {
-			await handleSendingError(client, error, usedId, failedRecipients);
+			await handleSendingError(client, error, userId, failedRecipients);
 		}
 	}
 	// Return the array of failed recipient IDs
