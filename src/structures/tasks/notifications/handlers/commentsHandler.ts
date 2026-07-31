@@ -68,7 +68,7 @@ export async function handleChapterComment(client: ShewenyClient, notification: 
 	// Determine the title and description based on whether the comment is a reply or a root comment
 	const title = data.is_reply ? "💬 Nouvelle réponse à un commentaire" : "💬 Nouveau commentaire";
 	const action = data.is_reply ? "répondu à un commentaire sur" : "commenté";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a ${action} le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a ${action} le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug}?comment=${data.comment_id})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCommentNotification to send the notification to the recipients
 	return await sendCommentNotification(client, notification, data.author_name, title, description);
@@ -94,7 +94,7 @@ export async function handleChapterRootComment(client: ShewenyClient, notificati
 
 	// Construct the title and description for the root comment notification
 	const title = "💬 Nouveau commentaire";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a commenté le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a commenté le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug}?comment=${data.comment_id})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCommentNotification to send the notification to the recipients
 	return await sendCommentNotification(client, notification, data.author_name, title, description);
@@ -120,7 +120,7 @@ export async function handleChapterReplyComment(client: ShewenyClient, notificat
 
 	// Construct the title and description for the reply comment notification
 	const title = "💬 Nouvelle réponse à un commentaire";
-	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a répondu à un commentaire sur le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+	const description = `**[${data.author_name}](${config.APILink}/profile/${data.author_slug})**${mention} a répondu à un commentaire sur le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug}?comment=${data.comment_id})**\u00A0» de l'histoire «\u00A0**[${data.story_name}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendCommentNotification to send the notification to the recipients
 	return await sendCommentNotification(client, notification, data.author_name, title, description);

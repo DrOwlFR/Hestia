@@ -67,7 +67,7 @@ export function getRulesMessages(season?: Season) {
 			.addTextDisplayComponents(
 				new TextDisplayBuilder()
 					.setContent(stripIndent(`
-								* **Nous décourageons la publicité personnelle**. De fait, merci de ne partager vos créations que dans les endroits dédiés, dans la section Atelier, en respectant les règles qui y sont épinglées (📍) et sous réserve de participation à la vie de la communauté.
+								* **Nous décourageons la publicité personnelle**. De fait, merci de ne partager vos créations que dans les endroits dédiés, dans la section Atelier, en respectant les règles qui y sont épinglées (📌) et sous réserve de participation à la vie de la communauté.
 								❗ **À savoir** : tout contenu partagé sur ce serveur ou sur le site, appartient strictement à l’Esperluette qui l’a créé. Les règles usuelles de propriété intellectuelle s’appliquent.
 								❓**Note** : vos réseaux sociaux peuvent figurer uniquement dans votre message de présentation. Globalement, l’utilisation des services du Jardin à des fins commerciales ou conduisant à toute autre forme de rémunération est interdite.
 

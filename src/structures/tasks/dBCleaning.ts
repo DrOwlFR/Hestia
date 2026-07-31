@@ -129,7 +129,10 @@ export async function dailyDBCleaning(client: ShewenyClient) {
 							config.libraryRoleId,
 							config.terraceRoleId,
 							config.seriousRoleId,
-							config.irlRoleId];
+							config.irlRoleId,
+							config.pronounsHeHimRoleId,
+							config.pronounsSheHerRoleId,
+							config.pronounsTheyThemRoleId];
 						const accessoryRolesGuild = member.roles.cache.map(r => r.id).filter(id => accessoryRoles.includes(id)) || [];
 						const accessoryRolesDb = dbUser.accessoryRoles || [];
 						const rolesDiffer = accessoryRolesGuild.length !== accessoryRolesDb.length || !accessoryRolesGuild.every(role => accessoryRolesDb.includes(role));

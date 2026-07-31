@@ -95,6 +95,15 @@ export interface StoryCollaboratorLeftData {
 	story_slug: string,
 }
 
+// Publication notification data interfaces
+
+export interface StoryChapterScheduledPublishedData {
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+}
+
 // Readlist notification data interfaces
 
 export interface ReadlistChapterPublishedData {
@@ -247,6 +256,13 @@ export interface StoryCollaboratorLeftNotification extends BaseNotification {
 	data: StoryCollaboratorLeftData;
 }
 
+// Publication notification types
+
+export interface StoryChapterScheduledPublishedNotification extends BaseNotification {
+	type: "story.chapter.scheduled_published";
+	data: StoryChapterScheduledPublishedData;
+}
+
 // Readlist notification types
 
 export interface ReadlistChapterPublishedNotification extends BaseNotification {
@@ -351,7 +367,8 @@ export type NotificationItem =
 | AuthPromotionRejectedNotification
 | FollowNewFollowerNotification
 | FollowNewStoryNotification
-| QuoteChapterQuotedNotification;
+| QuoteChapterQuotedNotification
+| StoryChapterScheduledPublishedNotification;
 
 // Interface for pagination metadata
 export interface Pagination {
