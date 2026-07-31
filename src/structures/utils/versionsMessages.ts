@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.7.0", description: "Dernière version en date", value: "1.7.0" },
+				{ label: "v1.7.1", description: "Dernière version en date", value: "1.7.1" },
+				{ label: "v1.7.0", value: "1.7.0" },
 				{ label: "v1.6.5", value: "1.6.5" },
 				{ label: "v1.6.4", value: "1.6.4" },
 				{ label: "v1.6.3", value: "1.6.3" },
@@ -35,6 +36,29 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.7.1": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.7.1
+							*(31 juillet 2026)*
+							### ➕ Ajout
+							- \`[notifications]\` - Ajout du nouveau type de notification "publication d'un chapitre programmé"
+							### 🔨 Modifications
+							- \`[notifications]\` - À présent, dans les notifications de commentaires, le lien vers le chapitre dirige directement vers le commentaire concerné
+							- \`[règles de vie]\` - Changement d'un emoji
+							-# - \`[tâche de nettoyage de la base de données]\` - Ajouts des rôles pronoms dans le stockage des rôles accessoires
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.7.0...v1.7.1)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.7.0": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
