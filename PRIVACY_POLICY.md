@@ -7,13 +7,15 @@ Ce document présente en termes simples la politique de confidentialité d'Hesti
 Dès lors que vous rejoignez le serveur, Hestia crée un document dans la base de données contenant :
 
 - Votre identifiant (ID) de compte Discord : une suite de chiffres unique (et non modifiable) associée à votre compte Discord. Il se présente sous la forme d'une suite de chiffres (exemple : `123456789123456789`).
-- Votre nom d'utilisateur
+- Votre nom d'utilisateur Discord
 - La date à laquelle vous avez rejoint le serveur.
 
 Hestia récupère également au fil de vos interactions sur le serveur :
+- L'information (true/false) selon laquelle vous vous êtes présenté dans le salon `🪞-galerie-des-portraits` (ou non).
+- Les rôles accessoires (de salon, d'atelier, pronoms, etc.) que vous possédez (mis à jour tous les jours).
 - Le nombre de messages totaux envoyés.
 - Le nombre de messages envoyés par jour (sur les 30 derniers jours).
-Uniquement le nombre de messages est stocké, pas leur contenu.
+Seul le nombre de messages est stocké, pas leur contenu.
 
 Lorsque vous liez votre compte Discord au site :
 - L'identifiant (ID) de votre compte sur le site.
@@ -22,7 +24,7 @@ Lorsque vous liez votre compte Discord au site :
 Certaines données spécifiques sont également stockées dans le fichier `config` d'Hestia (ce fichier n'est pas public) :
 - L'ID du serveur Discord du Jardin.
 - L'ID de plusieurs salons : `🪞-galerie-des-portraits`, `🪑-antichambre`, `🍵-grand-salon-parlotte`, `👩‍🎓-fumoir-non-fumeur-sérieux` et `🤝-retraites-et-cousinades`.
-- L'ID de plusieurs rôles : `@Majuscules`, `@Cadratins`, `@Arobases`, `@Guillemets`, `@de salon`, `@d'atelier`, `@de bibliothèque`, `@de terrasse`, `@fumeuse non fumeuse`, et `@à la retraite`.
+- L'ID de plusieurs rôles : `@Majuscules`, `@Cadratins`, `@Arobases`, `@Guillemets`, `@de salon`, `@d'atelier`, `@de bibliothèque`, `@de terrasse`, `@fumeuse non fumeuse`, `@à la retraite` et les rôles de pronoms.
 - L'ID des comptes Discord des Majuscules (Admin) et des Cadratins (Modos).
 
 À savoir que les identifiants (IDs) ne contiennent aucune information personnelle en eux-mêmes. Il s'agit simplement d'un moyen de vous identifier à coup sûr (l'ID étant unique par définition).
@@ -48,11 +50,11 @@ Les données stockées le sont uniquement dans le but d'assurer le fonctionnemen
 
 ## À part Discord, partageons-nous vos données avec des tiers ?
 
-Non. La base de données est stockée en ligne dans le cluster personnel du développeur, fourni par l'entreprise MongoDB Inc., mais l'entreprise n'y accède pas librement. La seule personne qui a librement accès aux données est le développeur (Midriass).
+**Non.** La base de données est stockée en ligne dans le cluster personnel du développeur, fourni par l'entreprise MongoDB Inc., mais l'entreprise n'y accède pas librement. La seule personne qui a librement accès aux données est le développeur (Midriass).
 
 ## Comment les utilisateurs peuvent-ils faire supprimer des données ou contacter le propriétaire du bot ?
 
-Les utilisateurs du bot ne peuvent contacter directement supprimer leurs données. Mais ils peuvent contacter le développeur (Midriass / drowl_) afin d'avoir accès à leurs données stockées et peuvent demander à les supprimer.
+Les utilisateurs du bot ne peuvent pas directement (par eux-mêmes) supprimer leurs données. Mais ils peuvent contacter le développeur (Midriass / drowl_) afin d'avoir accès à leurs données stockées et peuvent demander à les supprimer.
 Cependant, il est à noter que certaines données sont strictement nécessaires au fonctionnement normal du serveur (exemple : votre identifiant). Ainsi, leur suppression obligera à vous retirer l'accès au serveur du Jardin, ou à minima à certains salons (Fumoir et/ou IRL).
 
 Par ailleurs, toutes les données stockées sont automatiquement supprimées lorsque le membre à qui elles appartiennent quitte le serveur. Les données de liaison au site sont également supprimées lorsque le membre délie son compte.
