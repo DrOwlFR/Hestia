@@ -6,6 +6,7 @@ import { handleDefaultNotification } from "./handlers/defaultHandler";
 import { handleFollowNewFollower, handleFollowNewStory } from "./handlers/followHandler";
 import { handleAuthPromotionAccepted, handleAuthPromotionRejected } from "./handlers/moderationHandler";
 import { handleNewsPublished } from "./handlers/newsHandler";
+import { handleStoryChapterScheduledPublished } from "./handlers/publicationHandler";
 import { handleQuoteChapterQuoted } from "./handlers/quoteHandler";
 import { handleReadlistChapterPublished, handleReadlistChapterUnpublished, handleReadlistStoryAdded, handleReadlistStoryCompleted, handleReadlistStoryDeleted, handleReadlistStoryRepublished, handleReadlistStoryUnpublished } from "./handlers/readlistHandler";
 import type { NotificationItem } from "./utils/types";
@@ -23,6 +24,7 @@ const handlers: Record<string, NotificationHandler> = {
 	"story.collaborator.role_given": handleStoryCollaboratorRoleGiven as NotificationHandler,
 	"story.collaborator.removed": handleStoryCollaboratorRoleRemoved as NotificationHandler,
 	"story.collaborator.left": handleStoryCollaboratorLeft as NotificationHandler,
+	"story.chapter.scheduled_published": handleStoryChapterScheduledPublished as NotificationHandler,
 	"readlist.chapter.published": handleReadlistChapterPublished as NotificationHandler,
 	"readlist.chapter.unpublished": handleReadlistChapterUnpublished as NotificationHandler,
 	"readlist.story.added": handleReadlistStoryAdded as NotificationHandler,
