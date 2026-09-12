@@ -90,7 +90,7 @@ export class ModalComponent extends Modal {
 						roles: connectResponseJson.roles,
 					},
 				},
-				{ new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true },
+				{ returnDocument: "after", upsert: true, runValidators: true, setDefaultsOnInsert: true },
 			);
 
 			// Handle database error
