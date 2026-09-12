@@ -1,10 +1,12 @@
 import type { ShewenyClient } from "sheweny";
 
+import { handleCalendarQuoteContestEntryRemoved, handleCalendarQuoteContestSubmissionsClosing, handleCalendarQuoteContestSubmissionsOpen, handleCalendarQuoteContestVotesClosing, handleCalendarQuoteContestVotesOpen } from "./handlers/calendarHandler";
 import { handleStoryCoAuthorChapterCreated, handleStoryCoAuthorChapterDeleted, handleStoryCoAuthorChapterUpdated, handleStoryCollaboratorLeft, handleStoryCollaboratorRoleGiven, handleStoryCollaboratorRoleRemoved } from "./handlers/collaborationsHandler";
 import { handleChapterComment, handleChapterReplyComment, handleChapterRootComment } from "./handlers/commentsHandler";
 import { handleDefaultNotification } from "./handlers/defaultHandler";
 import { handleFollowNewFollower, handleFollowNewStory } from "./handlers/followHandler";
 import { handleAuthPromotionAccepted, handleAuthPromotionRejected } from "./handlers/moderationHandler";
+import { handleNewsReplyComment } from "./handlers/newsCommentsHandler";
 import { handleNewsPublished } from "./handlers/newsHandler";
 import { handleStoryChapterScheduledPublished } from "./handlers/publicationHandler";
 import { handleQuoteChapterQuoted } from "./handlers/quoteHandler";
@@ -33,11 +35,17 @@ const handlers: Record<string, NotificationHandler> = {
 	"readlist.story.republished": handleReadlistStoryRepublished as NotificationHandler,
 	"readlist.story.completed": handleReadlistStoryCompleted as NotificationHandler,
 	"news.published": handleNewsPublished as NotificationHandler,
+	"news.reply_comment": handleNewsReplyComment as NotificationHandler,
 	"auth.promotion.accepted": handleAuthPromotionAccepted as NotificationHandler,
 	"auth.promotion.rejected": handleAuthPromotionRejected as NotificationHandler,
 	"follow.new_follower": handleFollowNewFollower as NotificationHandler,
 	"follow.new_story": handleFollowNewStory as NotificationHandler,
 	"quote.chapter_quoted": handleQuoteChapterQuoted as NotificationHandler,
+	"calendar.quote_contest.entry_removed": handleCalendarQuoteContestEntryRemoved as NotificationHandler,
+	"calendar.quote_contest.submissions_open": handleCalendarQuoteContestSubmissionsOpen as NotificationHandler,
+	"calendar.quote_contest.submissions_closing": handleCalendarQuoteContestSubmissionsClosing as NotificationHandler,
+	"calendar.quote_contest.votes_open": handleCalendarQuoteContestVotesOpen as NotificationHandler,
+	"calendar.quote_contest.votes_closing": handleCalendarQuoteContestVotesClosing as NotificationHandler,
 };
 
 export async function dispatchNotifications(client: ShewenyClient, notification: NotificationItem): Promise<string[]> {
