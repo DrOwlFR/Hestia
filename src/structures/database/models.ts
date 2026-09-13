@@ -119,3 +119,45 @@ export const MessageStats = model<messageStats>(
 	"messages_stats",
 	MessageStatsSchema,
 );
+
+/**
+ * Interface for voteDetails subdocument.
+ * Represents an individual vote with user ID, choice, proxy status, and voting details.
+ */
+interface voteDetails {
+	userId: string;
+	choice: "yes" | "no" | "abstain";
+	isProxy: boolean;
+	votedBy: string;
+	targetPseudo: string,
+}
+
+/**
+ * Interface for Vote documents in the database.
+ * Represents a vote with a message ID, channel ID, question, and a list of individual votes.
+ */
+interface vote extends Document {
+	messageId: string;
+	channelId: string;
+	question: string;
+	votes: voteDetails[];
+}
+
+/**
+ * Mongoose model for Vote collection.
+ * Manages votes with unique message IDs and associated voting details.
+ */
+export const voteSchema = model<vote>("Vote", new Schema<vote>({
+	messageId: { type: String, required: true, unique: true },
+	channelId: { type: String, required: true },
+	question: { type: String, required: true },
+	votes: [
+		{
+			userId: { type: String, required: true },
+			choice: { type: String, enum: ["yes", "no", "abstain"], required: true },
+			isProxy: { type: Boolean, default: false, required: true },
+			votedBy: { type: String, default: null },
+			targetPseudo: { type: String, default: null },
+		},
+	],
+}));
