@@ -176,11 +176,19 @@ export interface NewsReplyCommentData {
 
 // Moderation notification data interfaces
 
+export interface ModerationReportSubmittedData {
+	user_name: string,
+}
+
 export interface AuthPromotionAcceptedData {
 	user_name: string,
 }
 
 export interface AuthPromotionRejectedData {
+	user_name: string,
+}
+
+export interface AuthPromotionRequestedData {
 	user_name: string,
 }
 
@@ -354,6 +362,11 @@ export interface NewsReplyCommentNotification extends BaseNotification {
 
 // Moderation notification types
 
+export interface ModerationReportSubmittedNotification extends BaseNotification {
+	type: "moderation.report.submitted";
+	data: ModerationReportSubmittedData;
+}
+
 export interface AuthPromotionAcceptedNotification extends BaseNotification {
 	type: "auth.promotion.accepted";
 	data: AuthPromotionAcceptedData;
@@ -362,6 +375,11 @@ export interface AuthPromotionAcceptedNotification extends BaseNotification {
 export interface AuthPromotionRejectedNotification extends BaseNotification {
 	type: "auth.promotion.rejected";
 	data: AuthPromotionRejectedData;
+}
+
+export interface AuthPromotionRequestedNotification extends BaseNotification {
+	type: "auth.promotion.requested";
+	data: AuthPromotionRequestedData;
 }
 
 // Follow notification types
@@ -437,8 +455,10 @@ export type NotificationItem =
 | ReadlistStoryCompletedNotification
 | NewsPublishedNotification
 | NewsReplyCommentNotification
+| ModerationReportSubmittedNotification
 | AuthPromotionAcceptedNotification
 | AuthPromotionRejectedNotification
+| AuthPromotionRequestedNotification
 | FollowNewFollowerNotification
 | FollowNewStoryNotification
 | QuoteChapterQuotedNotification

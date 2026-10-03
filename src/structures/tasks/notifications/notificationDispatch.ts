@@ -5,7 +5,7 @@ import { handleStoryCoAuthorChapterCreated, handleStoryCoAuthorChapterDeleted, h
 import { handleChapterComment, handleChapterReplyComment, handleChapterRootComment } from "./handlers/commentsHandler";
 import { handleDefaultNotification } from "./handlers/defaultHandler";
 import { handleFollowNewFollower, handleFollowNewStory } from "./handlers/followHandler";
-import { handleAuthPromotionAccepted, handleAuthPromotionRejected } from "./handlers/moderationHandler";
+import { handleAuthPromotionAccepted, handleAuthPromotionRejected, handleAuthPromotionRequested, handleModerationReportSubmitted } from "./handlers/moderationHandler";
 import { handleNewsReplyComment } from "./handlers/newsCommentsHandler";
 import { handleNewsPublished } from "./handlers/newsHandler";
 import { handleStoryChapterScheduledPublished } from "./handlers/publicationHandler";
@@ -36,8 +36,10 @@ const handlers: Record<string, NotificationHandler> = {
 	"readlist.story.completed": handleReadlistStoryCompleted as NotificationHandler,
 	"news.published": handleNewsPublished as NotificationHandler,
 	"news.reply_comment": handleNewsReplyComment as NotificationHandler,
+	"moderation.report.submitted": handleModerationReportSubmitted as NotificationHandler,
 	"auth.promotion.accepted": handleAuthPromotionAccepted as NotificationHandler,
 	"auth.promotion.rejected": handleAuthPromotionRejected as NotificationHandler,
+	"auth.promotion.requested": handleAuthPromotionRequested as NotificationHandler,
 	"follow.new_follower": handleFollowNewFollower as NotificationHandler,
 	"follow.new_story": handleFollowNewStory as NotificationHandler,
 	"quote.chapter_quoted": handleQuoteChapterQuoted as NotificationHandler,

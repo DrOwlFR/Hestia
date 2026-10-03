@@ -2,8 +2,9 @@ import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
 import { getCurrentSeason } from "../../seasonsSystem";
+import { getDiscordIdFromSiteId } from "../services/userService";
 import { createNotificationEmbed } from "../utils/embedFunction";
-import type { AuthPromotionAcceptedNotification, AuthPromotionRejectedNotification, NotificationItem } from "../utils/types";
+import type { AuthPromotionAcceptedNotification, AuthPromotionRejectedNotification, ModerationReportSubmittedNotification, NotificationItem } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
 
 /**
@@ -18,9 +19,10 @@ import { handleSendingError } from "./errorHandler";
  * @param notification - The NotificationItem object containing details about the moderation event and recipients.
  * @param title - The title of the notification embed.
  * @param description - The description of the notification embed.
+ * @param userName - Optional. The name of the user who initiated the moderation action, used as the author name in the notification embed.
  * @returns - A promise that resolves to an array of user IDs for whom the notification failed to send.
  */
-async function sendModerationNotification(client: ShewenyClient, notification: NotificationItem, title: string, description: string): Promise<string[]> {
+async function sendModerationNotification(client: ShewenyClient, notification: NotificationItem, title: string, description: string, userName?: string): Promise<string[]> {
 	const failedRecipients: string[] = [];
 
 	// Get the current season and its corresponding icon from the configuration
@@ -30,8 +32,8 @@ async function sendModerationNotification(client: ShewenyClient, notification: N
 	// Create the notification embed using the provided title and description
 	const embed = createNotificationEmbed({
 		author: {
-			name: "Jardin des Esperluettes",
-			iconURL: icon,
+			name: userName || "Jardin des Esperluettes",
+			iconURL: notification.avatarUrl ?? icon,
 		},
 		title,
 		description,
@@ -52,6 +54,32 @@ async function sendModerationNotification(client: ShewenyClient, notification: N
 }
 
 /**
+ * handleModerationReportSubmitted: handles the notification for a user who has submitted a moderation report.
+ * Summary: This function constructs the title and description for the notification embed, informing moderators and administrators of the new moderation report submission. It then calls sendModerationNotification to send the notification to the recipients and returns the array of failed recipient IDs.
+ * Steps:
+ * - Get the Discord ID of the user who submitted the moderation report using their site ID from the notification data and construct a mention string if the Discord ID is found.
+ * - Construct the title and description for the notification embed, informing moderators and administrators of the new moderation report submission.
+ * - Call sendModerationNotification with the constructed title and description to send the notification to the recipients.
+ * @param client - The ShewenyClient instance used to fetch users and send messages.
+ * @param notification - The ModerationReportSubmittedNotification object containing details about the moderation report submission event and recipients.
+ * @returns - A promise that resolves to an array of user IDs for whom the notification failed to send.
+ */
+export async function handleModerationReportSubmitted(client: ShewenyClient, notification: ModerationReportSubmittedNotification): Promise<string[]> {
+	const { data } = notification;
+
+	// Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
+	// Construct the title and description for the notification embed, informing moderators and administrators of the new moderation report submission
+	const title = "🚩 Nouveau signalement";
+	const description = `**${data.user_name}**${mention} a déposé un nouveau signalement.`;
+
+	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
+	return sendModerationNotification(client, notification, title, description, data.user_name);
+}
+
+/**
  * handleAuthPromotionAccepted: handles the notification for a user whose promotion request has been accepted.
  * Summary: This function constructs the title and description for the notification embed, congratulating the user on their promotion acceptance. It then calls sendModerationNotification to send the notification to the recipients and returns the array of failed recipient IDs.
  * Steps:
@@ -66,7 +94,7 @@ export async function handleAuthPromotionAccepted(client: ShewenyClient, notific
 
 	// Construct the title and description for the notification embed, congratulating the user on their promotion acceptance
 	const title = "🌱 Promotion *acceptée*";
-	const description = `Félicitations, ${data.user_name} ! 🎉 Votre demande de promotion a été acceptée par l'équipe du Jardin. Vous êtes maintenant une **Esperluette confirmée** !`;
+	const description = `Félicitations, **${data.user_name}** ! 🎉 Votre demande de promotion a été acceptée par l'équipe du Jardin. Vous êtes maintenant une **Esperluette confirmée** !`;
 
 	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
 	return sendModerationNotification(client, notification, title, description);
@@ -91,4 +119,18 @@ export async function handleAuthPromotionRejected(client: ShewenyClient, notific
 
 	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
 	return sendModerationNotification(client, notification, title, description);
+}
+
+export async function handleAuthPromotionRequested(client: ShewenyClient, notification: AuthPromotionRejectedNotification): Promise<string[]> {
+	const { data } = notification;
+
+	// Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
+	const title = "🌱 Nouvelle demande de promotion";
+	const description = `**${data.user_name}**${mention} a déposé une demande de promotion. `;
+
+	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
+	return sendModerationNotification(client, notification, title, description, data.user_name);
 }
