@@ -121,43 +121,57 @@ export const MessageStats = model<messageStats>(
 );
 
 /**
- * Interface for voteDetails subdocument.
- * Represents an individual vote with user ID, choice, proxy status, and voting details.
+ * Interface for voteRecord subdocument.
+ * Represents an individual user's vote choice.
  */
-interface voteDetails {
+interface voteRecord {
 	userId: string;
-	choice: "yes" | "no" | "abstain";
-	isProxy: boolean;
-	votedBy: string;
-	targetPseudo: string,
+	displayName: string;
+	choice : "yes" | "no" | "abstain";
 }
 
 /**
- * Interface for Vote documents in the database.
- * Represents a vote with a message ID, channel ID, question, and a list of individual votes.
+ * Interface for proxyVoteRecord subdocument.
+ * Represents a proxy vote with holder and target information.
  */
-interface vote extends Document {
+interface proxyVoteRecord {
+	holderId: string;
+	holderDisplayName: string;
+	targetPseudo: string;
+	choice : "yes" | "no" | "abstain";
+}
+
+/**
+ * Interface for voteDocument in the database.
+ * Represents a voting session with question, status, and associated votes.
+ */
+export interface voteDocument {
 	messageId: string;
 	channelId: string;
 	question: string;
-	votes: voteDetails[];
+	isClosed: boolean;
+	votes: voteRecord[];
+	proxyVotes: proxyVoteRecord[];
 }
 
 /**
  * Mongoose model for Vote collection.
- * Manages votes with unique message IDs and associated voting details.
+ * Manages voting sessions with user votes and proxy votes.
  */
-export const voteSchema = model<vote>("Vote", new Schema<vote>({
+export const voteSchema = model<voteDocument>("Vote", new Schema<voteDocument>({
 	messageId: { type: String, required: true, unique: true },
 	channelId: { type: String, required: true },
 	question: { type: String, required: true },
-	votes: [
-		{
-			userId: { type: String, required: true },
-			choice: { type: String, enum: ["yes", "no", "abstain"], required: true },
-			isProxy: { type: Boolean, default: false, required: true },
-			votedBy: { type: String, default: null },
-			targetPseudo: { type: String, default: null },
-		},
-	],
+	isClosed: { type: Boolean, required: true, default: false },
+	votes: [{
+		userId: { type: String, required: true },
+		displayName: { type: String, required: true },
+		choice: { type: String, enum: ["yes", "no", "abstain"], required: true },
+	}],
+	proxyVotes: [{
+		holderId: { type: String, required: true },
+		holderDisplayName: { type: String, required: true },
+		targetPseudo: { type: String, required: true },
+		choice: { type: String, enum: ["yes", "no", "abstain"], required: true },
+	}],
 }));

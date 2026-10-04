@@ -4,6 +4,7 @@ import { Command } from "sheweny";
 import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
+import { voteSchema } from "../../structures/database/models";
 
 export class VoteCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -41,15 +42,13 @@ export class VoteCommand extends Command {
 
 		// Permission check for guild administrators and bot admins
 		const isAdmin = this.client.admins.includes(user.id) ||
-		config.adminsDiscordIds.includes(user.id) ||
-		config.siteModsIds.includes(user.id) ||
-		config.discordModsIds.includes(user.id);
+		config.adminsDiscordIds.includes(user.id);
 		if (!isAdmin) {
 			return interaction.reply({
 				content: stripIndent(`
 					> *Alors que vous essayez désespérément de faire fonctionner ce mécanisme, vous entendez des talons approcher en claquant sur le sol. Puis… La voix de la Concierge.*
 					— Hep, hep, hep ! Que croyez-vous faire là ? Vous n'avez pas le droit ! Déguerpissez !\n
-					-# ${config.emojis.cross} Vous n'avez pas les permissions suffisantes pour la commande \`${interaction}\`. Cette dernière est réservée à mon Développeur, aux Majuscules et aux Cadratins.
+					-# ${config.emojis.cross} Vous n'avez pas les permissions suffisantes pour la commande \`${interaction}\`. Cette dernière est réservée à mon Développeur et aux Majuscules.
 				`),
 				flags: MessageFlags.Ephemeral,
 			});
@@ -61,7 +60,7 @@ export class VoteCommand extends Command {
 		}
 
 		// Extract the question option provided by the user
-		const question = options.getString("question");
+		const question = options.getString("question", true);
 
 		const embed = new ContainerBuilder()
 			// .setAccentColor(colors.colorTertiary)
@@ -83,7 +82,7 @@ export class VoteCommand extends Command {
 							.setLabel("Contre")
 							.setEmoji("👎"),
 						new ButtonBuilder()
-							.setCustomId("voteAbstentionButton")
+							.setCustomId("voteAbstainButton")
 							.setStyle(ButtonStyle.Secondary)
 							.setLabel("Abstention")
 							.setEmoji("😶"),
@@ -115,7 +114,8 @@ export class VoteCommand extends Command {
 							.setCustomId("voteReopenButton")
 							.setStyle(ButtonStyle.Success)
 							.setLabel("Rouvrir le vote")
-							.setEmoji("✅"),
+							.setEmoji("✅")
+							.setDisabled(true),
 					),
 			)
 			.addSeparatorComponents(
@@ -138,11 +138,21 @@ export class VoteCommand extends Command {
 			);
 
 		// Sending the rules messages one by one
-		await channel.send({
+		const voteMessage = await interaction.reply({
 			components: [
 				embed,
 			],
 			flags: MessageFlags.IsComponentsV2,
+			withResponse: true,
+		});
+
+		await voteSchema.create({
+			messageId: voteMessage.resource?.message?.id,
+			channelId: channel.id,
+			question,
+			isClosed: false,
+			votes: [],
+			proxyVotes: [],
 		});
 
 	}
