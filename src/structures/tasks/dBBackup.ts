@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 import fs from "fs";
 
-import type { Document, Model } from "mongoose";
+import type { Model } from "mongoose";
 import { mongo } from "mongoose";
 import type { ShewenyClient } from "sheweny";
 
 import config from "../config";
-import type { dbUser, linkedUser, messageStats } from "../database/models";
+import type { dbUser, linkedUser, messageStats, voteDocument } from "../database/models";
 import { sendLog } from "../utils/functions";
 
 /**
@@ -21,7 +21,7 @@ import { sendLog } from "../utils/functions";
  * @param Model - The Mongoose model for the collection to backup.
  * @param collectionName - The name of the collection for the filename.
  */
-export async function backupCollection<T extends Document = Document>(client: ShewenyClient, Model: Model<T>, collectionName: string) {
+export async function backupCollection<T>(client: ShewenyClient, Model: Model<T>, collectionName: string) {
 	try {
 		const docs = await Model.find().lean();
 		const data = mongo.BSON.EJSON.stringify(docs, { relaxed: false });
@@ -53,14 +53,16 @@ export async function backupCollection<T extends Document = Document>(client: Sh
  * @param User - The User model.
  * @param LinkedUser - The LinkedUser model.
  * @param MessagesStats - The MessagesStats model.
+ * @param Vote - The Vote model.
  */
-export async function weeklyDBBackup(client: ShewenyClient, User: Model<dbUser>, LinkedUser: Model<linkedUser>, MessagesStats: Model<messageStats>) {
+export async function weeklyDBBackup(client: ShewenyClient, User: Model<dbUser>, LinkedUser: Model<linkedUser>, MessagesStats: Model<messageStats>, Vote: Model<voteDocument>) {
 	console.log("⌚ Lancement de la sauvegarde hebdomadaire de la base de données...");
 	await sendLog(client, "dbBackupCron", `${config.emojis.loading} Lancement de la sauvegarde hebdomadaire de la base de données...`);
 	await Promise.all([
 		backupCollection(client, User, "Users"),
 		backupCollection(client, LinkedUser, "LinkedUsers"),
 		backupCollection(client, MessagesStats, "MessagesStats"),
+		backupCollection(client, Vote, "Votes"),
 	]);
 	console.log("✅ Fin du script de sauvegarde hebdomadaire de la base de données.");
 	await sendLog(client, "dbBackupCron", `${config.emojis.check} Fin du script de sauvegarde hebdomadaire de la base de données.`);

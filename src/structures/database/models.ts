@@ -1,4 +1,4 @@
-import type { Document, Types } from "mongoose";
+import type { Types } from "mongoose";
 import { model, Schema } from "mongoose";
 
 /**
@@ -14,7 +14,7 @@ interface MessagePerDay {
  * Interface for User documents in the database.
  * Represents a Discord user with message statistics, join date, and timestamps.
  */
-export interface dbUser extends Document {
+export interface dbUser {
 	_id: Types.ObjectId;
 	discordId: string;
 	discordUsername: string;
@@ -46,7 +46,7 @@ export const User = model<dbUser>("User", new Schema({
  * Interface for LinkedUser documents in the database.
  * Represents the link between a Discord user and their site account.
  */
-export interface linkedUser extends Document {
+export interface linkedUser {
 	_id: Types.ObjectId,
 	discordId: string,
 	discordUsername: string,
@@ -72,7 +72,7 @@ export const LinkedUser = model<linkedUser>("linked_user", new Schema({
  * Interface for MessageStats documents in the database.
  * Tracks monthly message counts per channel in a guild.
  */
-export interface messageStats extends Document {
+export interface messageStats {
 	_id: Types.ObjectId,
 	guildId: string,
 	channelId: string,
@@ -127,7 +127,7 @@ export const MessageStats = model<messageStats>(
 interface voteRecord {
 	userId: string;
 	displayName: string;
-	choice : "yes" | "no" | "abstain";
+	choice: "yes" | "no" | "abstain";
 }
 
 /**
@@ -138,7 +138,7 @@ interface proxyVoteRecord {
 	holderId: string;
 	holderDisplayName: string;
 	targetPseudo: string;
-	choice : "yes" | "no" | "abstain";
+	choice: "yes" | "no" | "abstain";
 }
 
 /**
@@ -158,7 +158,7 @@ export interface voteDocument {
  * Mongoose model for Vote collection.
  * Manages voting sessions with user votes and proxy votes.
  */
-export const voteSchema = model<voteDocument>("Vote", new Schema<voteDocument>({
+export const Vote = model<voteDocument>("Vote", new Schema<voteDocument>({
 	messageId: { type: String, required: true, unique: true },
 	channelId: { type: String, required: true },
 	question: { type: String, required: true },
