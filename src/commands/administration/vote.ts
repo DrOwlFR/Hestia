@@ -4,7 +4,7 @@ import { Command } from "sheweny";
 import stripIndent from "strip-indent";
 
 import config from "../../structures/config";
-import { voteSchema } from "../../structures/database/models";
+import { Vote } from "../../structures/database/models";
 
 export class VoteCommand extends Command {
 	constructor(client: ShewenyClient) {
@@ -42,7 +42,7 @@ export class VoteCommand extends Command {
 
 		// Permission check for guild administrators and bot admins
 		const isAdmin = this.client.admins.includes(user.id) ||
-		config.adminsDiscordIds.includes(user.id);
+			config.adminsDiscordIds.includes(user.id);
 		if (!isAdmin) {
 			return interaction.reply({
 				content: stripIndent(`
@@ -146,7 +146,7 @@ export class VoteCommand extends Command {
 			withResponse: true,
 		});
 
-		await voteSchema.create({
+		await Vote.create({
 			messageId: voteMessage.resource?.message?.id,
 			channelId: channel.id,
 			question,

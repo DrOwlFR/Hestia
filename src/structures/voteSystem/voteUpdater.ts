@@ -1,7 +1,7 @@
 import type { TextChannel } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
-import { voteSchema } from "../database/models";
+import { Vote } from "../database/models";
 import { sendLog } from "../utils/functions";
 import { buildVoteContainer } from "./voteRenderer";
 
@@ -16,7 +16,7 @@ export function scheduleMessageUpdate(client: ShewenyClient, channelId: string, 
 		pendingUpdates.delete(messageId);
 
 		try {
-			const latestVoteDocument = await voteSchema.findOne({ messageId: messageId });
+			const latestVoteDocument = await Vote.findOne({ messageId: messageId });
 			if (!latestVoteDocument) return;
 
 			const channel = await client.channels.fetch(channelId) as TextChannel | null;

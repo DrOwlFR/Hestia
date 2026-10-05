@@ -3,7 +3,7 @@ import type { ShewenyClient } from "sheweny";
 import { Button } from "sheweny";
 
 import config from "../../../structures/config";
-import { voteSchema } from "../../../structures/database/models";
+import { Vote } from "../../../structures/database/models";
 
 export class ProxyVotesButton extends Button {
 	constructor(client: ShewenyClient) {
@@ -29,7 +29,7 @@ export class ProxyVotesButton extends Button {
 		if (!member || !(member instanceof GuildMember)) return;
 
 		// Check if the vote session exists in the database
-		const voteDocument = await voteSchema.findOne(({ messageId: button.message.id }));
+		const voteDocument = await Vote.findOne(({ messageId: button.message.id }));
 		if (!voteDocument) {
 			return button.reply({
 				content: "> *Hestia hausse un sourcil, visiblement contrariée.*\n— Je... Je ne retrouve pas la session de vote associée à ce formulaire, désolée.",

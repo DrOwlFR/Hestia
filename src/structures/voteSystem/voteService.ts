@@ -1,4 +1,4 @@
-import { voteSchema } from "../database/models";
+import { Vote } from "../database/models";
 import type { VoteChoice } from "./types";
 
 // Result type for vote registration
@@ -19,18 +19,18 @@ type RegisterDirectVoteResult =
  */
 export async function registerDirectVote(messageId: string, user: { id: string; displayName: string }, choice: VoteChoice): Promise<RegisterDirectVoteResult> {
 	// Check if the vote session exists and is open
-	const voteDocument = await voteSchema.findOne({ messageId });
+	const voteDocument = await Vote.findOne({ messageId });
 	if (!voteDocument) return { success: false, reason: "NOT_FOUND" };
 	if (voteDocument.isClosed) return { success: false, reason: "CLOSED" };
 
 	// Remove any existing vote from the user for the given messageId
-	const pullResult = await voteSchema.updateOne(
+	const pullResult = await Vote.updateOne(
 		{ messageId },
 		{ $pull: { votes: { userId: user.id } } },
 	);
 
 	// Add the new vote to the votes array
-	await voteSchema.updateOne(
+	await Vote.updateOne(
 		{ messageId },
 		{
 			$push: {
@@ -72,7 +72,7 @@ export async function registerProxyVote(messageId: string, holder: { id: string,
 	const cleanPseudo = targetPseudo.trim();
 
 	// Check if the vote session exists and is open, and if the holder has not exceeded the proxy vote quota
-	const voteDocument = await voteSchema.findOne({ messageId });
+	const voteDocument = await Vote.findOne({ messageId });
 	if (!voteDocument) return { success: false, reason: "NOT_FOUND" };
 	if (voteDocument.isClosed) return { success: false, reason: "CLOSED" };
 
@@ -81,7 +81,7 @@ export async function registerProxyVote(messageId: string, holder: { id: string,
 	if (holderProxies >= 3) return { success: false, reason: "QUOTA_EXCEEDED" };
 
 	// Add the new proxy vote to the proxyVotes array
-	await voteSchema.updateOne(
+	await Vote.updateOne(
 		{ messageId },
 		{
 			$push: {
@@ -101,8 +101,8 @@ export async function registerProxyVote(messageId: string, holder: { id: string,
 
 // Result type for setting vote status
 type SetVoteStatusResult =
-| { success: true; isClosed: boolean }
-| { success: false; reason: "NOT_FOUND" | "ALREADY_IN_STATE" };
+	| { success: true; isClosed: boolean }
+	| { success: false; reason: "NOT_FOUND" | "ALREADY_IN_STATE" };
 
 /**
  * Sets the status of a vote session (open or closed) for a given messageId.
@@ -118,14 +118,14 @@ type SetVoteStatusResult =
  */
 export async function setVoteStatus(messageId: string, isClosed: boolean): Promise<SetVoteStatusResult> {
 	// Check if the vote session exists
-	const voteDocument = await voteSchema.findOne({ messageId });
+	const voteDocument = await Vote.findOne({ messageId });
 	if (!voteDocument) return { success: false, reason: "NOT_FOUND" };
 
 	// Check if the vote session is already in the desired state to avoid unnecessary updates
 	if (voteDocument.isClosed === isClosed) return { success: false, reason: "ALREADY_IN_STATE" };
 
 	// Update the vote session's isClosed status in the database
-	await voteSchema.updateOne(
+	await Vote.updateOne(
 		{ messageId },
 		{ $set: { isClosed } },
 	);
