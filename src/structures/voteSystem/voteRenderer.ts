@@ -25,12 +25,43 @@ export function buildVoteContainer(voteDocument: voteDocument): ContainerBuilder
 	const yesCount = countFor("yes");
 	const noCount = countFor("no");
 	const abstainCount = countFor("abstain");
+	const totalCount = yesCount + noCount + abstainCount;
 	const proxyCount = voteDocument.proxyVotes.length;
+
+	const directVotersList = voteDocument.votes.map(vote => `  - <@${vote.userId}>`);
+	const proxyVotersList = voteDocument.proxyVotes.map(proxy => `  - ${proxy.targetPseudo} (proc. <@${proxy.holderId}>)`);
+	const allVotersList = [...directVotersList, ...proxyVotersList];
+
+	const emargementDisplay = allVotersList.length > 0 ? allVotersList.join("\n") : "  - *(aucun votant)*";
+
+	const resultsDisplay = voteDocument.isAnonymous
+		? [
+			"## Résultats",
+			`- **Total des votes** : ${totalCount} (dont ${proxyCount} par procuration)`,
+			"### Détail :",
+			`- **Pour** : ${yesCount} vote${yesCount >= 2 ? "s" : ""}`,
+			`- **Contre** : ${noCount} vote${noCount >= 2 ? "s" : ""}`,
+			`- **Abstention** : ${abstainCount} vote${abstainCount >= 2 ? "s" : ""}`,
+			"### Feuille d'émargement :",
+			emargementDisplay,
+		].join("\n")
+		: [
+			"## Résultats",
+			`- **Total des votes** : ${totalCount} (dont ${proxyCount} par procuration)`,
+			"### Détail :",
+			`- **Pour** : ${yesCount} vote${yesCount >= 2 ? "s" : ""}`,
+			formatList("yes"),
+			`- **Contre** : ${noCount} vote${noCount >= 2 ? "s" : ""}`,
+			formatList("no"),
+			`- **Abstention** : ${abstainCount} vote${abstainCount >= 2 ? "s" : ""}`,
+			formatList("abstain"),
+			`- **Procuration** : ${proxyCount} vote${proxyCount >= 2 ? "s" : ""}`,
+		].join("\n");
 
 	return new ContainerBuilder()
 		.addTextDisplayComponents(
 			new TextDisplayBuilder()
-				.setContent(`# ${voteDocument.question}\n${voteDocument.isClosed ? "🔒 Le vote est **clos**." : "Place aux votes ! Veuillez voter en utilisant les boutons ci-dessous."}`),
+				.setContent(`# ${voteDocument.question}\n${voteDocument.isClosed ? "🔒 Le vote est **clos**." : "Place aux votes ! Veuillez voter en utilisant les boutons ci-dessous."}${voteDocument.isAnonymous ? "\n\n❗ Ce vote est **anonyme**. Les résultats détaillés ne seront pas affichés." : ""}`),
 		)
 		.addActionRowComponents(
 			new ActionRowBuilder<ButtonBuilder>()
@@ -94,17 +125,6 @@ export function buildVoteContainer(voteDocument: voteDocument): ContainerBuilder
 		)
 		.addTextDisplayComponents(
 			new TextDisplayBuilder()
-				.setContent([
-					"## Résultats",
-					`- **Total des votes** : ${yesCount + noCount + abstainCount} (dont ${proxyCount} par procuration)`,
-					"### Détail :",
-					`- **Pour** : ${yesCount} vote${yesCount >= 2 ? "s" : ""}`,
-					formatList("yes"),
-					`- **Contre** : ${noCount} vote${noCount >= 2 ? "s" : ""}`,
-					formatList("no"),
-					`- **Abstention** : ${abstainCount} vote${abstainCount >= 2 ? "s" : ""}`,
-					formatList("abstain"),
-					`- **Procuration** : ${proxyCount} vote${proxyCount >= 2 ? "s" : ""}`,
-				].join("\n")),
+				.setContent(resultsDisplay),
 		);
 }

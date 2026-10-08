@@ -149,6 +149,7 @@ export interface voteDocument {
 	messageId: string;
 	channelId: string;
 	question: string;
+	isAnonymous: boolean;
 	isClosed: boolean;
 	votes: voteRecord[];
 	proxyVotes: proxyVoteRecord[];
@@ -162,6 +163,7 @@ export const Vote = model<voteDocument>("Vote", new Schema<voteDocument>({
 	messageId: { type: String, required: true, unique: true },
 	channelId: { type: String, required: true },
 	question: { type: String, required: true },
+	isAnonymous: { type: Boolean, required: true, default: false },
 	isClosed: { type: Boolean, required: true, default: false },
 	votes: [{
 		userId: { type: String, required: true },

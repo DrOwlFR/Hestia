@@ -12,7 +12,7 @@ export class VoteCommand extends Command {
 			name: "vote",
 			description: "Lance un vote",
 			category: "Administration",
-			usage: "vote [question]",
+			usage: "vote [question] [anonyme]",
 			examples: ["vote Voulez-vous que je vous fasse un câlin ?"],
 			options: [
 				{
@@ -21,19 +21,26 @@ export class VoteCommand extends Command {
 					type: ApplicationCommandOptionType.String,
 					required: true,
 				},
+				{
+					name: "anonyme",
+					description: "Anonymité du vote (par défaut : non)",
+					type: ApplicationCommandOptionType.Boolean,
+					required: false,
+				},
 			],
 		});
 	}
 
 	/**
-	 * Execute: main handler for the `ping` command.
-	 * Summary: Measure and display the bot's response latency, Discord API latency, and database latency.
+	 * Execute: main handler for the `vote` command.
+	 * Summary: This command initiates a voting session in the current text channel. It checks for administrative permissions, constructs an interactive embed with voting buttons, and records the vote session in the database.
+	 * The command supports an optional anonymity flag for the vote.
 	 * Steps:
-	 * - Send an initial reply indicating calculation in progress
-	 * - Calculate bot latency by fetching the reply timestamp
-	 * - Retrieve API latency from the WebSocket ping
-	 * - Ping the database to measure DB latency
-	 * - Build an embed with the latency values and edit the reply
+	 * - Check if the user has administrative permissions.
+	 * - Validate that the command is used in a text channel.
+	 * - Extract the question and anonymity option from the command options.
+	 * - Create an interactive embed with voting buttons and administrative controls.
+	 * - Send the embed to the channel and store the vote session in the database.
 	 * @param interaction - The slash command interaction.
 	 */
 	async execute(interaction: ChatInputCommandInteraction) {
@@ -59,14 +66,15 @@ export class VoteCommand extends Command {
 			return interaction.followUp({ content: `${config.emojis.cross} Cette commande doit être utilisée dans un salon textuel.`, flags: MessageFlags.Ephemeral });
 		}
 
-		// Extract the question option provided by the user
+		// Extract the question and anonymity option from the command options
 		const question = options.getString("question", true);
+		const isAnonymous = options.getBoolean("anonyme") ?? false;
 
 		const embed = new ContainerBuilder()
 			// .setAccentColor(colors.colorTertiary)
 			.addTextDisplayComponents(
 				new TextDisplayBuilder()
-					.setContent(`# ${question}\nPlace aux votes ! Veuillez voter en utilisant les boutons ci-dessous.`),
+					.setContent(`# ${question}\nPlace aux votes ! Veuillez voter en utilisant les boutons ci-dessous.${isAnonymous ? "\n\n❗ Ce vote est **anonyme**. Les résultats détaillés ne seront pas affichés." : ""}`),
 			)
 			.addActionRowComponents(
 				new ActionRowBuilder<ButtonBuilder>()
@@ -122,11 +130,29 @@ export class VoteCommand extends Command {
 				new SeparatorBuilder()
 					.setDivider(true)
 					.setSpacing(SeparatorSpacingSize.Large),
-			)
-			.addTextDisplayComponents(
+			);
+
+		if (isAnonymous) {
+			embed.addTextDisplayComponents(
 				new TextDisplayBuilder()
 					.setContent(stripIndent(`
 						## Résultats
+						- **Total des votes** : 0 vote
+						### Détail :
+						- **Pour** : 0 vote
+						- **Contre** : 0 vote
+						- **Abstention** : 0 vote
+						### Feuille d'émargement :
+						- *(aucun votant)*
+					`)),
+			);
+		} else {
+			embed.addTextDisplayComponents(
+				new TextDisplayBuilder()
+					.setContent(stripIndent(`
+						## Résultats
+						- **Total des votes** : 0 vote
+						### Détail :
 						- **Pour** : 0 vote
 						  - *(aucun vote)*
 						- **Contre** : 0 vote
@@ -136,6 +162,7 @@ export class VoteCommand extends Command {
 						- **Procuration** : 0
 						`)),
 			);
+		}
 
 		// Sending the rules messages one by one
 		const voteMessage = await interaction.reply({
@@ -150,6 +177,7 @@ export class VoteCommand extends Command {
 			messageId: voteMessage.resource?.message?.id,
 			channelId: channel.id,
 			question,
+			isAnonymous,
 			isClosed: false,
 			votes: [],
 			proxyVotes: [],
