@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.7.1", description: "Dernière version en date", value: "1.7.1" },
+				{ label: "v1.8.0", description: "Dernière version en date", value: "1.8.0" },
+				{ label: "v1.7.1", value: "1.7.1" },
 				{ label: "v1.7.0", value: "1.7.0" },
 				{ label: "v1.6.5", value: "1.6.5" },
 				{ label: "v1.6.4", value: "1.6.4" },
@@ -36,6 +37,29 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.8.0": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.8.0 - __Les Votes !__
+							*(10 octobre 2026)*
+							### 🚀 La grande nouveauté
+							Le système de **votes** est arrivé à la conciergerie ! Il permettra de gérer (de manière moins chaotique...) les votes (anonymes ou non) de l'association lors des assemblées générales et lors des réunions du Conseil d'Administration.
+							### ➕ Ajout
+							- \`[notifications]\` - Ajouts de nouveaux types de notifications concernant les commentaires sur les news, les évènements des citations, et les notifications de demande de promotion et de signalement pour l'équipe du Jardin
+							### 🔨 Modification
+							- \`[politique de confidentialité]\` - Modification en accord avec les nouvelles données stockées pour le système de votes
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.7.1...v1.8.0)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.7.1": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(
