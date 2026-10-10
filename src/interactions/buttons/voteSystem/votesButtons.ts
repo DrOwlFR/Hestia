@@ -5,7 +5,7 @@ import { Button } from "sheweny";
 import config from "../../../structures/config";
 import type { VoteButtonCustomId } from "../../../structures/voteSystem/types";
 import { BUTTON_CHOICE_MAP, VOTE_TRANSLATIONS } from "../../../structures/voteSystem/types";
-import { registerDirectVote } from "../../../structures/voteSystem/voteService";
+import { registerDirectVote, sendVoteConfirmation } from "../../../structures/voteSystem/voteService";
 import { scheduleMessageUpdate } from "../../../structures/voteSystem/voteUpdater";
 
 export class VotesButtons extends Button {
@@ -62,14 +62,29 @@ export class VotesButtons extends Button {
 			}
 		}
 
+		// Send a confirmation message to the user, indicating whether it was an update or a new vote
+		const dmSent = await sendVoteConfirmation({
+			user,
+			question: result.question,
+			choice: vote,
+			isUpdate: result.isUpdate,
+			isProxy: false,
+			messageUrl: message.url,
+		});
+
 		// Prepare the message content based on whether it was an update or a new vote
 		const messageContent = result.isUpdate
-			? `> *Hestia regarde votre bulletin et hoche la tête.*\n— Très bien, j'ai modifié votre vote, il s'agit à présent de : **${VOTE_TRANSLATIONS[vote]}**.`
+			? `> *Hestia regarde votre bulletin et hoche la tête.*\n— Très bien, j'ai modifié votre vote pour : **${VOTE_TRANSLATIONS[vote]}**.`
 			: `> *Hestia regarde votre bulletin et hoche la tête.*\n— Très bien, j'ai comptabilisé votre vote, vous avez voté : **${VOTE_TRANSLATIONS[vote]}**.`;
+
+		// Include a note about whether the confirmation message was sent successfully or not
+		const dmNote = dmSent ?
+			`\n-# ${config.emojis.check} Un message de confirmation vous a été envoyé en message privé.`
+			: `\n-# ${config.emojis.cross} Impossible de vous envoyer la confirmation en message privé. Ces derniers sont fermés.`;
 
 		// Send a confirmation reply to the user
 		await button.reply({
-			content: messageContent,
+			content: `${messageContent}\n${dmNote}`,
 			flags: MessageFlags.Ephemeral,
 		});
 

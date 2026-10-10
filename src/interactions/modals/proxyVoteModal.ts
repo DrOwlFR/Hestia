@@ -5,7 +5,7 @@ import { Modal } from "sheweny";
 
 import config from "../../structures/config";
 import { VOTE_TRANSLATIONS } from "../../structures/voteSystem/types";
-import { registerProxyVote } from "../../structures/voteSystem/voteService";
+import { registerProxyVote, sendVoteConfirmation } from "../../structures/voteSystem/voteService";
 import { scheduleMessageUpdate } from "../../structures/voteSystem/voteUpdater";
 
 export class ProxyVoteModal extends Modal {
@@ -27,19 +27,22 @@ export class ProxyVoteModal extends Modal {
 	 */
 	async execute(modal: ModalSubmitInteraction) {
 
-		const { channelId, fields, guild, member, message } = modal;
+		const { channelId, fields, guild, member, message, user } = modal;
 
 		// Only allow in the site's guild and ensure member is valid
 		if (guild?.id !== config.gardenGuildId) return;
 		if (!message || !channelId) return;
 		if (!member || !(member instanceof GuildMember)) return;
 
+		// Get the pseudonym and vote choice from the modal fields
 		const pseudo = fields.getTextInputValue("pseudonymInput").trim();
 		const [vote] = fields.getCheckboxGroup("voteChoiceCheckboxGroup") as ("yes" | "no" | "abstain")[];
 		const displayName = member.displayName || modal.user.username;
 
+		// Register the proxy vote
 		const result = await registerProxyVote(message.id, { id: member.id, displayName }, pseudo, vote);
 
+		// Handle the result of the proxy vote registration
 		if (!result.success) {
 			switch (result.reason) {
 				case "CLOSED":
@@ -62,11 +65,28 @@ export class ProxyVoteModal extends Modal {
 			}
 		}
 
+		// Send a confirmation message to the user
+		const dmSent = await sendVoteConfirmation({
+			user,
+			question: result.question,
+			choice: vote,
+			isProxy: true,
+			targetPseudo: pseudo,
+			messageUrl: message.url,
+		});
+
+		// Add a note about whether the confirmation message was sent successfully or not
+		const dmNote = dmSent ?
+			`\n-# ${config.emojis.check} Un message de confirmation vous a été envoyé en message privé.`
+			: `\n-# ${config.emojis.cross} Impossible de vous envoyer la confirmation en message privé. Ces derniers sont fermés.`;
+
+		// Send a confirmation reply to the user
 		await modal.reply({
-			content: `> *Hestia vous adresse un sourire chaleureux.*\n— Merci. J'ai comptabilisé votre vote par procuration pour **${pseudo}**, vous avez voté : **${VOTE_TRANSLATIONS[vote]}**.`,
+			content: `> *Hestia vous adresse un sourire chaleureux.*\n— Merci. J'ai comptabilisé votre vote par procuration pour **${pseudo}**, vous avez voté : **${VOTE_TRANSLATIONS[vote]}**.\n${dmNote}`,
 			flags: MessageFlags.Ephemeral,
 		});
 
+		// Schedule a message update to reflect the new vote in the original message
 		scheduleMessageUpdate(this.client, channelId, message.id);
 	}
 };

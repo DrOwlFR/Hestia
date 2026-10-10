@@ -1,9 +1,14 @@
+import type { User } from "discord.js";
+import { EmbedBuilder } from "discord.js";
+
+import config from "../config";
 import { Vote } from "../database/models";
-import type { VoteChoice } from "./types";
+import { getCurrentSeason, pickRandomSeasonColor } from "../tasks/seasonsSystem";
+import { VOTE_TRANSLATIONS, type VoteChoice } from "./types";
 
 // Result type for vote registration
 type RegisterDirectVoteResult =
-	| { success: true; isUpdate: boolean }
+	| { success: true; isUpdate: boolean; question: string }
 	| { success: false; reason: "CLOSED" | "NOT_FOUND" };
 /**
  * Registers a direct vote for a given messageId by a user with a specific choice.
@@ -42,13 +47,17 @@ export async function registerDirectVote(messageId: string, user: { id: string; 
 			},
 		},
 	);
-	// Return wether an existing vote was updated
-	return { success: true, isUpdate: pullResult.modifiedCount > 0 };
+	// Return success with information about whether it was an update or a new vote, and the question associated with the vote
+	return {
+		success: true,
+		isUpdate: pullResult.modifiedCount > 0,
+		question: voteDocument.question,
+	};
 }
 
 // Result type for proxy vote registration
 type RegisterProxyVoteResult =
-	| { success: true }
+	| { success: true; question: string }
 	| { success: false; reason: "CLOSED" | "NOT_FOUND" | "QUOTA_EXCEEDED" };
 
 /**
@@ -95,8 +104,73 @@ export async function registerProxyVote(messageId: string, holder: { id: string,
 		},
 	);
 
-	// Return success
-	return { success: true };
+	// Return success with the question associated with the vote
+	return {
+		success: true,
+		question: voteDocument.question,
+	};
+}
+
+// Options for sending a vote confirmation message
+interface SendConfirmationOptions {
+	user: User;
+	question: string;
+	choice: VoteChoice;
+	isUpdate?: boolean;
+	isProxy: boolean;
+	targetPseudo?: string;
+	messageUrl: string;
+}
+
+/**
+ * Sends a confirmation message to the user after they have cast their vote, either directly or via proxy.
+ * Summary: This function creates an embed message that confirms the user's vote, including details such as the question, choice made, and the date of the vote. It also handles proxy votes by indicating that the user's proxy has been recorded.
+ * Steps:
+ * - Determine the color for the embed, picking a random seasonal color.
+ * - Get the current season and its corresponding icon from the configuration.
+ * - If the vote is an update, include a note about the update.
+ * - Create an embed message to confirm the user's vote, including details such as the question, choice made, and the date of the vote.
+ * - Send the embed message to the user via direct message.
+ * - Return a boolean indicating whether the message was successfully sent.
+ * @param user - The ShewenyClient instance representing the bot client.
+ * @param question - The question associated with the vote.
+ * @param choice - The choice made by the user, which is of type VoteChoice.
+ * @param isUpdate - Optional. A boolean indicating whether the vote was an update (true) or a new vote (false).
+ * @param isProxy - A boolean indicating whether the vote was cast via proxy (true) or directly (false).
+ * @param targetPseudo - Optional. The pseudo of the target user for proxy votes.
+ * @param messageUrl - The URL of the message associated with the vote.
+ * @returns
+ */
+export async function sendVoteConfirmation({ choice, isProxy, isUpdate = false, messageUrl, question, targetPseudo, user }: SendConfirmationOptions): Promise<boolean> {
+
+	// Determine the color for the embed, picking a random seasonal color
+	const color = pickRandomSeasonColor();
+
+	// Get the current season and its corresponding icon from the configuration
+	const currentSeason = getCurrentSeason();
+	const icon = config[currentSeason].favicon;
+
+	// Create an embed message to confirm the user's vote, including details such as the question, choice made, and the date of the vote
+	const confirmationEmbed = new EmbedBuilder()
+		.setColor(color)
+		.setURL(messageUrl)
+		.setTitle("🗳️ Accusé de réception de votre vote")
+		.setDescription(isProxy
+			? `Votre procuration pour **${targetPseudo}** a bien été prise en compte.`
+			: isUpdate
+				? "Votre bulletin a bien été mis à jour."
+				: "Votre bulletin a bien été enregistré.",
+		)
+		.addFields(
+			{ name: "Scrutin", value: question },
+			{ name: "Choix exprimé", value: `**${VOTE_TRANSLATIONS[choice].toUpperCase()}**` },
+			{ name: "Date", value: `<t:${Math.floor(Date.now() / 1000)}:f>` },
+		)
+		.setFooter({ text: "Ce message fait office de preuve de votre émargement.", iconURL: icon })
+	;
+
+	const sentMessage = await user.send({ embeds: [confirmationEmbed] }).catch(() => null);
+	return Boolean(sentMessage);
 }
 
 // Result type for setting vote status
