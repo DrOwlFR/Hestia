@@ -8,7 +8,7 @@ import { Event } from "sheweny";
 
 import { version } from "../../package.json";
 import config from "../structures/config";
-import { LinkedUser, MessageStats, User } from "../structures/database/models";
+import { LinkedUser, MessageStats, User, Vote } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
 import { sendNotifications } from "../structures/tasks/notifications/services/notificationsProcessor";
@@ -83,9 +83,9 @@ export class ReadyEvent extends Event {
 		});
 
 		// --- DB saving cron: every monday at 3AM ---
-		// Backs up Users, LinkedUsers, and MessageStats collections to JSON files
+		// Backs up Users, LinkedUsers, MessageStats, and Vote collections to JSON files
 		schedule("0 3 * * 1", async () => {
-			await weeklyDBBackup(this.client, User, LinkedUser, MessageStats);
+			await weeklyDBBackup(this.client, User, LinkedUser, MessageStats, Vote);
 		}, {
 			timezone: "Europe/Paris",
 		});
@@ -138,7 +138,7 @@ export class ReadyEvent extends Event {
 				if (!thread.joined) {
 					try {
 						await threadJoinLimiter.schedule<ThreadChannel>(async () => thread.join());
-					} catch {}
+					} catch { }
 				}
 			}
 

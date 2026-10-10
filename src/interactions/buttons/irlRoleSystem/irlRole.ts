@@ -75,7 +75,7 @@ export class IRLRoleButton extends Button {
 						createdAt: { $ifNull: ["$createdAt", "$$NOW"] },
 					},
 				}],
-				{ upsert: true, new: true, updatePipeline: true },
+				{ upsert: true, returnDocument: "after", updatePipeline: true },
 			);
 		}
 		catch (err) {

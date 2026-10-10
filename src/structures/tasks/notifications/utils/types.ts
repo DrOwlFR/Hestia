@@ -164,13 +164,31 @@ export interface NewsPublishedData {
 	news_slug: string,
 }
 
+// News comments notification data interfaces
+
+export interface NewsReplyCommentData {
+	comment_id: number,
+	author_name: string,
+	author_slug: string,
+	news_title: string,
+	news_slug: string,
+}
+
 // Moderation notification data interfaces
+
+export interface ModerationReportSubmittedData {
+	user_name: string,
+}
 
 export interface AuthPromotionAcceptedData {
 	user_name: string,
 }
 
 export interface AuthPromotionRejectedData {
+	user_name: string,
+}
+
+export interface AuthPromotionRequestedData {
 	user_name: string,
 }
 
@@ -203,6 +221,34 @@ export interface QuoteChapterQuotedData {
 	story_id: number,
 	story_title: string,
 	story_slug: string,
+}
+
+// Calendar notification data interfaces
+
+export interface CalendarQuoteContestEntryRemovedData {
+	category_title: string,
+	activity_name: string,
+	activity_slug: string,
+}
+
+export interface CalendarQuoteContestSubmissionsOpenData {
+	activity_name: string,
+	activity_slug: string,
+}
+
+export interface CalendarQuoteContestSubmissionsClosingData {
+	activity_name: string,
+	activity_slug: string,
+}
+
+export interface CalendarQuoteContestVotesOpenData {
+	activity_name: string,
+	activity_slug: string,
+}
+
+export interface CalendarQuoteContestVotesClosingData {
+	activity_name: string,
+	activity_slug: string,
 }
 
 // --- Individual notification type interfaces extending the base notification interface ---
@@ -307,7 +353,19 @@ export interface NewsPublishedNotification extends BaseNotification {
 	data: NewsPublishedData;
 }
 
+// News comments notification types
+
+export interface NewsReplyCommentNotification extends BaseNotification {
+	type: "news.reply_comment";
+	data: NewsReplyCommentData;
+}
+
 // Moderation notification types
+
+export interface ModerationReportSubmittedNotification extends BaseNotification {
+	type: "moderation.report.submitted";
+	data: ModerationReportSubmittedData;
+}
 
 export interface AuthPromotionAcceptedNotification extends BaseNotification {
 	type: "auth.promotion.accepted";
@@ -317,6 +375,11 @@ export interface AuthPromotionAcceptedNotification extends BaseNotification {
 export interface AuthPromotionRejectedNotification extends BaseNotification {
 	type: "auth.promotion.rejected";
 	data: AuthPromotionRejectedData;
+}
+
+export interface AuthPromotionRequestedNotification extends BaseNotification {
+	type: "auth.promotion.requested";
+	data: AuthPromotionRequestedData;
 }
 
 // Follow notification types
@@ -338,6 +401,33 @@ export interface QuoteChapterQuotedNotification extends BaseNotification {
 	data: QuoteChapterQuotedData;
 }
 
+// Calendar notification types
+
+export interface CalendarQuoteContestEntryRemovedNotification extends BaseNotification {
+	type: "calendar.quote_contest.entry_removed";
+	data: CalendarQuoteContestEntryRemovedData;
+}
+
+export interface CalendarQuoteContestSubmissionsOpenNotification extends BaseNotification {
+	type: "calendar.quote_contest.submissions_open";
+	data: CalendarQuoteContestSubmissionsOpenData;
+}
+
+export interface CalendarQuoteContestSubmissionsClosingNotification extends BaseNotification {
+	type: "calendar.quote_contest.submissions_closing";
+	data: CalendarQuoteContestSubmissionsClosingData;
+}
+
+export interface CalendarQuoteContestVotesOpenNotification extends BaseNotification {
+	type: "calendar.quote_contest.votes_open";
+	data: CalendarQuoteContestVotesOpenData;
+}
+
+export interface CalendarQuoteContestVotesClosingNotification extends BaseNotification {
+	type: "calendar.quote_contest.votes_closing";
+	data: CalendarQuoteContestVotesClosingData;
+}
+
 // Fallback notification type for unrecognized notification types
 export interface FallbackNotification extends BaseNotification {
 	type: string,
@@ -355,6 +445,7 @@ export type NotificationItem =
 | StoryCollaboratorRoleGivenNotification
 | StoryCollaboratorRemovedNotification
 | StoryCollaboratorLeftNotification
+| StoryChapterScheduledPublishedNotification
 | ReadlistChapterPublishedNotification
 | ReadlistChapterUnpublishedNotification
 | ReadlistStoryAddedNotification
@@ -363,12 +454,19 @@ export type NotificationItem =
 | ReadlistStoryRepublishedNotification
 | ReadlistStoryCompletedNotification
 | NewsPublishedNotification
+| NewsReplyCommentNotification
+| ModerationReportSubmittedNotification
 | AuthPromotionAcceptedNotification
 | AuthPromotionRejectedNotification
+| AuthPromotionRequestedNotification
 | FollowNewFollowerNotification
 | FollowNewStoryNotification
 | QuoteChapterQuotedNotification
-| StoryChapterScheduledPublishedNotification;
+| CalendarQuoteContestEntryRemovedNotification
+| CalendarQuoteContestSubmissionsOpenNotification
+| CalendarQuoteContestSubmissionsClosingNotification
+| CalendarQuoteContestVotesOpenNotification
+| CalendarQuoteContestVotesClosingNotification;
 
 // Interface for pagination metadata
 export interface Pagination {

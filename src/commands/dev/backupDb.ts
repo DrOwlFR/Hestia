@@ -3,7 +3,7 @@ import type { ShewenyClient } from "sheweny";
 import { Command } from "sheweny";
 
 import config from "../../structures/config";
-import { LinkedUser, MessageStats, User } from "../../structures/database/models";
+import { LinkedUser, MessageStats, User, Vote } from "../../structures/database/models";
 import { weeklyDBBackup } from "../../structures/tasks/dBBackup";
 import { sendLog } from "../../structures/utils/functions";
 
@@ -45,7 +45,7 @@ export class BackupDbCommand extends Command {
 
 		// Perform the database backup task
 		await sendLog(this.client, "dbBackupCron", `${config.emojis.loading} Lancement __**manuel**__ de la sauvegarde de la base de données...`);
-		await weeklyDBBackup(this.client, User, LinkedUser, MessageStats);
+		await weeklyDBBackup(this.client, User, LinkedUser, MessageStats, Vote);
 
 		// Notify the user that the manual database backup has completed
 		await sendLog(this.client, "dbBackupCron", `${config.emojis.check} Fin de la sauvegarde __**manuelle**__ de la base de données...`);
