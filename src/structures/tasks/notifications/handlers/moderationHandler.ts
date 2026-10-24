@@ -73,7 +73,7 @@ export async function handleModerationReportSubmitted(client: ShewenyClient, not
 
 	// Construct the title and description for the notification embed, informing moderators and administrators of the new moderation report submission
 	const title = "🚩 Nouveau signalement";
-	const description = `**${data.user_name}**${mention} a déposé un nouveau signalement.`;
+	const description = `**${data.user_name}**${mention} a déposé un nouveau signalement. **[Accéder aux signalements](${config.APILink}/admin/moderation/moderation-reports)**.`;
 
 	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
 	return sendModerationNotification(client, notification, title, description, data.user_name);
@@ -129,7 +129,7 @@ export async function handleAuthPromotionRequested(client: ShewenyClient, notifi
 	const mention = discordId ? ` (<@${discordId}>)` : "";
 
 	const title = "🌱 Nouvelle demande de promotion";
-	const description = `**${data.user_name}**${mention} a déposé une demande de promotion. `;
+	const description = `**${data.user_name}**${mention} a déposé une demande de promotion. **[Accéder aux demandes de promotion](${config.APILink}/admin/auth/promotion-requests)**.`;
 
 	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
 	return sendModerationNotification(client, notification, title, description, data.user_name);
