@@ -4,6 +4,7 @@ import { handleCalendarQuoteContestEntryRemoved, handleCalendarQuoteContestSubmi
 import { handleStoryCoAuthorChapterCreated, handleStoryCoAuthorChapterDeleted, handleStoryCoAuthorChapterUpdated, handleStoryCollaboratorLeft, handleStoryCollaboratorRoleGiven, handleStoryCollaboratorRoleRemoved } from "./handlers/collaborationsHandler";
 import { handleChapterComment, handleChapterReplyComment, handleChapterRootComment } from "./handlers/commentsHandler";
 import { handleDefaultNotification } from "./handlers/defaultHandler";
+import { handleFanartAccepted, handleFanartAudioReplaced, handleFanartDeclined, handleFanartDeleted, handleFanartDeletedByModeration, handleFanartRemovedWithContent, handleFanartRoleDeclined, handleFanartRoleGiven, handleFanartRoleRequested, handleFanartSubmitted } from "./handlers/fanartHandler";
 import { handleFollowNewFollower, handleFollowNewStory } from "./handlers/followHandler";
 import { handleAuthPromotionAccepted, handleAuthPromotionRejected, handleAuthPromotionRequested, handleModerationReportSubmitted } from "./handlers/moderationHandler";
 import { handleNewsReplyComment } from "./handlers/newsCommentsHandler";
@@ -43,6 +44,16 @@ const handlers: Record<string, NotificationHandler> = {
 	"follow.new_follower": handleFollowNewFollower as NotificationHandler,
 	"follow.new_story": handleFollowNewStory as NotificationHandler,
 	"quote.chapter_quoted": handleQuoteChapterQuoted as NotificationHandler,
+	"fanart.submitted": handleFanartSubmitted as NotificationHandler,
+	"fanart.accepted": handleFanartAccepted as NotificationHandler,
+	"fanart.declined": handleFanartDeclined as NotificationHandler,
+	"fanart.deleted": handleFanartDeleted as NotificationHandler,
+	"fanart.deleted_by_moderation": handleFanartDeletedByModeration as NotificationHandler,
+	"fanart.audio_replaced": handleFanartAudioReplaced as NotificationHandler,
+	"fanart.removed_with_content": handleFanartRemovedWithContent as NotificationHandler,
+	"fanart.role_requested": handleFanartRoleRequested as NotificationHandler,
+	"fanart.role_given": handleFanartRoleGiven as NotificationHandler,
+	"fanart.role_declined": handleFanartRoleDeclined as NotificationHandler,
 	"calendar.quote_contest.entry_removed": handleCalendarQuoteContestEntryRemoved as NotificationHandler,
 	"calendar.quote_contest.submissions_open": handleCalendarQuoteContestSubmissionsOpen as NotificationHandler,
 	"calendar.quote_contest.submissions_closing": handleCalendarQuoteContestSubmissionsClosing as NotificationHandler,

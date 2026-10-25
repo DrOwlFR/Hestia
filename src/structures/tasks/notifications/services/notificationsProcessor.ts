@@ -27,6 +27,7 @@ export async function sendNotifications(client: ShewenyClient): Promise<void> {
 
 	// Parse the response as JSON and check if there are any notifications to process. If there are no notifications, return early.
 	const notificationsJson = (await notificationsResponse.json() as NotificationsJson);
+	console.log(notificationsJson);
 	if (!notificationsJson.data.length) return;
 
 	// Initialize an array to hold the results of processing each notification, including any failed recipients.
@@ -43,7 +44,7 @@ export async function sendNotifications(client: ShewenyClient): Promise<void> {
 	}
 
 	// After processing all notifications, mark them as sent in the site API by calling postNotifications with the results.
-	await postNotifications(results);
+	// await postNotifications(results);
 }
 
 /**
@@ -63,27 +64,27 @@ async function getNotifications(page: number = 1, perPage: number = 100): Promis
 	});
 }
 
-// Interface for notification objects
-interface NotificationPost {
-	id: number,
-	failedRecipients?: string[],
-}
+// // Interface for notification objects
+// interface NotificationPost {
+// 	id: number,
+// 	failedRecipients?: string[],
+// }
 
-/**
- * postNotifications: marks notifications as sent in the site API.
- * Summary: Sends a POST request to update the status of notifications to "sent" in the site database.
- * @param notifications - An array of notification objects to mark as sent.
- * @returns - The API response indicating success or failure of the operation.
- */
-async function postNotifications(notifications: NotificationPost[]): Promise<Response> {
-	return await fetch(`${config.APILink}/api/discord/notifications/mark-sent`, {
-		method: "POST",
-		headers: {
-			"Authorization": `Bearer ${config.API_KEY}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			"notifications": notifications,
-		}),
-	});
-}
+// /**
+//  * postNotifications: marks notifications as sent in the site API.
+//  * Summary: Sends a POST request to update the status of notifications to "sent" in the site database.
+//  * @param notifications - An array of notification objects to mark as sent.
+//  * @returns - The API response indicating success or failure of the operation.
+//  */
+// async function postNotifications(notifications: NotificationPost[]): Promise<Response> {
+// 	return await fetch(`${config.APILink}/api/discord/notifications/mark-sent`, {
+// 		method: "POST",
+// 		headers: {
+// 			"Authorization": `Bearer ${config.API_KEY}`,
+// 			"Content-Type": "application/json",
+// 		},
+// 		body: JSON.stringify({
+// 			"notifications": notifications,
+// 		}),
+// 	});
+// }

@@ -224,6 +224,148 @@ export interface QuoteChapterQuotedData {
 	story_slug: string,
 }
 
+// Fanart notification data interfaces
+
+export interface FanartSubmittedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartAcceptedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartDeclinedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartDeletedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartDeletedByModerationData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartAudioReplacedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartRemovedWithContentData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartRoleRequestedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartRoleGivenData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
+export interface FanartRoleDeclinedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
 // Calendar notification data interfaces
 
 export interface CalendarQuoteContestEntryRemovedData {
@@ -402,6 +544,58 @@ export interface QuoteChapterQuotedNotification extends BaseNotification {
 	data: QuoteChapterQuotedData;
 }
 
+// Fanart notification types
+
+export interface FanartSubmittedNotification extends BaseNotification {
+	type: "fanart.submitted";
+	data: FanartSubmittedData;
+}
+
+export interface FanartAcceptedNotification extends BaseNotification {
+	type: "fanart.accepted";
+	data: FanartAcceptedData;
+}
+
+export interface FanartDeclinedNotification extends BaseNotification {
+	type: "fanart.declined";
+	data: FanartDeclinedData;
+}
+
+export interface FanartDeletedNotification extends BaseNotification {
+	type: "fanart.deleted";
+	data: FanartDeletedData;
+}
+
+export interface FanartDeletedByModerationNotification extends BaseNotification {
+	type: "fanart.deleted_by_moderation";
+	data: FanartDeletedByModerationData;
+}
+
+export interface FanartAudioReplacedNotification extends BaseNotification {
+	type: "fanart.audio_replaced";
+	data: FanartAudioReplacedData;
+}
+
+export interface FanartRemovedWithContentNotification extends BaseNotification {
+	type: "fanart.removed_with_content";
+	data: FanartRemovedWithContentData;
+}
+
+export interface FanartRoleRequestedNotification extends BaseNotification {
+	type: "fanart.role_requested";
+	data: FanartRoleRequestedData;
+}
+
+export interface FanartRoleGivenNotification extends BaseNotification {
+	type: "fanart.role_given";
+	data: FanartRoleGivenData;
+}
+
+export interface FanartRoleDeclinedNotification extends BaseNotification {
+	type: "fanart.role_declined";
+	data: FanartRoleDeclinedData;
+}
+
 // Calendar notification types
 
 export interface CalendarQuoteContestEntryRemovedNotification extends BaseNotification {
@@ -463,6 +657,16 @@ export type NotificationItem =
 | FollowNewFollowerNotification
 | FollowNewStoryNotification
 | QuoteChapterQuotedNotification
+| FanartSubmittedNotification
+| FanartAcceptedNotification
+| FanartDeclinedNotification
+| FanartDeletedNotification
+| FanartDeletedByModerationNotification
+| FanartAudioReplacedNotification
+| FanartRemovedWithContentNotification
+| FanartRoleRequestedNotification
+| FanartRoleGivenNotification
+| FanartRoleDeclinedNotification
 | CalendarQuoteContestEntryRemovedNotification
 | CalendarQuoteContestSubmissionsOpenNotification
 | CalendarQuoteContestSubmissionsClosingNotification
