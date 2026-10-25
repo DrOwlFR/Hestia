@@ -23,6 +23,7 @@ export default {
 	seriousRoleCronChannelId: "",
 	saveDbCronChannelId: "",
 	seasonsCronChannelId: "",
+	fanartsCronChannelId: "",
 
 	gardenGuildId: "",
 
@@ -30,6 +31,7 @@ export default {
 	portraitGaleryChannelId: "",
 	antechamberChannelId: "",
 	loungeChannelId: "",
+	privateCollectionChannelId: "",
 	seriousChannelId: "",
 	irlChannelId: "",
 

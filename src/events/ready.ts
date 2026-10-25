@@ -11,6 +11,7 @@ import config from "../structures/config";
 import { LinkedUser, MessageStats, User, Vote } from "../structures/database/models";
 import { weeklyDBBackup } from "../structures/tasks/dBBackup";
 import { dailyDBCleaning } from "../structures/tasks/dBCleaning";
+import { sendFanarts } from "../structures/tasks/fanarts/fanartProcessor";
 import { sendNotifications } from "../structures/tasks/notifications/services/notificationsProcessor";
 import { getCurrentSeason, getSeasonStartingToday, updateGuildIcon, updateRulesMessages, updateSeasonalTheme } from "../structures/tasks/seasonsSystem";
 import { dailySeriousRolesUpdate } from "../structures/tasks/seriousRole";
@@ -65,6 +66,11 @@ export class ReadyEvent extends Event {
 		schedule("*/1 * * * *", async () => {
 			await sendNotifications(this.client);
 		});
+
+		// --- Fanarts sending cron: every 1 minutes ---
+		// schedule("*/1 * * * *", async () => {
+		await sendFanarts(this.client);
+		// });
 
 		// --- DB cleaning cron: everyday at 1 AM ---
 		// Cleans the Users and LinkedUsers collections: removes users no longer in guild, deletes site links, removes roles
