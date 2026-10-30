@@ -190,6 +190,7 @@ export interface AuthPromotionRejectedData {
 
 export interface AuthPromotionRequestedData {
 	user_name: string,
+	user_slug: string,
 }
 
 // Follow notification data interfaces

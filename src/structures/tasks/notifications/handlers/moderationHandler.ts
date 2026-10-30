@@ -1,10 +1,11 @@
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
 import { getCurrentSeason } from "../../seasonsSystem";
 import { getDiscordIdFromSiteId } from "../services/userService";
 import { createNotificationEmbed } from "../utils/embedFunction";
-import type { AuthPromotionAcceptedNotification, AuthPromotionRejectedNotification, ModerationReportSubmittedNotification, NotificationItem } from "../utils/types";
+import type { AuthPromotionAcceptedNotification, AuthPromotionRejectedNotification, AuthPromotionRequestedNotification, ModerationReportSubmittedNotification, NotificationItem } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
 
 /**
@@ -20,9 +21,10 @@ import { handleSendingError } from "./errorHandler";
  * @param title - The title of the notification embed.
  * @param description - The description of the notification embed.
  * @param userName - Optional. The name of the user who initiated the moderation action, used as the author name in the notification embed.
+ * @param components - Optional. The action row containing buttons to include in the notification.
  * @returns - A promise that resolves to an array of user IDs for whom the notification failed to send.
  */
-async function sendModerationNotification(client: ShewenyClient, notification: NotificationItem, title: string, description: string, userName?: string): Promise<string[]> {
+async function sendModerationNotification(client: ShewenyClient, notification: NotificationItem, title: string, description: string, userName?: string, components?: ActionRowBuilder<ButtonBuilder>): Promise<string[]> {
 	const failedRecipients: string[] = [];
 
 	// Get the current season and its corresponding icon from the configuration
@@ -44,7 +46,7 @@ async function sendModerationNotification(client: ShewenyClient, notification: N
 	for (const userId of notification.recipients) {
 		try {
 			const user = await client.users.fetch(userId);
-			await user.send({ embeds: [embed] });
+			await user.send({ embeds: [embed], components: components ? [components] : [] });
 		} catch (error) {
 			await handleSendingError(client, error, userId, failedRecipients);
 		}
@@ -73,10 +75,19 @@ export async function handleModerationReportSubmitted(client: ShewenyClient, not
 
 	// Construct the title and description for the notification embed, informing moderators and administrators of the new moderation report submission
 	const title = "🚩 Nouveau signalement";
-	const description = `**${data.user_name}**${mention} a déposé un nouveau signalement. **[Accéder aux signalements](${config.APILink}/admin/moderation/moderation-reports)**.`;
+	const description = `**${data.user_name}**${mention} a déposé un nouveau signalement.`;
+
+	// Create an action row with a button that links to the moderation reports page in the admin panel
+	const moderationReportsPageButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+		new ButtonBuilder()
+			.setLabel("Accéder aux signalements")
+			.setStyle(ButtonStyle.Link)
+			.setURL(`${config.APILink}/admin/moderation/moderation-reports`)
+			.setEmoji("🚩"),
+	);
 
 	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
-	return sendModerationNotification(client, notification, title, description, data.user_name);
+	return sendModerationNotification(client, notification, title, description, data.user_name, moderationReportsPageButton);
 }
 
 /**
@@ -121,16 +132,26 @@ export async function handleAuthPromotionRejected(client: ShewenyClient, notific
 	return sendModerationNotification(client, notification, title, description);
 }
 
-export async function handleAuthPromotionRequested(client: ShewenyClient, notification: AuthPromotionRejectedNotification): Promise<string[]> {
+export async function handleAuthPromotionRequested(client: ShewenyClient, notification: AuthPromotionRequestedNotification): Promise<string[]> {
 	const { data } = notification;
 
 	// Get the Discord ID of the new follower using their site ID from the notification data and construct a mention string if the Discord ID is found
 	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
 	const mention = discordId ? ` (<@${discordId}>)` : "";
 
+	// Construct the title and description for the notification embed, informing moderators and administrators of the new promotion request submission
 	const title = "🌱 Nouvelle demande de promotion";
-	const description = `**${data.user_name}**${mention} a déposé une demande de promotion. **[Accéder aux demandes de promotion](${config.APILink}/admin/auth/promotion-requests)**.`;
+	const description = `**[${data.user_name}](${config.APILink}/profile/${data.user_slug})**${mention} a déposé une demande de promotion.`;
+
+	// Create an action row with a button that links to the promotion requests page in the admin panel
+	const promotionRequestsPageButton = new ActionRowBuilder<ButtonBuilder>().addComponents(
+		new ButtonBuilder()
+			.setLabel("Accéder aux demandes de promotion")
+			.setStyle(ButtonStyle.Link)
+			.setURL(`${config.APILink}/admin/auth/promotion-requests`)
+			.setEmoji("🌱"),
+	);
 
 	// Call sendModerationNotification with the constructed title and description to send the notification to the recipients
-	return sendModerationNotification(client, notification, title, description, data.user_name);
+	return sendModerationNotification(client, notification, title, description, data.user_name, promotionRequestsPageButton);
 }
