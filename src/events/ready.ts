@@ -68,9 +68,9 @@ export class ReadyEvent extends Event {
 		});
 
 		// --- Fanarts sending cron: every 1 minutes ---
-		// schedule("*/1 * * * *", async () => {
-		await sendFanarts(this.client);
-		// });
+		schedule("*/1 * * * *", async () => {
+			await sendFanarts(this.client);
+		});
 
 		// --- DB cleaning cron: everyday at 1 AM ---
 		// Cleans the Users and LinkedUsers collections: removes users no longer in guild, deletes site links, removes roles

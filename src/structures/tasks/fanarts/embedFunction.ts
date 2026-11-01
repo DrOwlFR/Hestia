@@ -6,12 +6,12 @@ import { pickRandomSeasonColor } from "../seasonsSystem";
 // Options for creating a fanart embed
 interface CreateFanartEmbedOptions {
 	color?: number;
-	author?: {
-		name?: string;
+	author: {
+		name: string;
 		iconURL?: string;
 	};
 	description: string;
-	imageUrl: string;
+	fileName: string;
 	timestamp: string | Date;
 }
 
@@ -25,7 +25,7 @@ export function createFanartEmbed(options: CreateFanartEmbedOptions): EmbedBuild
 	const embed = new EmbedBuilder()
 		.setColor(color)
 		.setDescription(options.description)
-		.setImage(options.imageUrl)
+		.setImage(`attachment://${options.fileName}`)
 		.setTimestamp(new Date(options.timestamp));
 
 	// Set the author of the embed if an author name is provided and not empty and sanitize the author's icon URL if provided
