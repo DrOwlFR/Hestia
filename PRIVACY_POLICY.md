@@ -31,6 +31,8 @@ Certaines données spécifiques sont également stockées dans le fichier `confi
 
 - Sont également stockés le nombre de messages globaux envoyés par salon (ou fil) et par mois, mais ces données ne sont pas liées à un utilisateur en particulier.
 
+- Vos réponses aux votes sont également stockées dans la base de données, que le vote soit anonyme ou non. Dans le cas d'un vote anonyme, vos votes sont stockés mais non accessibles publiquement (ni même à l'équipe de modération, seul le développeur peut y accéder, mais il s'engage à ne pas les consulter).
+
 ## 2. Pourquoi avons-nous besoin de ces données ?
 
 Les données stockées le sont uniquement dans le but d'assurer le fonctionnement normal du serveur. **Aucun contenu que vous envoyez (contenu des messages, images, etc.) n'est stocké par Hestia**.
@@ -47,6 +49,8 @@ Les données stockées le sont uniquement dans le but d'assurer le fonctionnemen
 - Les ID des rôles du Jardin sont stockés afin de faciliter leur attribution ou leur mention. De même, les IDs des salons et de certains membres de l'équipe de modération sont stockés dans le but de faciliter leur mention dans les règles ou les messages d'indications du bot.
 
 - Les statistiques de messages par salon et par mois servent uniquement à l'équipe de modération du serveur pour suivre l'activité globale du serveur.
+
+- Les votes sont stockés afin de pouvoir compter les votes et déterminer le résultat d'un vote. Ils sont stockées pour une durée indéterminée, afin de servir de preuve de résultats d'un vote.
 
 ## À part Discord, partageons-nous vos données avec des tiers ?
 

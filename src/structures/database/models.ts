@@ -1,4 +1,4 @@
-import type { Document, Types } from "mongoose";
+import type { Types } from "mongoose";
 import { model, Schema } from "mongoose";
 
 /**
@@ -14,7 +14,7 @@ interface MessagePerDay {
  * Interface for User documents in the database.
  * Represents a Discord user with message statistics, join date, and timestamps.
  */
-export interface dbUser extends Document {
+export interface dbUser {
 	_id: Types.ObjectId;
 	discordId: string;
 	discordUsername: string;
@@ -46,7 +46,7 @@ export const User = model<dbUser>("User", new Schema({
  * Interface for LinkedUser documents in the database.
  * Represents the link between a Discord user and their site account.
  */
-export interface linkedUser extends Document {
+export interface linkedUser {
 	_id: Types.ObjectId,
 	discordId: string,
 	discordUsername: string,
@@ -72,7 +72,7 @@ export const LinkedUser = model<linkedUser>("linked_user", new Schema({
  * Interface for MessageStats documents in the database.
  * Tracks monthly message counts per channel in a guild.
  */
-export interface messageStats extends Document {
+export interface messageStats {
 	_id: Types.ObjectId,
 	guildId: string,
 	channelId: string,
@@ -119,3 +119,61 @@ export const MessageStats = model<messageStats>(
 	"messages_stats",
 	MessageStatsSchema,
 );
+
+/**
+ * Interface for voteRecord subdocument.
+ * Represents an individual user's vote choice.
+ */
+interface voteRecord {
+	userId: string;
+	displayName: string;
+	choice: "yes" | "no" | "abstain";
+}
+
+/**
+ * Interface for proxyVoteRecord subdocument.
+ * Represents a proxy vote with holder and target information.
+ */
+interface proxyVoteRecord {
+	holderId: string;
+	holderDisplayName: string;
+	targetPseudo: string;
+	choice: "yes" | "no" | "abstain";
+}
+
+/**
+ * Interface for voteDocument in the database.
+ * Represents a voting session with question, status, and associated votes.
+ */
+export interface voteDocument {
+	messageId: string;
+	channelId: string;
+	question: string;
+	isAnonymous: boolean;
+	isClosed: boolean;
+	votes: voteRecord[];
+	proxyVotes: proxyVoteRecord[];
+}
+
+/**
+ * Mongoose model for Vote collection.
+ * Manages voting sessions with user votes and proxy votes.
+ */
+export const Vote = model<voteDocument>("Vote", new Schema<voteDocument>({
+	messageId: { type: String, required: true, unique: true },
+	channelId: { type: String, required: true },
+	question: { type: String, required: true },
+	isAnonymous: { type: Boolean, required: true, default: false },
+	isClosed: { type: Boolean, required: true, default: false },
+	votes: [{
+		userId: { type: String, required: true },
+		displayName: { type: String, required: true },
+		choice: { type: String, enum: ["yes", "no", "abstain"], required: true },
+	}],
+	proxyVotes: [{
+		holderId: { type: String, required: true },
+		holderDisplayName: { type: String, required: true },
+		targetPseudo: { type: String, required: true },
+		choice: { type: String, enum: ["yes", "no", "abstain"], required: true },
+	}],
+}));
