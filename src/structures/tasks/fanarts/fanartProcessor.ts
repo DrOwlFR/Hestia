@@ -116,9 +116,7 @@ export async function sendFanarts(client: ShewenyClient): Promise<void> {
 			await channel.send({ embeds: [embed], files: [attachment] });
 
 			// Add the fanart ID to the list of successfully sent fanarts
-			successfulIds.push({
-				id: fanart.id,
-			});
+			successfulIds.push(fanart.id);
 		} catch (error) {
 			await sendLog(client, "fanartsCron", `${config.emojis.cross} Echec de l'envoi du fanart \`${fanart.id}\` :\n\`\`\`js\n${error}\n\`\`\``);
 		}
@@ -145,18 +143,13 @@ async function getFanarts(page: number = 1, perPage: number = 100): Promise<Resp
 	});
 }
 
-// Interface for fanart post data to mark as sent
-interface FanartPost {
-	id: number,
-}
-
 /**
  * postFanarts: marks fanarts as sent in the site API.
  * Summary: Sends a POST request to mark the specified fanarts as sent in the site API.
  * @param fanarts - An array of fanart post objects to mark as sent.
  * @returns - The API response indicating success or failure of the operation.
  */
-async function postFanarts(fanarts: FanartPost[]): Promise<Response> {
+async function postFanarts(fanarts: number[]): Promise<Response> {
 	return await fetch(`${config.APILink}/api/discord/fanarts/mark-sent`, {
 		method: "POST",
 		headers: {
