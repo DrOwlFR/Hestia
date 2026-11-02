@@ -4,7 +4,7 @@ import { handleCalendarQuoteContestEntryRemoved, handleCalendarQuoteContestSubmi
 import { handleStoryCoAuthorChapterCreated, handleStoryCoAuthorChapterDeleted, handleStoryCoAuthorChapterUpdated, handleStoryCollaboratorLeft, handleStoryCollaboratorRoleGiven, handleStoryCollaboratorRoleRemoved } from "./handlers/collaborationsHandler";
 import { handleChapterComment, handleChapterReplyComment, handleChapterRootComment } from "./handlers/commentsHandler";
 import { handleDefaultNotification } from "./handlers/defaultHandler";
-import { handleFanartAccepted, handleFanartAudioReplaced, handleFanartDeclined, handleFanartDeleted, handleFanartDeletedByModeration, handleFanartRemovedWithContent, handleFanartRoleDeclined, handleFanartRoleGiven, handleFanartRoleRequested, handleFanartSubmitted } from "./handlers/fanartHandler";
+import { handleFanartAccepted, handleFanartAudioReplaced, handleFanartDeclined, handleFanartDeleted, handleFanartDeletedByModeration, handleFanartRemovedWithContent, handleFanartRoleDeclined, handleFanartRoleGiven, handleFanartRoleRequested, handleFanartRoleRevoked, handleFanartSubmitted } from "./handlers/fanartHandler";
 import { handleFollowNewFollower, handleFollowNewStory } from "./handlers/followHandler";
 import { handleAuthPromotionAccepted, handleAuthPromotionRejected, handleAuthPromotionRequested, handleModerationReportSubmitted } from "./handlers/moderationHandler";
 import { handleNewsReplyComment } from "./handlers/newsCommentsHandler";
@@ -54,6 +54,7 @@ const handlers: Record<string, NotificationHandler> = {
 	"fanart.role_requested": handleFanartRoleRequested as NotificationHandler,
 	"fanart.role_given": handleFanartRoleGiven as NotificationHandler,
 	"fanart.role_declined": handleFanartRoleDeclined as NotificationHandler,
+	"fanart.role_revoked": handleFanartRoleRevoked as NotificationHandler,
 	"calendar.quote_contest.entry_removed": handleCalendarQuoteContestEntryRemoved as NotificationHandler,
 	"calendar.quote_contest.submissions_open": handleCalendarQuoteContestSubmissionsOpen as NotificationHandler,
 	"calendar.quote_contest.submissions_closing": handleCalendarQuoteContestSubmissionsClosing as NotificationHandler,

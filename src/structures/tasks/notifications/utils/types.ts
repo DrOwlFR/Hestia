@@ -366,6 +366,20 @@ export interface FanartRoleDeclinedData {
 	comment: string,
 }
 
+export interface FanartRoleRevokedData {
+	actor_id: number,
+	actor_name: string,
+	actor_slug: string,
+	story_id: number,
+	story_title: string,
+	story_slug: string,
+	chapter_title: string,
+	chapter_slug: string,
+	fanart_title: string,
+	kind: string,
+	comment: string,
+}
+
 // Calendar notification data interfaces
 
 export interface CalendarQuoteContestEntryRemovedData {
@@ -596,6 +610,11 @@ export interface FanartRoleDeclinedNotification extends BaseNotification {
 	data: FanartRoleDeclinedData;
 }
 
+export interface FanartRoleRevokedNotification extends BaseNotification {
+	type: "fanart.role_revoked";
+	data: FanartRoleRevokedData;
+}
+
 // Calendar notification types
 
 export interface CalendarQuoteContestEntryRemovedNotification extends BaseNotification {
@@ -667,6 +686,7 @@ export type NotificationItem =
 | FanartRoleRequestedNotification
 | FanartRoleGivenNotification
 | FanartRoleDeclinedNotification
+| FanartRoleRevokedNotification
 | CalendarQuoteContestEntryRemovedNotification
 | CalendarQuoteContestSubmissionsOpenNotification
 | CalendarQuoteContestSubmissionsClosingNotification

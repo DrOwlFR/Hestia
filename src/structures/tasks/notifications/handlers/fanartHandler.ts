@@ -1,11 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
 import { getCurrentSeason } from "../../seasonsSystem";
 import { getDiscordIdFromSiteId } from "../services/userService";
 import { createNotificationEmbed } from "../utils/embedFunction";
-import type { FanartAcceptedNotification, FanartDeclinedNotification, FanartDeletedNotification, FanartRemovedWithContentNotification, FanartSubmittedNotification, NotificationItem } from "../utils/types";
+import type { FanartAcceptedNotification, FanartDeclinedNotification, FanartDeletedNotification, FanartRemovedWithContentNotification, FanartRoleRevokedNotification, FanartSubmittedNotification, NotificationItem } from "../utils/types";
 import { handleSendingError } from "./errorHandler";
 
 /**
@@ -34,8 +34,8 @@ async function sendFanartNotification(client: ShewenyClient, notification: Notif
 	// Create an embed for the notification using the provided title and description, along with the user's name and avatar URL.
 	const embed = createNotificationEmbed({
 		author: {
-			name: userName === "mod" ? "Jardin des Esperluettes" : userName,
-			iconURL: userName === "mod" ? icon : notification.avatarUrl ?? undefined,
+			name: userName || "Jardin des Esperluettes",
+			iconURL: !userName ? icon : (notification.avatarUrl ?? undefined),
 		},
 		title,
 		description,
@@ -45,7 +45,9 @@ async function sendFanartNotification(client: ShewenyClient, notification: Notif
 	// Iterate over each recipient in the notification's recipients array, attempt to send the embed and add any failed recipient IDs to the failedRecipients array (through the handleSendingError function)
 	for (const userId of notification.recipients) {
 		try {
-			const user = await client.users.fetch(userId);
+			// const user = await client.users.fetch(userId);
+			const user = await client.channels.fetch("1426615318079344660");
+			if (!user || user.type !== ChannelType.GuildText) return [""];
 			await user.send({ embeds: [embed], components: components ? [components] : undefined });
 		} catch (error) {
 			await handleSendingError(client, error, userId, failedRecipients);
@@ -211,9 +213,6 @@ export async function handleFanartDeleted(client: ShewenyClient, notification: F
 export async function handleFanartDeletedByModeration(client: ShewenyClient, notification: FanartDeletedNotification): Promise<string[]> {
 	const { data } = notification;
 
-	// Replace the actor_name with "mod" to indicate that the fanart was deleted by moderation
-	data.actor_name = "mod";
-
 	// Determine the type of fanart based on its kind.
 	const fanartType = data.kind === "audio" ? "son" : "image";
 
@@ -362,6 +361,32 @@ export async function handleFanartRoleDeclined(client: ShewenyClient, notificati
 	// Construct the title and description for the notification of the declined fanart role
 	const title = "🖼️ Rôle de fanartiste refusé";
 	const description = `**[${data.actor_name}](${config.APILink}/profile/${data.actor_slug})**${mention} a refusé votre demande de rôle de **fanartiste** sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
+
+	// Call sendFanartNotification to send the notification to the recipients
+	return await sendFanartNotification(client, notification, data.actor_name, title, description);
+}
+
+/**
+ * handleFanartRoleRevoked: handles notifications for fanarts where the role has been revoked.
+ * Summary: This function constructs the title and description for the fanart role revoked notification, indicating that a user's fanart role has been revoked. It then calls sendFanartNotification to send the notification to the recipients.
+ * Steps:
+ * - Get the Discord ID of the user who revoked the fanart role using their site ID from the notification data and construct a mention string if the Discord ID is found.
+ * - Construct the title and description for the notification of the revoked fanart role.
+ * - Call sendFanartNotification to send the notification to the recipients.
+ * @param client - The ShewenyClient instance used to fetch users and send messages.
+ * @param notification - The notification item containing the fanart role revoked details.
+ * @returns - A promise resolving to an array of failed recipient IDs.
+ */
+export async function handleFanartRoleRevoked(client: ShewenyClient, notification: FanartRoleRevokedNotification): Promise<string[]> {
+	const { data } = notification;
+
+	// Get the Discord ID of the user who revoked the fanart role using their site ID from the notification data and construct a mention string if the Discord ID is found.
+	const discordId = await getDiscordIdFromSiteId(notification.sourceUserId);
+	const mention = discordId ? ` (<@${discordId}>)` : "";
+
+	// Construct the title and description for the notification of the revoked fanart role
+	const title = "🖼️ Rôle de fanartiste retiré";
+	const description = `**[${data.actor_name}](${config.APILink}/profile/${data.actor_slug})**${mention} vous a retiré le rôle de **fanartiste** sur l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».`;
 
 	// Call sendFanartNotification to send the notification to the recipients
 	return await sendFanartNotification(client, notification, data.actor_name, title, description);
