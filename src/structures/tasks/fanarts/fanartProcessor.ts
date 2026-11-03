@@ -70,7 +70,7 @@ export async function sendFanarts(client: ShewenyClient): Promise<void> {
 	if (!fanartsJson.data.length) return;
 
 	// Fetch the specified Discord channel where fanarts will be sent. If the channel is not found or is not a text channel, log an error message and return early.
-	const channel = await client.channels.fetch(config.privateCollectionChannelId);
+	const channel = await client.channels.fetch(config.fanartsWallChannelId);
 	if (!channel || channel.type !== ChannelType.GuildText) {
 		await sendLog(client, "fanartsCron", `<@${config.botAdminsIds[0]}> ${config.emojis.cross} Impossible de récupérer le channel des fanarts : ${config.fanartsCronChannelId}`);
 		return;

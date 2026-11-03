@@ -31,7 +31,7 @@ export default {
 	portraitGaleryChannelId: "",
 	antechamberChannelId: "",
 	loungeChannelId: "",
-	privateCollectionChannelId: "",
+	fanartsWallChannelId: "",
 	seriousChannelId: "",
 	irlChannelId: "",
 
