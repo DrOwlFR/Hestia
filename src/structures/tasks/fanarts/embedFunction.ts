@@ -11,7 +11,7 @@ interface CreateFanartEmbedOptions {
 		iconURL?: string;
 	};
 	description: string;
-	fileName: string;
+	fileName: string | null;
 	timestamp: string | Date;
 }
 
@@ -25,8 +25,11 @@ export function createFanartEmbed(options: CreateFanartEmbedOptions): EmbedBuild
 	const embed = new EmbedBuilder()
 		.setColor(color)
 		.setDescription(options.description)
-		.setImage(`attachment://${options.fileName}`)
 		.setTimestamp(new Date(options.timestamp));
+
+	if (options.fileName) {
+		embed.setImage(`attachment://${options.fileName}`);
+	}
 
 	// Set the author of the embed if an author name is provided and not empty and sanitize the author's icon URL if provided
 	if (options.author?.name && options.author.name.trim() !== "") {

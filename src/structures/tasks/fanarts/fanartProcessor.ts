@@ -8,6 +8,7 @@ import { createFanartEmbed } from "./embedFunction";
 // Interface for fanart data returned by the API
 interface FanartData {
 	id: number;
+	kind: string;
 	title: string;
 	artistName: string;
 	artist: {
@@ -15,18 +16,19 @@ interface FanartData {
 		slug: string;
 		avatarUrl: string;
 	},
-	authors: [{
+	authors: {
 		id: number;
 		name: string;
 		slug: string;
-	}]
+	}[];
 	storyTitle: string;
+	storySlug: string;
 	storyUrl: string;
+	approvedAt: string;
 	chapterTitle?: string;
 	chapterSlug?: string;
 	description?: string;
-	imageUrl: string;
-	approvedAt: string;
+	imageUrl?: string;
 }
 
 // Interface for pagination information returned by the API
@@ -51,8 +53,7 @@ interface FanartsJson {
  * - Retrieve pending fanarts from the site API and check if the response is successful. If not, log an error message and return early.
  * - Parse the response as JSON and check if there are any fanarts to process. If there are no fanarts, return early.
  * - Fetch the specified Discord channel where fanarts will be sent. If the channel is not found or is not a text channel, log an error message and return early.
- * - Iterate over each fanart in the retrieved fanarts, download the image, create an embed, and send it to the specified channel. Log any errors encountered during the process.
- * - Mark the successfully sent fanarts as sent in the site API.
+ * - Process each fanart, download the image if available, create an embed, and send it to the channel.
  * @param client - The ShewenyClient instance used to fetch users and send messages.
  * @returns - A promise that resolves when all fanarts have been processed.
  */
@@ -78,28 +79,46 @@ export async function sendFanarts(client: ShewenyClient): Promise<void> {
 	// Initialize an array to hold the IDs of successfully sent fanarts
 	const successfulIds = [];
 
-	// Iterate over each fanart in the retrieved fanarts, download the image, create an embed, and send it to the specified channel. Log any errors encountered during the process.
+	// Process each fanart in the retrieved data, download the image if available, create an embed, and send it to the specified channel. Log any errors encountered during the process.
 	for (const fanart of fanartsJson.data) {
 		try {
-			// Download the fanart image from the provided URL
-			const imageReponse = await fetch(fanart.imageUrl);
-			if (!imageReponse.ok) {
-				await sendLog(client, "fanartsCron", `${config.emojis.cross} Echec du téléchargement de l'image du fanart \`${fanart.id}\` : ${imageReponse.status} ${imageReponse.statusText}`);
-				continue;
+			let attachment = null;
+			let fileName = null;
+
+			// If the fanart has an image URL (so is not an audio fanart), download the image and create an attachment for it
+			if (fanart.imageUrl) {
+				// Download the fanart image from the provided URL
+				const imageReponse = await fetch(fanart.imageUrl);
+				if (!imageReponse.ok) {
+					await sendLog(client, "fanartsCron", `${config.emojis.cross} Echec du téléchargement de l'image du fanart \`${fanart.id}\` : ${imageReponse.status} ${imageReponse.statusText}`);
+					continue;
+				}
+
+				// Convert the downloaded image to a buffer for attachment
+				const arrayBuffer = await imageReponse.arrayBuffer();
+				const buffer = Buffer.from(arrayBuffer);
+
+				// Create an attachment for the fanart image with a unique filename
+				fileName = `fanart-${fanart.id}.png`;
+				attachment = new AttachmentBuilder(buffer, { name: fileName });
 			}
 
-			// Convert the downloaded image to a buffer for attachment
-			const arrayBuffer = await imageReponse.arrayBuffer();
-			const buffer = Buffer.from(arrayBuffer);
+			// Determine the type of fanart based on its kind.
+			const fanartType = fanart.kind === "audio" ? "son" : "image";
 
-			// Create an attachment for the fanart image with a unique filename
-			const fileName = `fanart-${fanart.id}.png`;
-			const attachment = new AttachmentBuilder(buffer, { name: fileName });
+			// Format the authors' names and links for the embed description, handling multiple authors with proper conjunctions.
+			const formatter = new Intl.ListFormat("fr", { style: "long", type: "conjunction" });
+			const formattedAuthors = formatter.format(fanart.authors.map(author => `**[${author.name}](${config.APILink}/profile/${author.slug})**`));
 
-			// Construct the description for the embed, including chapter information if available
-			const description = fanart.chapterTitle ?
-				`## «\u00A0${fanart.title}\u00A0»\n\n${fanart.description ? `${fanart.description}\n\n` : ""}-# Fanart illustrant le chapitre «\u00A0**[${fanart.chapterTitle}](${fanart.storyUrl}/chapters/${fanart.chapterSlug})**\u00A0» de l'histoire «\u00A0**[${fanart.storyTitle}](${fanart.storyUrl})**\u00A0».` :
-				`## «\u00A0${fanart.title}\u00A0»\n\n${fanart.description ? `${fanart.description}\n\n` : ""}-# Fanart illustrant l'histoire «\u00A0**[${fanart.storyTitle}](${fanart.storyUrl})**\u00A0».`;
+			const prefix = fanart.authors.length > 1 ? "co-écrite par" : "écrite par";
+			const authorsText = `${prefix} ${formattedAuthors}`;
+
+			// Construct the description for the embed based on whether the fanart is an audio or image type, and whether it is associated with a chapter or just a story. Include the fanart's title, description, chapter title, story title, and authors in the description.
+			const description = fanartType === "son" ?
+				`### 🔊 Nouveau fanart audio\n\n${fanart.description ? `${fanart.description}\n\n` : ""}-# Son illustrant le chapitre «\u00A0**[${fanart.chapterTitle}](${config.APILink}/stories/${fanart.storySlug}/chapters/${fanart.chapterSlug})**\u00A0» de l'histoire «\u00A0**[${fanart.storyTitle}](${config.APILink}/stories/${fanart.storySlug})**\u00A0», ${authorsText}.`
+				: fanart.chapterTitle ?
+					`## «\u00A0${fanart.title}\u00A0»\n\n${fanart.description ? `${fanart.description}\n\n` : ""}-# Image illustrant le chapitre «\u00A0**[${fanart.chapterTitle}](${config.APILink}/stories/${fanart.storySlug}/chapters/${fanart.chapterSlug})**\u00A0» de l'histoire «\u00A0**[${fanart.storyTitle}](${config.APILink}/stories/${fanart.storySlug})**\u00A0», ${authorsText}.`
+					: `## «\u00A0${fanart.title}\u00A0»\n\n${fanart.description ? `${fanart.description}\n\n` : ""}-# Image illustrant l'histoire «\u00A0**[${fanart.storyTitle}](${config.APILink}/stories/${fanart.storySlug})**\u00A0», ${authorsText}.`;
 
 			// Create an embed for the fanart using the specified options, including author information, description, filename, and timestamp
 			const embed = createFanartEmbed({
@@ -112,8 +131,14 @@ export async function sendFanarts(client: ShewenyClient): Promise<void> {
 				timestamp: fanart.approvedAt,
 			});
 
+			// Construct the message payload to be sent to the channel, including the embed and any attachment if available
+			const messagePayload = {
+				embeds: [embed],
+				files: attachment ? [attachment] : undefined,
+			};
+
 			// Send the embed and attachment to the specified channel
-			await channel.send({ embeds: [embed], files: [attachment] });
+			await channel.send(messagePayload);
 
 			// Add the fanart ID to the list of successfully sent fanarts
 			successfulIds.push(fanart.id);
