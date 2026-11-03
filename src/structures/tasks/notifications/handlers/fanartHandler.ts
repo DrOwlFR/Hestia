@@ -85,9 +85,9 @@ export async function handleFanartSubmitted(client: ShewenyClient, notification:
 	// Construct the title and description for the notification embed, including the actor's name, chapter title, story title, and links to the relevant pages on the site.
 	const title = fanartType === "son" ? "🔊 Nouveau son" : "🖼️ Nouveau fanart";
 	const description = data.chapter_title ?
-		`**[${data.actor_name}](${config.APILink}/profile/${data.actor_slug})**${mention} a soumis ${fanartType === "son" ? "un son" : "une image"} «\u00A0**${data.fanart_title}**\u00A0» pour le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».
+		`**[${data.actor_name}](${config.APILink}/profile/${data.actor_slug})**${mention} a soumis ${fanartType === "son" ? "le son" : "l'image"} «\u00A0**${data.fanart_title}**\u00A0» pour le chapitre «\u00A0**[${data.chapter_title}](${config.APILink}/stories/${data.story_slug}/chapters/${data.chapter_slug})**\u00A0» de l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».
 		${data.comment ? `\nMessage de l'artiste : «\u00A0${data.comment}\u00A0»` : ""}`
-		: `**[${data.actor_name}](${config.APILink}/profile/${data.actor_slug})**${mention} a soumis ${fanartType === "son" ? "un son" : "une image"} «\u00A0**${data.fanart_title}**\u00A0» pour l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».
+		: `**[${data.actor_name}](${config.APILink}/profile/${data.actor_slug})**${mention} a soumis ${fanartType === "son" ? "le son" : "l'image"} «\u00A0**${data.fanart_title}**\u00A0» pour l'histoire «\u00A0**[${data.story_title}](${config.APILink}/stories/${data.story_slug})**\u00A0».
 		${data.comment ? `\nMessage de l'artiste : «\u00A0${data.comment}\u00A0»` : ""}`;
 
 	// Create a button that links to the collaborators page of the story for the user to review the request
