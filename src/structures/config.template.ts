@@ -32,6 +32,7 @@ export default {
 	antechamberChannelId: "",
 	loungeChannelId: "",
 	fanartsWallChannelId: "",
+	fanartsThreadId: "",
 	seriousChannelId: "",
 	irlChannelId: "",
 

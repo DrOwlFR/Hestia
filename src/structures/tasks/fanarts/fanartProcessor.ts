@@ -70,8 +70,8 @@ export async function sendFanarts(client: ShewenyClient): Promise<void> {
 	if (!fanartsJson.data.length) return;
 
 	// Fetch the specified Discord channel where fanarts will be sent. If the channel is not found or is not a text channel, log an error message and return early.
-	const channel = await client.channels.fetch(config.fanartsWallChannelId);
-	if (!channel || channel.type !== ChannelType.GuildText) {
+	const fanartsWallChannel = await client.channels.fetch(config.fanartsWallChannelId);
+	if (!fanartsWallChannel || fanartsWallChannel.type !== ChannelType.GuildText) {
 		await sendLog(client, "fanartsCron", `<@${config.botAdminsIds[0]}> ${config.emojis.cross} Impossible de récupérer le channel des fanarts : ${config.fanartsCronChannelId}`);
 		return;
 	}
@@ -138,7 +138,17 @@ export async function sendFanarts(client: ShewenyClient): Promise<void> {
 			};
 
 			// Send the embed and attachment to the specified channel
-			await channel.send(messagePayload);
+			await fanartsWallChannel.send(messagePayload);
+
+			// Fetch the fanarts thread channel, unlock it, send the message payload, and then lock it again to prevent further messages
+			const fanartsThread = await client.channels.fetch(config.fanartsThreadId);
+			if (fanartsThread && fanartsThread.type === ChannelType.PublicThread) {
+				if (fanartsThread.locked) {
+					await fanartsThread.setLocked(false, "Fanarts thread unlocked for sending fanart");
+				}
+				await fanartsThread.send(messagePayload);
+				await fanartsThread.setLocked(true, "Fanarts thread locked after sending fanart");
+			}
 
 			// Add the fanart ID to the list of successfully sent fanarts
 			successfulIds.push(fanart.id);
