@@ -12,7 +12,8 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 			.setPlaceholder("Sélectionnez une version pour voir les notes de patch")
 			.setMaxValues(1)
 			.addOptions([
-				{ label: "v1.9.0", description: "Dernière version en date", value: "1.9.0" },
+				{ label: "v1.9.1", description: "Dernière version en date", value: "1.9.1" },
+				{ label: "v1.9.0", value: "1.9.0" },
 				{ label: "v1.8.0", value: "1.8.0" },
 				{ label: "v1.7.1", value: "1.7.1" },
 				{ label: "v1.7.0", value: "1.7.0" },
@@ -38,6 +39,27 @@ export const versionsSelectMenu = new ActionRowBuilder<StringSelectMenuBuilder>(
 
 // Function returning embeds for version patch notes
 export const versionsMessages = (client: ShewenyClient) => ({
+	"1.9.1": new ContainerBuilder()
+		.setAccentColor(0x26c4ec)
+		.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder()
+						.setContent(stripIndent(`
+							## Notes de patch - Version 1.9.1
+							*(6 novembre 2026)*
+							### ➕ Ajout
+							- \`[fanarts]\` - Les fanarts seront désormais postés également dans le fil <#${config.fanartsThreadId}> (en plus du salon <#${config.fanartsWallChannelId}>). Ce fil sera verrouillé en permanence afin de conserver un archivage propre des fanarts. Ce qui permettra de laisser place aux discussions dans le salon principal.
+							### 🔨 Correction
+							- \`[notifications]\` - Suppression d'une ligne de code de test qui empêchait l'envoi des notifications liées aux fanarts (déjà en place depuis le 3 novembre au soir en hot-fix).
+
+							**Journal complet** : [Voir sur GitHub](${config.githubRepositoryUrl}/compare/v1.9.0...v1.9.1)
+				`)))
+				.setThumbnailAccessory(
+					new ThumbnailBuilder()
+						.setURL(client.user?.displayAvatarURL({ size: 1024 }) || ""),
+				),
+		),
 	"1.9.0": new ContainerBuilder()
 		.setAccentColor(0x26c4ec)
 		.addSectionComponents(

@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { ShewenyClient } from "sheweny";
 
 import config from "../../../config";
@@ -45,9 +45,7 @@ async function sendFanartNotification(client: ShewenyClient, notification: Notif
 	// Iterate over each recipient in the notification's recipients array, attempt to send the embed and add any failed recipient IDs to the failedRecipients array (through the handleSendingError function)
 	for (const userId of notification.recipients) {
 		try {
-			// const user = await client.users.fetch(userId);
-			const user = await client.channels.fetch("1426615318079344660");
-			if (!user || user.type !== ChannelType.GuildText) return [""];
+			const user = await client.users.fetch(userId);
 			await user.send({ embeds: [embed], components: components ? [components] : undefined });
 		} catch (error) {
 			await handleSendingError(client, error, userId, failedRecipients);
